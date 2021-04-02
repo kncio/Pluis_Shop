@@ -23,13 +23,13 @@ class ProductCard extends StatelessWidget {
           Expanded(
             child: Container(
               padding: EdgeInsets.all(10),
-              child: Hero(tag: '${this.product.productName}',child: Image(image: this.product.image)),
+              child: Hero(tag: '${this.product.name}',child: Image.network(this.product.image)),
 
             ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(30.0, 10.0, 0.0, 2.0),
-            child: Text(product.productName,
+            child: Text(product.name,
                 //TODO: Sustituir por la informacion dinamica
                 style: TextStyle(
                     fontSize: 15,

@@ -19,7 +19,6 @@ class DetailsPage extends StatefulWidget {
 }
 
 //TODO: FAlta maquetar el carousel para mostrar las diferentes fotos,
-//TODO://además falta extender la foto por debajo del boton de cancelar
 class _DetailsPage extends State<DetailsPage> {
   final Product product;
   bool addTapped = false;
@@ -29,7 +28,7 @@ class _DetailsPage extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
-    log(product.productName);
+    log(product.name);
   }
 
   @override
@@ -46,9 +45,9 @@ class _DetailsPage extends State<DetailsPage> {
         children: [
           Expanded(
               child: Hero(
-            tag: '${this.product.productName}',
-            child: Image(
-              image: this.product.image,
+            tag: '${this.product.name}',
+            child: Image.network(
+             this.product.image,
             ),
           )),
           Container(
@@ -110,7 +109,9 @@ class _DetailsPage extends State<DetailsPage> {
 
   AppBar buildAppBar() => AppBar(
         leading: IconButton(
-          onPressed: () => {},
+          onPressed: () => {
+            Navigator.of(context).pop()
+          },
           icon: Icon(Icons.clear_outlined),
           color: Colors.black,
         ),

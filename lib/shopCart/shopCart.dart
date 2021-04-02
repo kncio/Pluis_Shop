@@ -109,6 +109,7 @@ class _ShopCartPage extends State<ShopCartPage> {
     );
   }
 
+  //TODO: EL carrito tiene que ser persistente, o ser un endpoint de la api
   Widget itemsBody() {
     return Expanded(
       child: Container(
@@ -116,25 +117,25 @@ class _ShopCartPage extends State<ShopCartPage> {
         child: ListView(
           children: [
             ShopCartItem(
-              product: Product(image: LocalResources.menImages[4]),
+              product: Product(image: LocalResources.menImages[4].assetName),
             ),
             SizedBox(
               height: 10,
             ),
             ShopCartItem(
-              product: Product(image: LocalResources.menImages[2]),
+              product: Product(image: LocalResources.menImages[2].assetName),
             ),
             SizedBox(
               height: 10,
             ),
             ShopCartItem(
-              product: Product(image: LocalResources.menImages[1]),
+              product: Product(image: LocalResources.menImages[1].assetName),
             ),
             SizedBox(
               height: 10,
             ),
             ShopCartItem(
-              product: Product(image: LocalResources.menImages[4]),
+              product: Product(image: LocalResources.menImages[4].assetName),
             ),
             SizedBox(
               height: 10,
@@ -172,8 +173,8 @@ class ShopCartItem extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-              child: Image(
-            image: this.product.image,
+              child: Image.network(
+             this.product.image,
           )),
           Expanded(
               child: Column(

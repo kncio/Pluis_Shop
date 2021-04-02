@@ -22,6 +22,12 @@ class GalleryPage extends StatefulWidget {
 
 class _GalleryPage extends State<GalleryPage> {
   @override
+  void initState() {
+    context.bloc<GalleryPageCubit>().getAllProducts();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
@@ -32,7 +38,17 @@ class _GalleryPage extends State<GalleryPage> {
 
   Widget buildBody() {
     return BlocConsumer<GalleryPageCubit, GalleryPageState>(
-        listener: (context, state) async {},
+        listener: (context, state) async {
+          if(state is GalleryPageSuccessState){
+            log(state.products.length.toString());
+          }
+          else if(state is GalleryPageErrorState){
+            log("Errror: => " + state.message);
+          }
+        },
+        buildWhen: (previous, current) =>
+            current is GalleryPageSuccessState ||
+            previous is GalleryPageLoadingState,
         builder: (context, state) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,37 +56,45 @@ class _GalleryPage extends State<GalleryPage> {
               Expanded(
                   child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: GridView.builder(
-                  itemCount: LocalResources.menImages.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 5,
-                    childAspectRatio: 0.60,
-                  ),
-                  itemBuilder: (context, index) => ProductCard(
-                    product: buildProduct(index),
-                    press: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DetailsPage(
-                                  product: buildProduct(index),
-                                ))),
-                  ),
-                ),
+                child: buildGridView(context, state),
               ))
             ],
           );
         });
   }
 
+  GridView buildGridView(BuildContext context, GalleryPageState state) {
+    if(state is GalleryPageSuccessState  && state.products != null){
+      log("returnin gridview");
+      return GridView.builder(
+
+        itemCount: state.products.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 5,
+          childAspectRatio: 0.60,
+        ),
+        itemBuilder: (context, index) => ProductCard(
+          product: buildProduct(index),
+          press: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DetailsPage(
+                    product: state.products[index],
+                  ))),
+        ),
+      );
+    }
+
+  }
+
   Product buildProduct(int index) {
     var product = Product(
-        image: LocalResources.menImages[index],
-        productName: 'Prueba' + index.toString(),
-        productId: Uuid(),
-        productPrice: 22.0,
+        image: LocalResources.menImages[index].assetName,
+        name: 'Prueba' + index.toString(),
+        id: index.toDouble(),
+        price: 22.0,
         description: 'Descripción');
-    log(product.productName);
     return product;
   }
 

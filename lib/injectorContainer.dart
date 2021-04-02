@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/galleryPage/galleryPageCubit.dart';
+import 'package:pluis_hv_app/galleryPage/galleryRepository.dart';
 import 'package:pluis_hv_app/homePage/homePageCubit.dart';
 import 'package:pluis_hv_app/loginPage/loginCubit.dart';
 import 'package:pluis_hv_app/loginPage/loginRepository.dart';
@@ -43,7 +44,9 @@ Future<void> init() async {
   //endregion
 
   //region GalleryPage
-  sl.registerFactory(() => GalleryPageCubit());
+  sl.registerFactory(() => GalleryPageCubit(repository: sl()));
+
+  sl.registerFactory(() => GalleryRepository(api:  sl()));
   //endregion
 
   //region ShopCart
