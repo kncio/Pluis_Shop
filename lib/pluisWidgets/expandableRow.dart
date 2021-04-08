@@ -1,21 +1,25 @@
+import 'package:dartz/dartz.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 
 class ExpandableRow extends StatelessWidget {
   final String headerName;
-  final List<String> itemsNames;
-
+  final List<Map<String, dynamic>> itemsNames;
+  //TODO: Introduce onClick action
   const ExpandableRow({Key key, this.headerName, this.itemsNames})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    buildItem(String label) {
+    buildItem(String label, int id) {
       return Padding(
         padding: const EdgeInsets.all(10.0),
         child: TextButton(
-          onPressed: () => {},
+          onPressed: () => {
+            Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE, arguments: {id})
+          },
           child: Text(label),
         ),
       );
@@ -25,7 +29,7 @@ class ExpandableRow extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          for (var i in this.itemsNames) buildItem("${i}"),
+          for (var i in this.itemsNames) buildItem("${i['categoryName']}",i["id"]),
         ],
       );
     }

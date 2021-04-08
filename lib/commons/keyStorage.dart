@@ -1,6 +1,7 @@
 const String NAMESPACE = 'pluis.app';
 const String API_KEY_NAME = 'store_key';
 const String API_KEY = '123';
+const String API_TOKEN_KEY = NAMESPACE + 'app.token';
 
 //< #region User information (KEYS)
 const String USER_EMAIL = NAMESPACE + '.user.email';

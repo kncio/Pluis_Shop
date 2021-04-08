@@ -14,13 +14,11 @@ import 'package:pluis_hv_app/commons/failure.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 
-
 //TODO: Currently for testing
 class GalleryRepository {
   final ApiClient api;
 
   GalleryRepository({this.api});
-
 
   static Future<void> testGetAllProduct() async {
     var api = ApiClient(serviceUri: WEB_SERVICE);
@@ -28,11 +26,8 @@ class GalleryRepository {
     log(response.data.toString());
   }
 
-
-
-  //TODO: Implement RealLogin Methods
   Future<Either<Failure, List<Product>>> getAllProducts() async {
-    List<Product> allProducts = List();
+    List<Product> allProducts = [];
 
     try {
       var response = await api.get("getAllProduct", {});
@@ -40,15 +35,43 @@ class GalleryRepository {
       if (response.statusCode == 200) {
         log("GetAll Products called" + response.data["data"][0].toString());
 
-        for(var product in response.data["data"]){
+        for (var product in response.data["data"]) {
+          log(product.toString());
           allProducts.add(Product.fromMap(product));
         }
         log("list lenght" + allProducts.length.toString());
         return Right(allProducts);
-      } else{
+      } else {
         log(response.statusCode.toString());
       }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
 
+  static Future<void> testGetAllProductByCategory() async {
+    var api = ApiClient(serviceUri: WEB_SERVICE);
+    Response response = await api.get("getAllProductByCategory", {"id": 15});
+    log(response.data.toString());
+  }
+
+  Future<Either<Failure, List<Product>>> getAllProductByCategory(
+      categoryId) async {
+    List<Product> allProducts = [];
+    try {
+      var response =
+          await api.get("getAllProductByCategory", {"id": categoryId});
+
+      if (response.statusCode == 200) {
+        for (var product in response.data["data"]) {
+          allProducts.add(Product.fromMap(product));
+        }
+        log("list lenght" + allProducts.length.toString());
+        return Right(allProducts);
+      } else {
+        log(response.statusCode.toString());
+        return Left(Failure([response.statusMessage]));
+      }
     } catch (error) {
       return Left(Failure([error.toString()]));
     }

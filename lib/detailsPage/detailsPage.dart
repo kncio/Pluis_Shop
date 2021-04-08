@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class DetailsPage extends StatefulWidget {
   final Product product;
@@ -28,7 +29,7 @@ class _DetailsPage extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
-    log(product.name);
+    // log(product.name);
   }
 
   @override
@@ -46,9 +47,9 @@ class _DetailsPage extends State<DetailsPage> {
           Expanded(
               child: Hero(
             tag: '${this.product.name}',
-            child: Image.network(
-             this.product.image,
-            ),
+            child: FadeInImage.memoryNetwork(
+                image: this.product.image,
+                placeholder: kTransparentImage),
           )),
           Container(
             padding: EdgeInsets.fromLTRB(5, 0, 0, 5),

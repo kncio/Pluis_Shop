@@ -5,8 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
+import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
+import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
+import 'package:pluis_hv_app/register/registerDataModel.dart';
 import 'package:pluis_hv_app/register/registerState.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -18,8 +21,10 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPage extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  RegisterDataForm formData = RegisterDataForm();
   bool _hidePassword = true;
-  String province = "Provincia";
+  bool _hideRePassword = true;
+  String province = "La Habana";
 
   @override
   Widget build(BuildContext context) {
@@ -29,28 +34,58 @@ class _RegisterPage extends State<RegisterPage> {
     );
   }
 
-  AppBar buildAppBar() => AppBar(
+  AppBar buildAppBar() =>
+      AppBar(
         leading: IconButton(
+          color: Colors.black,
           icon: Icon(Icons.arrow_back),
+          onPressed: () => {Navigator.pop(context)},
         ),
       );
 
   BlocConsumer<RegisterCubit, RegisterState> buildBody() {
     return BlocConsumer<RegisterCubit, RegisterState>(
       builder: (context, state) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Text("REGISTRARSE",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            ),
-            Expanded(child: buildForm())
-          ],
-        );
+        switch (state.runtimeType) {
+          case RegisterLoadingState:
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text("REGISTRARSE",
+                      style:
+                      TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                ),
+                LinearProgressIndicator(
+                    minHeight: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+                Expanded(child: buildForm())
+              ],
+            );
+          default:
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text("REGISTRARSE",
+                      style:
+                      TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                ),
+                Expanded(child: buildForm())
+              ],
+            );
+        }
       },
-      listener: (context, state) async {},
+      listener: (context, state) async {
+        if(state is RegisterSuccessState){
+          Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE);
+        }
+        else if(state is RegisterErrorState){
+          showSnackbar(context,text:state.message);
+        }
+      },
     );
   }
 
@@ -62,17 +97,23 @@ class _RegisterPage extends State<RegisterPage> {
             Padding(
               padding: EdgeInsets.all(20),
               child: TextFormField(
-                onSaved: (newValue) => {},
+                onSaved: (newValue) =>
+                {
+                  formData.email = newValue
+                },
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 decoration:
-                    PluisAppTheme.textFormFieldDecoration(hintText: "Correo"),
+                PluisAppTheme.textFormFieldDecoration(hintText: "Correo"),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(20),
               child: TextFormField(
-                onSaved: (newValue) => {},
+                onSaved: (newValue) =>
+                {
+                  formData.password = newValue
+                },
                 keyboardType: TextInputType.visiblePassword,
                 obscureText: this._hidePassword,
                 decoration: PluisAppTheme.textFormFieldDecoration(
@@ -81,46 +122,57 @@ class _RegisterPage extends State<RegisterPage> {
                         icon: Icon(this._hidePassword
                             ? Icons.remove_red_eye_outlined
                             : Icons.remove_red_eye_rounded),
-                        onPressed: () => {
-                              this.setState(() {
-                                this._hidePassword = !this._hidePassword;
-                              })
-                            })),
+                        onPressed: () =>
+                        {
+                          this.setState(() {
+                            this._hidePassword = !this._hidePassword;
+                          })
+                        })),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(20),
               child: TextFormField(
-                onSaved: (newValue) => {},
+                onSaved: (newValue) =>
+                {
+                  formData.passwordConfirm = newValue
+                },
                 keyboardType: TextInputType.visiblePassword,
-                obscureText: this._hidePassword,
+                obscureText: this._hideRePassword,
                 decoration: PluisAppTheme.textFormFieldDecoration(
                     hintText: "Verificar Contraseña",
                     suffixIcon: IconButton(
-                        icon: Icon(this._hidePassword
+                        icon: Icon(this._hideRePassword
                             ? Icons.remove_red_eye_outlined
                             : Icons.remove_red_eye_rounded),
-                        onPressed: () => {
-                              this.setState(() {
-                                this._hidePassword = !this._hidePassword;
-                              })
-                            })),
+                        onPressed: () =>
+                        {
+                          this.setState(() {
+                            this._hideRePassword = !this._hideRePassword;
+                          })
+                        })),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(20),
               child: TextFormField(
-                onSaved: (newValue) => {},
+                onSaved: (newValue) =>
+                {
+                  formData.firstName = newValue
+                },
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
                 decoration:
-                    PluisAppTheme.textFormFieldDecoration(hintText: "Nombre"),
+                PluisAppTheme.textFormFieldDecoration(hintText: "Nombre"),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(20),
               child: TextFormField(
-                onSaved: (newValue) => {},
+                onSaved: (newValue) =>
+                {
+                  formData.lastName = newValue
+                },
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
                 decoration: PluisAppTheme.textFormFieldDecoration(
@@ -130,17 +182,23 @@ class _RegisterPage extends State<RegisterPage> {
             Padding(
               padding: EdgeInsets.all(20),
               child: TextFormField(
-                onSaved: (newValue) => {},
+                onSaved: (newValue) =>
+                {
+                  formData.phone = newValue
+                },
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
                 decoration:
-                    PluisAppTheme.textFormFieldDecoration(hintText: "Teléfono"),
+                PluisAppTheme.textFormFieldDecoration(hintText: "Teléfono"),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(20),
               child: TextFormField(
-                onSaved: (newValue) => {},
+                onSaved: (newValue) =>
+                {
+                  formData.addressLines = newValue
+                },
                 keyboardType: TextInputType.streetAddress,
                 textInputAction: TextInputAction.next,
                 decoration: PluisAppTheme.textFormFieldDecoration(
@@ -151,7 +209,7 @@ class _RegisterPage extends State<RegisterPage> {
                 padding: EdgeInsets.all(20),
                 child: DropdownButton(
                   isExpanded: true,
-                  hint: Text("Provincia"),
+                  hint: Text("La Habana"),
                   value: this.province,
                   // icon: Icon(Icons.arrow_downward),
                   style: TextStyle(color: Colors.black54),
@@ -162,14 +220,12 @@ class _RegisterPage extends State<RegisterPage> {
                   onChanged: (String newValue) {
                     setState(() {
                       this.province = newValue;
+                      formData.province = 3;
                     });
                   },
                   items: <String>[
-                    'Provincia',
-                    'One',
-                    'Two',
-                    'Free',
-                    'Four',
+                    "La Habana",
+                    'Matanzas'
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -181,10 +237,34 @@ class _RegisterPage extends State<RegisterPage> {
               padding: EdgeInsets.all(20),
               child: DarkButton(
                 text: "REGISTRARSE",
-                action: () => {log('registrarse')},
+                action: () =>
+                {
+                   doRegister(context, formData)
+                },
               ),
             )
           ],
         ));
+  }
+
+  Future<void> doRegister(BuildContext context,
+      RegisterDataForm dataForm) async {
+
+    _formKey.currentState.save();
+
+    var data = RegisterData(
+      email: dataForm.email,
+      password: dataForm.password,
+      passwordConfirm: dataForm.passwordConfirm,
+      firstName: dataForm.firstName,
+      lastName: dataForm.lastName,
+      phone: dataForm.phone,
+      privacyCheck: true,
+      province: dataForm.province,
+      addressLines: dataForm.addressLines,
+      addressLines_1: dataForm.addressLines,
+      isCompany: false
+    );
+    await context.read<RegisterCubit>().register(data);
   }
 }

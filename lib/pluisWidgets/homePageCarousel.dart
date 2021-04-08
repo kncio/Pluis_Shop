@@ -95,20 +95,4 @@ Widget buildTabBar() => AppBar(
       ),
     );
 
-class PruebaHome extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          height: 800,
-          child: Image(
-            image: AssetImage('assets/images/man4.jpg'),
-            fit: BoxFit.fill,
-          ),
-        ),
-        HomeAppBar()
-      ],
-    );
-  }
-}
+

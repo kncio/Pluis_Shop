@@ -47,30 +47,30 @@ class _LoginPage extends State<LoginPage> {
       if (state is LoginErrorState) {
         //ShowSnackbar
         log("error");
-        await showSnackbar(context, text: state.message,timeLimit: 5);
-      }
-      else if(state is LoginSuccessfulState){
+        await showSnackbar(context, text: state.message, timeLimit: 5);
+      } else if (state is LoginSuccessfulState) {
         var token = await Settings.storedToken;
         log("Secured : ${token}");
-        Navigator.of(context).pushNamedAndRemoveUntil(HOME_PAGE_ROUTE,ModalRoute.withName("/"));
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(HOME_PAGE_ROUTE, ModalRoute.withName("/"));
       }
     }, builder: (context, state) {
       switch (state.runtimeType) {
         case LoginSendingState:
-          return Column(
+          return ListView(
             children: [
               LinearProgressIndicator(
                   minHeight: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
-              Expanded(child: buildForm()),
+              buildForm(),
               buildDarkButton(),
               buildRegisterText(context),
             ],
           );
         default:
-          return Column(
+          return ListView(
             children: [
-              Expanded(child: buildForm()),
+              buildForm(),
               buildDarkButton(),
               buildRegisterText(context),
             ],
@@ -99,6 +99,7 @@ class _LoginPage extends State<LoginPage> {
 
   Container buildRegisterText(BuildContext context) {
     return Container(
+      alignment: Alignment.centerRight,
       padding: EdgeInsets.fromLTRB(16, 16, 16, 32),
       child: RichText(
         text: TextSpan(children: [
@@ -187,7 +188,5 @@ class _LoginPage extends State<LoginPage> {
         password: _formData.password, email: _formData.email, token_csrf: "");
 
     await context.bloc<LoginCubit>().login(userData);
-
-    log("Awaited test http ");
   }
 }

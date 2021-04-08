@@ -24,7 +24,7 @@ class ApiClient {
   ApiClient({this.serviceUri}) {
     this.client = Dio();
     client.options.baseUrl = serviceUri;
-    client.options.headers = this.header;
+    // client.options.queryParameters = this.header;
     cookieJar = CookieJar();
     client.interceptors.add(CookieManager(cookieJar));
   }
@@ -35,6 +35,8 @@ class ApiClient {
 
       log("METHOD: " + get_method);
 
+      log(client.options.headers.toString());
+
       var response = await client.get(get_method);
       //GEt the Cookies for later request
       var cookies = cookieJar.loadForRequest(Uri.parse(get_method));
@@ -43,7 +45,8 @@ class ApiClient {
 
       return response;
     } catch (error) {
-      log("ONError " + error.toString());
+      var err = error as Response;
+      log("ONError  get token" + err.data.toString());
       //TODO: Parse DIO.Error
     }
   }
@@ -83,6 +86,7 @@ class ApiClient {
     try {
 
       var url = this.serviceUri + method;
+      log(url);
       var formData = FormData.fromMap(data);
       var response = await client.post(url, data: formData);
 

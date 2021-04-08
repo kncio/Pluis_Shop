@@ -12,6 +12,8 @@ import 'package:pluis_hv_app/register/registerCubit.dart';
 import 'package:pluis_hv_app/register/registerPage.dart';
 import 'package:pluis_hv_app/shopCart/shopCart.dart';
 import 'package:pluis_hv_app/shopCart/shopCartCubit.dart';
+import 'package:pluis_hv_app/splashScreen/splashScreenCubit.dart';
+import 'package:pluis_hv_app/splashScreen/splashScreenPage.dart';
 
 import 'commons/pagesRoutes.dart';
 import 'galleryPage/galleryPage.dart';
@@ -26,9 +28,9 @@ class PluisApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Tienda Pluis',
       theme: PluisAppTheme.themeDataLight,
-      home: BlocProvider<HomePageCubit>(
-        create: (_) => injectionContainer.sl<HomePageCubit>(),
-        child: HomePage(),
+      home: BlocProvider<SplashScreenCubit>(
+        create: (_) => injectionContainer.sl<SplashScreenCubit>(),
+        child: SplashScreenPage(),
         //   home: ShopCartPage(),
       ),
       onGenerateRoute: (settings) {
@@ -38,7 +40,7 @@ class PluisApp extends StatelessWidget {
                 builder: (_) =>
                     BlocProvider<GalleryPageCubit>(
                       create: (_) => injectionContainer.sl<GalleryPageCubit>(),
-                      child: GalleryPage(),
+                      child: GalleryPage(categoryId: settings.arguments),
                     ));
           case REGISTER_PAGE_ROUTE:
             return PLuisPageRoute(

@@ -121,8 +121,6 @@ class LoginRepository {
           await Settings.setCredentials(userEmail: loginResponse.email, token: loginResponse.token, rememberMe: false);
           log(loginResponse.email);
         }
-
-
         return Right(true);
       } else {
         return Left(Failure(["Nombre de usuario o contraseña incorrecta."]));

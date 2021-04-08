@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:pluis_hv_app/commons/values.dart';
 import 'package:uuid/uuid.dart';
 
 class Product {
-  final double id;
+  final String id;
   final String description;
   final String name;
-  final double price;
+  final String price;
   final String status;
   final String visibility;
   final String hit;
@@ -52,7 +53,7 @@ class Product {
         updated_at: data["updated_at"],
         row_id: data["row_id"],
         category_id: data["category_id"],
-        image: data["image"]);
+        image: WEB_IMAGES + data["image"]);
   }
 }
 

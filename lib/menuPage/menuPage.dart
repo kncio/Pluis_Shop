@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pluis_hv_app/pluisWidgets/expandableRow.dart';
 
 class MenuPage extends StatefulWidget {
   @override
   _MenuPage createState() {
+    // TODO: implement createState
     return _MenuPage();
   }
 }
@@ -56,16 +58,22 @@ class _MenuPage extends State<MenuPage> {
             ExpandableRow(
               headerName: "COLECCIONES",
               itemsNames: [
-                "ZAPATOS",
-                "BOLSAS",
-                "PANTALONES",
-                "ACCESORIOS",
-                "ABRIGOS"
+                {"categoryName": "ZAPATOS", "id": 1},
+                {"categoryName": "BOLSAS", "id": 1},
+                {"categoryName": "PANTALONES", "id": 1},
+                {"categoryName": "ACCESORIOS", "id": 1},
+                {"categoryName": "ABRIGOS", "id": 1}
               ],
             ),
             ExpandableRow(
               headerName: "ACCESORIOS",
-              itemsNames: ["RELOJES", "PULSERAS", "CADENAS", "GORRAS", "GAFAS"],
+              itemsNames: [
+                {"name": "RELOJES", "id": 1},
+                {"name": "PULSERAS", "id": 1},
+                {"name": "CADENAS", "id": 1},
+                {"name": "GORRAS", "id": 1},
+                {"name": "GAFAS", "id": 1}
+              ],
             )
           ],
         ),
@@ -100,16 +108,22 @@ class _MenuPage extends State<MenuPage> {
             ExpandableRow(
               headerName: "COLECCIONES",
               itemsNames: [
-                "ZAPATOS",
-                "BOLSAS",
-                "PANTALONES",
-                "ACCESORIOS",
-                "ABRIGOS"
+                {"categoryName": "ZAPATOS", "id": 1},
+                {"categoryName": "BOLSAS", "id": 1},
+                {"categoryName": "PANTALONES", "id": 1},
+                {"categoryName": "ACCESORIOS", "id": 1},
+                {"categoryName": "ABRIGOS", "id": 1}
               ],
             ),
             ExpandableRow(
               headerName: "ACCESORIOS",
-              itemsNames: ["RELOJES", "PULSERAS", "CADENAS", "GORRAS", "GAFAS"],
+              itemsNames: [
+                {"name": "RELOJES", "id": 1},
+                {"name": "PULSERAS", "id": 1},
+                {"name": "CADENAS", "id": 1},
+                {"name": "GORRAS", "id": 1},
+                {"name": "GAFAS", "id": 1}
+              ],
             )
           ],
         ),
@@ -173,16 +187,22 @@ class _MenuPage extends State<MenuPage> {
             ExpandableRow(
               headerName: "COLECCIONES",
               itemsNames: [
-                "ZAPATOS",
-                "BOLSAS",
-                "PANTALONES",
-                "ACCESORIOS",
-                "ABRIGOS"
+                {"categoryName": "ZAPATOS", "id": 1},
+                {"categoryName": "BOLSAS", "id": 1},
+                {"categoryName": "PANTALONES", "id": 1},
+                {"categoryName": "ACCESORIOS", "id": 1},
+                {"categoryName": "ABRIGOS", "id": 1}
               ],
             ),
             ExpandableRow(
               headerName: "ACCESORIOS",
-              itemsNames: ["RELOJES", "PULSERAS", "CADENAS", "GORRAS", "GAFAS"],
+              itemsNames: [
+                {"name": "RELOJES", "id": 1},
+                {"name": "PULSERAS", "id": 1},
+                {"name": "CADENAS", "id": 1},
+                {"name": "GORRAS", "id": 1},
+                {"name": "GAFAS", "id": 1}
+              ],
             )
           ],
         ),

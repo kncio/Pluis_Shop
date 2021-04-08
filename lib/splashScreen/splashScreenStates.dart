@@ -11,3 +11,9 @@ abstract class SplashScreenState extends Equatable{
 class SplashScreenInitialState extends SplashScreenState{
   
 }
+
+class SplashScreenAppInitializedSuccess extends SplashScreenState{
+
+}
+
+class SplashScreenError extends SplashScreenState{}

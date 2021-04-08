@@ -25,4 +25,18 @@ class GalleryPageCubit extends Cubit<GalleryPageState>{
             : emit(GalleryPageErrorState("Error desconocido")));
   }
 
+  Future<void> getProductsByCategory(categoryId) async {
+    emit(GalleryPageLoadingState());
+
+    var eitherValue = await repository.getAllProductByCategory(categoryId);
+
+    eitherValue.fold(
+            (failure) => failure.properties.isEmpty
+            ? emit(GalleryPageErrorState("Server unreachable"))
+            : emit(GalleryPageErrorState(failure.properties.first)),
+            (products) => products.length >= 0
+            ? emit(GalleryPageSuccessState(products))
+            : emit(GalleryPageErrorState("Error desconocido")));
+  }
+
 }

@@ -10,7 +10,6 @@ import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/userInfo/roleManager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 import '../injectorContainer.dart';
 
 class Settings {
@@ -85,6 +84,15 @@ class Settings {
     return token;
   }
 
+  static Future<String> get storedApiToken async {
+    final secureStorage = sl<FlutterSecureStorage>();
+    var appToken = await secureStorage.read(key: API_TOKEN_KEY);
+    if (appToken != "") {
+      return appToken;
+    }
+    return "no_token_stored";
+  }
+
   static Future<Map<String, String>> get storedCredentials async {
     if (isLoggedIn) {
       final secureStorage = sl<FlutterSecureStorage>();
@@ -123,7 +131,6 @@ class Settings {
     prefs.setBool(REMEMBER, value);
   }
 
-
   static Future<void> setCredentials({
     @required userEmail,
     @required String token,
@@ -141,6 +148,11 @@ class Settings {
       key: USER_TOKEN_KEY,
       value: token,
     );
+  }
+
+  static Future<void> setApiToken({@required apiToken}) async {
+    final secureStorage = sl<FlutterSecureStorage>();
+    await secureStorage.write(key: API_TOKEN_KEY, value: apiToken);
   }
 
   static Future<void> setUserProfileInformation() async {
