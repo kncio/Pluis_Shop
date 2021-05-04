@@ -34,7 +34,6 @@ class ProductCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(30.0, 10.0, 0.0, 2.0),
             child: Text(product.name,
-                //TODO: Sustituir por la informacion dinamica
                 style: TextStyle(
                     fontSize: 15,
                     color: Colors.black,
@@ -42,8 +41,7 @@ class ProductCard extends StatelessWidget {
           ), //TODO: sustituir 20 por el default padding eventualmente
           Padding(
             padding: const EdgeInsets.fromLTRB(30.0, 2.0, 0.0, 0.0),
-            child: Text('\$22 cup',
-                //TODO: SUstituir por la informacion dinamica
+            child: Text('\$ ${product.price} CUP',
                 style: TextStyle(fontSize: 15, color: Colors.black)),
           ), //TO
         ],

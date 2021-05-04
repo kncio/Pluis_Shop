@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:pluis_hv_app/register/registerDataModel.dart';
 
 abstract class RegisterState extends Equatable{
   const RegisterState();
@@ -8,7 +9,9 @@ abstract class RegisterState extends Equatable{
 }
 
 class RegisterInitialState extends RegisterState{
+  final List<Province> provinces;
 
+  RegisterInitialState({this.provinces});
 }
 
 class RegisterLoadingState extends RegisterState{

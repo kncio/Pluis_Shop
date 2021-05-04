@@ -89,7 +89,7 @@ class _GalleryPage extends State<GalleryPage> {
           childAspectRatio: 0.60,
         ),
         itemBuilder: (context, index) => ProductCard(
-          product: buildProduct(index, state.products[index].image),
+          product: state.products[index],
           press: () => Navigator.push(
               context,
               MaterialPageRoute(

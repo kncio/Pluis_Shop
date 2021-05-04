@@ -57,10 +57,10 @@ class _DetailsPage extends State<DetailsPage> {
               height: 50,
               child: ListTile(
                 title: Text(
-                  'PANTALONES BÁSICOS',
+                  this.product.name,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                subtitle: Text('39.99 cup'),
+                subtitle: Text(this.product.price),
                 trailing: IconButton(
                   onPressed: () => {},
                   icon:

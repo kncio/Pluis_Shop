@@ -1,4 +1,0 @@
-package menuPage
-
-class MenuRepository {
-}

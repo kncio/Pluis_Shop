@@ -12,6 +12,7 @@ class RegisterData {
   final String addressLines_1;
   final String phone;
   final bool privacyCheck;
+  final String activation;
 
   RegisterData(
       {this.token_csrf,
@@ -26,7 +27,8 @@ class RegisterData {
       this.addressLines,
       this.addressLines_1,
       this.phone,
-      this.privacyCheck});
+      this.privacyCheck,
+      this.activation});
 
   Map<String, dynamic> toMap() {
     return {
@@ -42,7 +44,8 @@ class RegisterData {
       'addressLines': this.addressLines,
       'addressLines_1': this.addressLines_1,
       'phone': this.phone,
-      'privacyCheck': this.privacyCheck
+      'privacyCheck': this.privacyCheck,
+      'activation':this.activation
     };
   }
 }
@@ -61,4 +64,30 @@ class RegisterDataForm {
   String addressLines_1;
   String phone;
   bool privacyCheck;
+  String activation;
+}
+
+class Province{
+
+  final String id;
+  final String province;
+
+  Province({this.id, this.province});
+
+  factory Province.fromJson(Map<String, dynamic>json) => Province(
+    id: json["id"],
+    province: json["province"]
+  );
+
+}
+
+class Municipe {
+
+ final int id;
+ final String name;
+  final int province_id;
+  final String price_delivery;
+
+  Municipe({this.id, this.name, this.province_id, this.price_delivery});
+
 }

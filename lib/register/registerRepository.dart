@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
 import 'package:pluis_hv_app/commons/values.dart';
+import 'package:pluis_hv_app/loginPage/loginStates.dart';
 import 'package:pluis_hv_app/register/registerDataModel.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 
@@ -73,5 +74,41 @@ class RegisterRepository {
     }
 
     return Left(Failure(["No hay conexión con el servidor"]));
+  }
+
+  Future<Either<Failure, List<Province>>> getProvinces() async {
+    try {
+      var apiTOken = await Settings.storedApiToken;
+      var response = await api.get("get_state", {});
+      if (response.statusCode == 200) {
+        var listProvinces = List<Province>.from(
+            response.data["data"].map((x) => Province.fromJson(x)));
+        log("Register called" + response.data["data"].toString());
+        return Right(listProvinces);
+      } else {
+        log(response.statusCode.toString());
+        return Left(Failure([response.data.toString()]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, List<Municipe>>> getMunicipes() async {
+    try {
+      var apiTOken = await Settings.storedApiToken;
+      var response = await api.get("get_states", {});
+      if (response.statusCode == 200) {
+        log("Register called" + response.data.toString());
+        var listProvinces = List<Municipe>();
+
+        return Right(listProvinces);
+      } else {
+        log(response.statusCode.toString());
+        return Left(Failure([response.data.toString()]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
   }
 }

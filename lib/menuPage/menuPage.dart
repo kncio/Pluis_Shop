@@ -23,114 +23,6 @@ class _MenuPage extends State<MenuPage> {
     );
   }
 
-  Widget buildBody() => TabBarView(
-        children: [
-          buildListViewMen(),
-          buildListViewWomen(),
-          buildListViewChildren()
-        ],
-      );
-
-  ListView buildListViewWomen() {
-    return ListView(children: [
-      Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () => {},
-              child: Container(
-                padding: EdgeInsets.fromLTRB(10, 30, 0, 30),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "NUEVO",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ExpandableRow(
-              headerName: "COLECCIONES",
-              itemsNames: [
-                {"categoryName": "ZAPATOS", "id": 1},
-                {"categoryName": "BOLSAS", "id": 1},
-                {"categoryName": "PANTALONES", "id": 1},
-                {"categoryName": "ACCESORIOS", "id": 1},
-                {"categoryName": "ABRIGOS", "id": 1}
-              ],
-            ),
-            ExpandableRow(
-              headerName: "ACCESORIOS",
-              itemsNames: [
-                {"name": "RELOJES", "id": 1},
-                {"name": "PULSERAS", "id": 1},
-                {"name": "CADENAS", "id": 1},
-                {"name": "GORRAS", "id": 1},
-                {"name": "GAFAS", "id": 1}
-              ],
-            )
-          ],
-        ),
-      )
-    ]);
-  }
-
-  ListView buildListViewMen() {
-    return ListView(children: [
-      Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () => {},
-              child: Container(
-                padding: EdgeInsets.fromLTRB(10, 30, 0, 30),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "NUEVO",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ExpandableRow(
-              headerName: "COLECCIONES",
-              itemsNames: [
-                {"categoryName": "ZAPATOS", "id": 1},
-                {"categoryName": "BOLSAS", "id": 1},
-                {"categoryName": "PANTALONES", "id": 1},
-                {"categoryName": "ACCESORIOS", "id": 1},
-                {"categoryName": "ABRIGOS", "id": 1}
-              ],
-            ),
-            ExpandableRow(
-              headerName: "ACCESORIOS",
-              itemsNames: [
-                {"name": "RELOJES", "id": 1},
-                {"name": "PULSERAS", "id": 1},
-                {"name": "CADENAS", "id": 1},
-                {"name": "GORRAS", "id": 1},
-                {"name": "GAFAS", "id": 1}
-              ],
-            )
-          ],
-        ),
-      )
-    ]);
-  }
-
   Widget buildTabBar() => AppBar(
         automaticallyImplyLeading: false,
         actions: [
@@ -160,7 +52,15 @@ class _MenuPage extends State<MenuPage> {
         ),
       );
 
-  buildListViewChildren() {
+  Widget buildBody() => TabBarView(
+        children: [
+          buildListViewMen(),
+          buildListViewWomen(),
+          buildListViewChildren()
+        ],
+      );
+
+  ListView buildListViewWomen() {
     return ListView(children: [
       Padding(
         padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
@@ -175,7 +75,7 @@ class _MenuPage extends State<MenuPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        "NUEVO",
+                        "REBAJAS",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 24),
                       ),
@@ -194,16 +94,88 @@ class _MenuPage extends State<MenuPage> {
                 {"categoryName": "ABRIGOS", "id": 1}
               ],
             ),
+          ],
+        ),
+      )
+    ]);
+  }
+
+  ListView buildListViewMen() {
+    return ListView(children: [
+      Padding(
+        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () => {},
+              child: Container(
+                padding: EdgeInsets.fromLTRB(10, 30, 0, 30),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "REBAJAS",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 24),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             ExpandableRow(
-              headerName: "ACCESORIOS",
+              headerName: "COLECCIONES",
               itemsNames: [
-                {"name": "RELOJES", "id": 1},
-                {"name": "PULSERAS", "id": 1},
-                {"name": "CADENAS", "id": 1},
-                {"name": "GORRAS", "id": 1},
-                {"name": "GAFAS", "id": 1}
+                {"categoryName": "ZAPATOS", "id": 1},
+                {"categoryName": "BOLSAS", "id": 1},
+                {"categoryName": "PANTALONES", "id": 1},
+                {"categoryName": "ACCESORIOS", "id": 1},
+                {"categoryName": "ABRIGOS", "id": 1}
               ],
-            )
+            ),
+
+          ],
+        ),
+      )
+    ]);
+  }
+
+  buildListViewChildren() {
+    return ListView(children: [
+      Padding(
+        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () => {},
+              child: Container(
+                padding: EdgeInsets.fromLTRB(10, 30, 0, 30),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "REBAJAS",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 24),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ExpandableRow(
+              headerName: "COLECCIONES",
+              itemsNames: [
+                {"categoryName": "ZAPATOS", "id": 1},
+                {"categoryName": "BOLSAS", "id": 1},
+                {"categoryName": "PANTALONES", "id": 1},
+                {"categoryName": "ACCESORIOS", "id": 1},
+                {"categoryName": "ABRIGOS", "id": 1}
+              ],
+            ),
+
           ],
         ),
       )
@@ -211,5 +183,5 @@ class _MenuPage extends State<MenuPage> {
   }
 
 //TODO: Implement get categories for collection expandable item and dynamic content
-
+  Future<void> fetchCategoryByGender(int genderId) async {}
 }
