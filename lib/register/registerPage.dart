@@ -244,32 +244,7 @@ class _RegisterPage extends State<RegisterPage> {
                   },
                   items: (state as RegisterInitialState).provinces.map<DropdownMenuItem<String>>((Province value) {
                     return DropdownMenuItem<String>(
-                      value: value.id,
-                      child: Text(value.province),
-                    );
-                  }).toList(),
-                )),
-            Padding(
-                padding: EdgeInsets.all(20),
-                child: DropdownButton(
-                  isExpanded: true,
-                  hint: Text("La Habana"),
-                  value: this.province,
-                  // icon: Icon(Icons.arrow_downward),
-                  style: TextStyle(color: Colors.black54),
-                  underline: Container(
-                    height: 1,
-                    color: Colors.black54,
-                  ),
-                  onChanged: (String newValue) {
-                    setState(() {
-                      this.province = newValue;
-                      formData.province = int.parse(newValue);//TODO: Implement get the correct id
-                    });
-                  },
-                  items: (state as RegisterInitialState).provinces.map<DropdownMenuItem<String>>((Province value) {
-                    return DropdownMenuItem<String>(
-                      value: value.id,
+                      value: value.province,
                       child: Text(value.province),
                     );
                   }).toList(),

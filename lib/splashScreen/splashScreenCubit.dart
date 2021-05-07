@@ -3,6 +3,7 @@ import 'package:pluis_hv_app/splashScreen/SplashScreenRepository.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenStates.dart';
 
 class SplashScreenCubit extends Cubit<SplashScreenState> {
+
   final SplashScreenRepository initializeApp;
 
   SplashScreenCubit({this.initializeApp}) : super(SplashScreenInitialState());
@@ -17,4 +18,6 @@ class SplashScreenCubit extends Cubit<SplashScreenState> {
       },
     );
   }
+
+
 }

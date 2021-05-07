@@ -16,6 +16,10 @@ class HomePageCarousel extends StatelessWidget {
     scrollDirection: Axis.vertical,
   );
 
+  final List<String> imagesUrls;
+
+  HomePageCarousel({Key key, this.imagesUrls}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -29,70 +33,30 @@ class HomePageCarousel extends StatelessWidget {
     ]);
   }
 
-  List<Widget> getItemsRemote() {
-    //TODO: Implementar extraer la informacion mediante la Api(patrin repository)
+  List<Widget> getItemsRemote(List<String> imagesUrls) {
+    //TODO: Map each list element and create widget for display
+    //TODO: THink a good way to do it
   }
 
-  //TODO: Investigar como centrar las presentationCards
+
   List<Widget> getStaticItems() {
     var result = List<Widget>();
 
-    result.add(Stack(
-      children: [
-        Container(
-          height: 800,
-          child: Image(image: LocalResources.menImages[5], fit: BoxFit.fill),
-        ),
-        // Container(
-        //   margin: EdgeInsets.fromLTRB(0, 400, 0, 0),
-        //   child: PresentationCard(),
-        // )
-      ],
+    result.add(Container(
+      height: 800,
+      child: Image(image: LocalResources.menImages[5], fit: BoxFit.fill),
     ));
-    result.add(Stack(
-      children: [
-        Container(
-          height: 800,
-          child: Image(
-            image: LocalResources.menImages[0],
-            fit: BoxFit.fill,
-          ),
-        ),
-        // Container(
-        //   margin: EdgeInsets.fromLTRB(0, 400, 0, 0),
-        //   child: PresentationCard(),
-        // )
-      ],
+    result.add(Container(
+      height: 800,
+      child: Image(
+        image: LocalResources.menImages[0],
+        fit: BoxFit.fill,
+      ),
     ));
     return result;
   }
 }
 
-Widget buildTabBar() => AppBar(
-      automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-            icon: Icon(
-              Icons.clear,
-              color: Colors.black,
-            ),
-            onPressed: () => {})
-      ],
-      title: Center(
-        child: TabBar(
-          isScrollable: true,
-          tabs: [
-            Tab(
-              child: Text(
-                "Hombres",
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-            Tab(child: Text("Mujeres", style: TextStyle(color: Colors.black))),
-            Tab(child: Text("Niños", style: TextStyle(color: Colors.black))),
-          ],
-        ),
-      ),
-    );
+
 
 
