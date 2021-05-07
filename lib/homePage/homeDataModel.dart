@@ -22,12 +22,18 @@ class SlidesInfo {
 
 class GenresInfo {
   final String id;
+  final String title;
+  final String gender_id;
+  final String visibility;
+  final String created_at;
 
-  GenresInfo({this.id});
+  GenresInfo(
+      {this.title, this.gender_id, this.visibility, this.created_at, this.id});
 
   factory GenresInfo.fromJson(Map<String, dynamic> json) => GenresInfo(
-    id: json['id']
-  );
-
-
+      id: json['id'],
+      title: json['title'],
+      gender_id: json['gender_id'],
+      visibility: json['visibility'],
+      created_at: json['created_at']);
 }

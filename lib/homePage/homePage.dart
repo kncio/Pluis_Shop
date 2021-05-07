@@ -26,10 +26,14 @@ class _HomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    return buildScaffold(context);
+  }
+
+  Scaffold buildScaffold(BuildContext context) {
     return Scaffold(
-      body: buildBody(context),
-      bottomNavigationBar: buildBottomNavigationBar(),
-    );
+    body: buildBody(context),
+    bottomNavigationBar: buildBottomNavigationBar(),
+  );
   }
 
   BottomBar buildBottomNavigationBar() {
@@ -54,98 +58,44 @@ class _HomePage extends State<HomePage> {
             );
           case HomePageImagesLoaded:
             return DefaultTabController(
-              length: 4,
+              length: (state as HomePageImagesLoaded).genresInfo.length,
               child: Column(
                 children: [
-                AppBar(
-                automaticallyImplyLeading: false,
-                title: Center(
+                  SizedBox(height: MediaQuery.of(context).size.height/18,),
+                  Center(
                   child: TabBar(
+                    indicatorSize: TabBarIndicatorSize.label,
+                      indicatorColor: Colors.black,
                       isScrollable: true,
                       tabs: List<Tab>.from((state as HomePageImagesLoaded)
                           .genresInfo
                           .map((e) => Tab(
                         child: Text(
-                          e.id,
+                          e.title,
                           style: TextStyle(
                               fontSize: 18, color: Colors.black),
                         ),
                       )))),
                 ),
-              ),
-                  TabBarView(children: [
-                    HomePageCarousel(),
-                    HomePageCarousel(),
-                    HomePageCarousel(),
-                    HomePageCarousel(),
-                  ])
+
+                  Expanded(
+                    child: TabBarView(children: [
+                      HomePageCarousel(),
+                      HomePageCarousel(),
+                      HomePageCarousel(),
+                      HomePageCarousel(),
+                    ]),
+                  )
                 ],
               ),
             );
           default:
-            return TabBarView(children: [
-              HomePageCarousel(),
-              HomePageCarousel(),
-              HomePageCarousel(),
-              HomePageCarousel(),
-            ]);
-        }
-      },
-    );
-  }
-
-  // Widget buildTabBar() =>
-  //     AppBar(
-  //       automaticallyImplyLeading: false,
-  //       title: Center(
-  //         child: TabBar(
-  //           isScrollable: true,
-  //           tabs: [
-  //             Tab(
-  //               child: Text(
-  //                 "HOMBRES",
-  //                 style: TextStyle(fontSize: 18, color: Colors.black),
-  //               ),
-  //             ),
-  //             Tab(
-  //                 child: Text("MUJERES",
-  //                     style: TextStyle(fontSize: 18, color: Colors.black))),
-  //             Tab(
-  //                 child: Text("NIÑOS",
-  //                     style: TextStyle(fontSize: 18, color: Colors.black))),
-  //           ],
-  //         ),
-  //       ),
-  //     );
-
-  Widget buildTabBar() {
-    return BlocConsumer<HomePageCubit, HomePageState>(
-      listener: (context, state) {},
-      builder: (context, state) {
-        switch (state.runtimeType) {
-          case HomePageImagesLoaded:
-            return AppBar(
-              automaticallyImplyLeading: false,
-              title: Center(
-                child: TabBar(
-                    isScrollable: true,
-                    tabs: List<Tab>.from((state as HomePageImagesLoaded)
-                        .genresInfo
-                        .map((e) => Tab(
-                              child: Text(
-                                e.id,
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.black),
-                              ),
-                            )))),
-              ),
+            return Center(
+              child: Text("No hay conexión a internet..."),
             );
-          default:
-            return LinearProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                minHeight: 2);
         }
       },
     );
   }
+
 }
