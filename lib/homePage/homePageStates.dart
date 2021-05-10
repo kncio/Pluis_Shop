@@ -33,3 +33,15 @@ class HomePageErrorState extends HomePageState {
 
   HomePageErrorState({this.message});
 }
+
+class HomePageCarouselInit extends HomePageState{
+
+}
+class HomePageCarouselSuccess extends HomePageState{
+ final List<SlidesInfo> imagesUrls;
+
+  HomePageCarouselSuccess({this.imagesUrls});
+}
+class HomePageCarouselLoading extends HomePageState{
+
+}

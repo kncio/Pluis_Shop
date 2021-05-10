@@ -10,6 +10,7 @@ import 'package:pluis_hv_app/homePage/homePageRepository.dart';
 import 'package:pluis_hv_app/loginPage/loginCubit.dart';
 import 'package:pluis_hv_app/loginPage/loginRepository.dart';
 import 'package:pluis_hv_app/menuPage/menuCubit.dart';
+import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
 import 'package:pluis_hv_app/register/registerRepository.dart';
 import 'package:pluis_hv_app/shopCart/shopCartCubit.dart';
@@ -41,7 +42,10 @@ Future<void> init() async {
   //region HomePage
   sl.registerFactory(() => HomePageCubit(repository: sl()));
 
+  sl.registerFactory(() => HomePageCarouselCubit(repository: sl()));
+
   sl.registerFactory(() => HomePageRepository(api: sl()));
+
 
   //endregion
 

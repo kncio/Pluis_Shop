@@ -8,6 +8,7 @@ import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/homePage/homeDataModel.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
+import '../injectorContainer.dart' as injectionContainer;
 
 import 'homePageCubit.dart';
 import 'homePageStates.dart';
@@ -59,7 +60,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
       listener: (context, state) async {
         if (state is HomePageGenresLoaded) {
           log("!!!Genres Loaded");
-          this.genres = (state as HomePageGenresLoaded).genresInfo;
+          this.genres = state.genresInfo;
           _tabController = TabController(length: genres.length, vsync: this);
 
           tabs = List<Tab>.from(genres.map((genre) => Tab(
@@ -71,9 +72,9 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
 
           _tabController.addListener(() {
             this.selectedGenre = genres[_tabController.index].gender_id;
-            //
+            log("Tab index change" + this.selectedGenre);
           });
-          context.read<HomePageCubit>().loadSlidersInfo(this.genres);
+          await this.context.read<HomePageCubit>().setSuccess();
         }
       },
       builder: (context, state) {
@@ -99,9 +100,8 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
                 ),
                 Expanded(
                   child: TabBarView(
-                    controller: this._tabController,
-                      children: createCarouselFromSlidersInfo(
-                          (state as HomePageSuccessState).imagesUrl)),
+                      controller: this._tabController,
+                      children: createCarouselFromGenres()),
                 )
               ],
             );
@@ -115,10 +115,15 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
     );
   }
 
-  List<HomePageCarousel> createCarouselFromSlidersInfo(
-      List<List<SlidesInfo>> info) {
-    return List<HomePageCarousel>.from(info.map((e) => HomePageCarousel(
-          imagesUrls: e,
-        )));
+  List<BlocProvider<HomePageCarouselCubit>> createCarouselFromGenres() {
+    return List<BlocProvider<HomePageCarouselCubit>>.from(this.genres.map((e) => createCarouselProvider(e.gender_id)));
   }
+
+  BlocProvider createCarouselProvider(String genreId){
+    return BlocProvider<HomePageCarouselCubit>(
+      create: (_) => injectionContainer.sl<HomePageCarouselCubit>(),
+      child: HomePageCarousel(genreId: genreId),
+    );
+  }
+
 }

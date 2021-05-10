@@ -25,30 +25,9 @@ class HomePageCubit extends Cubit<HomePageState> {
   //               HomePageErrorState(message: "No hay provincias disponibles")));
   // }
 
-  Future<void> loadSlidersInfo(List<GenresInfo> genres) async {
-    emit(HomePageLoadingSliders());
 
-    List<List<SlidesInfo>> sliders = [];
-    getSliders(genres)
-        .then((value) => {sliders = value})
-        .catchError((err) => log("Error: $err"))
-        .whenComplete(() => {
-          emit(HomePageSuccessState(imagesUrl: sliders))
-
-        });
-
-    log("SLIDERS" + sliders.toString());
-  }
-
-  Future<List<List<SlidesInfo>>> getSliders(List<GenresInfo> genres) async {
-    List<List<SlidesInfo>> sliders = List<List<SlidesInfo>>();
-
-    genres.forEach((element) {
-      repository
-          .loadImageUrl(element.gender_id)
-          .then((value) => {value.fold((l) => [], (r) => sliders.add(r))});
-    });
-    return sliders;
+  Future<void> setSuccess()async {
+    emit(HomePageSuccessState());
   }
 
   Future<void> loadGenres() async {
