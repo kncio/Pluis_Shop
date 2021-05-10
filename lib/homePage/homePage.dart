@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
+import 'package:pluis_hv_app/homePage/homeDataModel.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
 
@@ -17,7 +19,13 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class _HomePage extends State<HomePage> {
+class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
+  TabController _tabController;
+  String selectedGenre = "0";
+  List<Tab> tabs;
+  List<GenresInfo> genres;
+  List<List<SlidesInfo>> slidersInfoByGender;
+
   @override
   void initState() {
     super.initState();
@@ -31,9 +39,9 @@ class _HomePage extends State<HomePage> {
 
   Scaffold buildScaffold(BuildContext context) {
     return Scaffold(
-    body: buildBody(context),
-    bottomNavigationBar: buildBottomNavigationBar(),
-  );
+      body: buildBody(context),
+      bottomNavigationBar: buildBottomNavigationBar(),
+    );
   }
 
   BottomBar buildBottomNavigationBar() {
@@ -48,7 +56,26 @@ class _HomePage extends State<HomePage> {
 
   Widget buildBody(BuildContext context) {
     return BlocConsumer<HomePageCubit, HomePageState>(
-      listener: (context, state) async {},
+      listener: (context, state) async {
+        if (state is HomePageGenresLoaded) {
+          log("!!!Genres Loaded");
+          this.genres = (state as HomePageGenresLoaded).genresInfo;
+          _tabController = TabController(length: genres.length, vsync: this);
+
+          tabs = List<Tab>.from(genres.map((genre) => Tab(
+                child: Text(
+                  genre.title,
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+              )));
+
+          _tabController.addListener(() {
+            this.selectedGenre = genres[_tabController.index].gender_id;
+            //
+          });
+          context.read<HomePageCubit>().loadSlidersInfo(this.genres);
+        }
+      },
       builder: (context, state) {
         switch (state.runtimeType) {
           case HomePageLoading:
@@ -56,46 +83,42 @@ class _HomePage extends State<HomePage> {
               child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
             );
-          case HomePageImagesLoaded:
-            return DefaultTabController(
-              length: (state as HomePageImagesLoaded).genresInfo.length,
-              child: Column(
-                children: [
-                  SizedBox(height: MediaQuery.of(context).size.height/18,),
-                  Center(
+          case HomePageSuccessState:
+            return Column(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 18,
+                ),
+                Center(
                   child: TabBar(
-                    indicatorSize: TabBarIndicatorSize.label,
+                      controller: _tabController,
+                      indicatorSize: TabBarIndicatorSize.label,
                       indicatorColor: Colors.black,
                       isScrollable: true,
-                      tabs: List<Tab>.from((state as HomePageImagesLoaded)
-                          .genresInfo
-                          .map((e) => Tab(
-                        child: Text(
-                          e.title,
-                          style: TextStyle(
-                              fontSize: 18, color: Colors.black),
-                        ),
-                      )))),
+                      tabs: this.tabs),
                 ),
-
-                  Expanded(
-                    child: TabBarView(children: [
-                      HomePageCarousel(),
-                      HomePageCarousel(),
-                      HomePageCarousel(),
-                      HomePageCarousel(),
-                    ]),
-                  )
-                ],
-              ),
+                Expanded(
+                  child: TabBarView(
+                    controller: this._tabController,
+                      children: createCarouselFromSlidersInfo(
+                          (state as HomePageSuccessState).imagesUrl)),
+                )
+              ],
             );
           default:
             return Center(
-              child: Text("No hay conexión a internet..."),
+              child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
             );
         }
       },
     );
   }
 
+  List<HomePageCarousel> createCarouselFromSlidersInfo(
+      List<List<SlidesInfo>> info) {
+    return List<HomePageCarousel>.from(info.map((e) => HomePageCarousel(
+          imagesUrls: e,
+        )));
+  }
 }

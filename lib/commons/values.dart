@@ -20,6 +20,7 @@ const String URI_HTTPS = 'https://' + SERVER_DEBUG_IP + ':' + SERVER_PORT;
 const String PREVIEW_ZOOM_APP = '/previewZoomApp';
 const String PREVIEW_ZOOM_REPOSITORY = '/repository/files/app/previewZoom';
 const String WEB_IMAGES= WEB_URI + 'writable/uploads/images/';
+const String WEB_SLIDES_IMAGES= WEB_URI + 'writable/uploads/slides/';
 //
 const int HTTP_CONNECTION_TIMEOUT = 5000;
 const int REQUEST_TIME_LIMIT = 6000;

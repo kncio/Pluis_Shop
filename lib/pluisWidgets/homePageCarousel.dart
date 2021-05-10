@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pluis_hv_app/commons/localResourcesPool.dart';
 import 'package:pluis_hv_app/commons/values.dart';
+import 'package:pluis_hv_app/homePage/homeDataModel.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisProductCard.dart';
 import 'package:pluis_hv_app/pluisWidgets/presentationCard.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import 'homeAppBar.dart';
 
@@ -16,7 +18,7 @@ class HomePageCarousel extends StatelessWidget {
     scrollDirection: Axis.vertical,
   );
 
-  final List<String> imagesUrls;
+  final List<SlidesInfo> imagesUrls;
 
   HomePageCarousel({Key key, this.imagesUrls}) : super(key: key);
 
@@ -26,35 +28,35 @@ class HomePageCarousel extends StatelessWidget {
       Container(
           height: 800,
           child:
-              CarouselSlider(items: getStaticItems(), options: defaultOptions)),
-      // HomeAppBar()
-
-
+              CarouselSlider(items: List<Widget>.from(imagesUrls.map((url) => createImage(url.image))), options: defaultOptions)),
     ]);
   }
 
-  List<Widget> getItemsRemote(List<String> imagesUrls) {
-    //TODO: Map each list element and create widget for display
-    //TODO: THink a good way to do it
+  
+  // List<Widget> getImagesFromUrls() {
+  //   var result = List<Widget>();
+  //
+  //   result.add(Container(
+  //     height: 800,
+  //     child: FadeInImage.memoryNetwork(image: ),
+  //   ));
+  //   result.add(Container(
+  //     height: 800,
+  //     child: Image(
+  //       image: LocalResources.menImages[0],
+  //       fit: BoxFit.fill,
+  //     ),
+  //   ));
+  //   return result;
+  // }
+
+  Widget createImage(String url){
+    return Container(
+      height: 800,
+      child: FadeInImage.memoryNetwork(image: url,placeholder: kTransparentImage,),
+    );
   }
 
-
-  List<Widget> getStaticItems() {
-    var result = List<Widget>();
-
-    result.add(Container(
-      height: 800,
-      child: Image(image: LocalResources.menImages[5], fit: BoxFit.fill),
-    ));
-    result.add(Container(
-      height: 800,
-      child: Image(
-        image: LocalResources.menImages[0],
-        fit: BoxFit.fill,
-      ),
-    ));
-    return result;
-  }
 }
 
 

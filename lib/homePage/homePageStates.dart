@@ -12,10 +12,20 @@ class HomePageInitial extends HomePageState {}
 
 class HomePageLoading extends HomePageState {}
 
-class HomePageImagesLoaded extends HomePageState {
-  final List<SlidesInfo> imagesUrl;
+class HomePageGenresLoaded extends HomePageState {
   final List<GenresInfo> genresInfo;
-  HomePageImagesLoaded({this.imagesUrl, this.genresInfo});
+
+  HomePageGenresLoaded({ this.genresInfo});
+}
+
+class HomePageLoadingSliders extends HomePageState {
+
+}
+
+class HomePageSuccessState extends HomePageState {
+  final List<List<SlidesInfo>> imagesUrl;
+
+  HomePageSuccessState({this.imagesUrl});
 }
 
 class HomePageErrorState extends HomePageState {

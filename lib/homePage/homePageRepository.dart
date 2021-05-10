@@ -13,16 +13,17 @@ class HomePageRepository {
 
   HomePageRepository({this.api});
 
-  Future<Either<Failure, List<SlidesInfo>>> loadImageUrl() async {
+  Future<Either<Failure, List<SlidesInfo>>> loadImageUrl(String genreId) async {
     try {
       var apiToken = await Settings.storedApiToken;
 
-      var response = await api.get(GET_SLIDES_IMAGES, {});
+      var response = await api.get(GET_SLIDES_IMAGES, {"id": genreId});
 
       if (response.statusCode == 200) {
         log("GET SLIDES called" + response.data.toString());
 
-        var slidesImageList = List<SlidesInfo>.from(response.data['data'].map((x) => SlidesInfo.fromJson(x)));
+        var slidesImageList = List<SlidesInfo>.from(
+            response.data['data'].map((x) => SlidesInfo.fromJson(x)));
 
         return Right(slidesImageList);
       } else {
@@ -45,7 +46,8 @@ class HomePageRepository {
       if (response.statusCode == 200) {
         log("GET Genres called" + response.data.toString());
 
-        var slidesImageList = List<GenresInfo>.from(response.data['data'].map((x) => GenresInfo.fromJson(x)));
+        var slidesImageList = List<GenresInfo>.from(
+            response.data['data'].map((x) => GenresInfo.fromJson(x)));
 
         return Right(slidesImageList);
       } else {
@@ -58,5 +60,4 @@ class HomePageRepository {
 
     return Left(Failure(["No hay conexión con el servidor"]));
   }
-
 }

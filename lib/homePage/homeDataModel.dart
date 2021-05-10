@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pluis_hv_app/commons/values.dart';
 
 class HomePageDataModel {}
 
@@ -15,7 +16,7 @@ class SlidesInfo {
   factory SlidesInfo.fromJson(Map<String, dynamic> json) => SlidesInfo(
       id: json['id'],
       gender_id: json['gender_id'],
-      image: json['image'],
+      image: WEB_SLIDES_IMAGES + json['image'],
       description: json['description'],
       text_color: json['text_color']);
 }
