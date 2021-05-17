@@ -45,7 +45,7 @@ class RegisterData {
       'addressLines_1': this.addressLines_1,
       'phone': this.phone,
       'privacyCheck': this.privacyCheck,
-      'activation':this.activation
+      'activation': this.activation
     };
   }
 }
@@ -61,33 +61,34 @@ class RegisterDataForm {
   int province;
   String municipe;
   String addressLines;
-  String addressLines_1;
+  String addressLines_1;//Pending tp remove
   String phone;
-  bool privacyCheck;
+  bool privacyCheck =false;
   String activation;
 }
 
-class Province{
-
+class Province {
   final String id;
   final String province;
 
   Province({this.id, this.province});
 
-  factory Province.fromJson(Map<String, dynamic>json) => Province(
-    id: json["id"],
-    province: json["province"]
-  );
-
+  factory Province.fromJson(Map<String, dynamic> json) =>
+      Province(id: json["id"], province: json["province"]);
 }
 
 class Municipe {
-
- final int id;
- final String name;
+  final int id;
+  final String name;
   final int province_id;
   final String price_delivery;
 
   Municipe({this.id, this.name, this.province_id, this.price_delivery});
 
+  factory Municipe.fromJson(Map<String, dynamic> json) => Municipe(
+        id: json['id'],
+        name: json['name'],
+        province_id: json['province_id'],
+        price_delivery: json['price_delivery'],
+      );
 }

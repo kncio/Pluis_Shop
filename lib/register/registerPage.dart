@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,7 +22,7 @@ class _RegisterPage extends State<RegisterPage> {
   RegisterDataForm formData = RegisterDataForm();
   bool _hidePassword = true;
   bool _hideRePassword = true;
-  String province = "La Habana";
+  Province selectedProvince;
 
   @override
   Widget build(BuildContext context) {
@@ -39,15 +38,13 @@ class _RegisterPage extends State<RegisterPage> {
     super.initState();
   }
 
-  AppBar buildAppBar() =>
-      AppBar(
+  AppBar buildAppBar() => AppBar(
         leading: IconButton(
           color: Colors.black,
           icon: Icon(Icons.arrow_back),
           onPressed: () => {Navigator.pop(context)},
         ),
       );
-
 
   BlocConsumer<RegisterCubit, RegisterState> buildBody() {
     return BlocConsumer<RegisterCubit, RegisterState>(
@@ -61,7 +58,7 @@ class _RegisterPage extends State<RegisterPage> {
                   padding: EdgeInsets.all(20),
                   child: Text("REGISTRARSE",
                       style:
-                      TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ),
                 LinearProgressIndicator(
                     minHeight: 2,
@@ -77,7 +74,7 @@ class _RegisterPage extends State<RegisterPage> {
                   padding: EdgeInsets.all(20),
                   child: Text("REGISTRARSE",
                       style:
-                      TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ),
                 Expanded(child: buildForm(state))
               ],
@@ -90,7 +87,7 @@ class _RegisterPage extends State<RegisterPage> {
                   padding: EdgeInsets.all(20),
                   child: Text("REGISTRARSE",
                       style:
-                      TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ),
                 Expanded(child: buildForm(state))
               ],
@@ -98,11 +95,10 @@ class _RegisterPage extends State<RegisterPage> {
         }
       },
       listener: (context, state) async {
-        if(state is RegisterSuccessState){
+        if (state is RegisterSuccessState) {
           Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE);
-        }
-        else if(state is RegisterErrorState){
-          showSnackbar(context,text:state.message);
+        } else if (state is RegisterErrorState) {
+          showSnackbar(context, text: state.message);
         }
       },
     );
@@ -113,175 +109,202 @@ class _RegisterPage extends State<RegisterPage> {
         key: this._formKey,
         child: ListView(
           children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: TextFormField(
-                onSaved: (newValue) =>
-                {
-                  formData.email = newValue
-                },
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                decoration:
-                PluisAppTheme.textFormFieldDecoration(hintText: "Correo"),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: TextFormField(
-                onSaved: (newValue) =>
-                {
-                  formData.password = newValue
-                },
-                keyboardType: TextInputType.visiblePassword,
-                obscureText: this._hidePassword,
-                decoration: PluisAppTheme.textFormFieldDecoration(
-                    hintText: "Contraseña",
-                    suffixIcon: IconButton(
-                        icon: Icon(this._hidePassword
-                            ? Icons.remove_red_eye_outlined
-                            : Icons.remove_red_eye_rounded),
-                        onPressed: () =>
-                        {
-                          this.setState(() {
-                            this._hidePassword = !this._hidePassword;
-                          })
-                        })),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: TextFormField(
-                onSaved: (newValue) =>
-                {
-                  formData.passwordConfirm = newValue
-                },
-                keyboardType: TextInputType.visiblePassword,
-                obscureText: this._hideRePassword,
-                decoration: PluisAppTheme.textFormFieldDecoration(
-                    hintText: "Verificar Contraseña",
-                    suffixIcon: IconButton(
-                        icon: Icon(this._hideRePassword
-                            ? Icons.remove_red_eye_outlined
-                            : Icons.remove_red_eye_rounded),
-                        onPressed: () =>
-                        {
-                          this.setState(() {
-                            this._hideRePassword = !this._hideRePassword;
-                          })
-                        })),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: TextFormField(
-                onSaved: (newValue) =>
-                {
-                  formData.firstName = newValue
-                },
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.next,
-                decoration:
-                PluisAppTheme.textFormFieldDecoration(hintText: "Nombre"),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: TextFormField(
-                onSaved: (newValue) =>
-                {
-                  formData.lastName = newValue
-                },
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.next,
-                decoration: PluisAppTheme.textFormFieldDecoration(
-                    hintText: "Apellidos"),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: TextFormField(
-                onSaved: (newValue) =>
-                {
-                  formData.phone = newValue
-                },
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
-                decoration:
-                PluisAppTheme.textFormFieldDecoration(hintText: "Teléfono"),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: TextFormField(
-                onSaved: (newValue) =>
-                {
-                  formData.addressLines = newValue
-                },
-                keyboardType: TextInputType.streetAddress,
-                textInputAction: TextInputAction.next,
-                decoration: PluisAppTheme.textFormFieldDecoration(
-                    hintText: "Dirección"),
-              ),
-            ),
-            Padding(
-                padding: EdgeInsets.all(20),
-                child: DropdownButton(
-                  isExpanded: true,
-                  hint: Text("La Habana"),
-                  value: this.province,
-                  // icon: Icon(Icons.arrow_downward),
-                  style: TextStyle(color: Colors.black54),
-                  underline: Container(
-                    height: 1,
-                    color: Colors.black54,
-                  ),
-                  onChanged: (String newValue) {
-                    setState(() {
-                      this.province = newValue;
-                      formData.province = 3;
-                    });
-                  },
-                  items: (state as RegisterInitialState).provinces.map<DropdownMenuItem<String>>((Province value) {
-                    return DropdownMenuItem<String>(
-                      value: value.province,
-                      child: Text(value.province),
-                    );
-                  }).toList(),
-                )),
-            Padding(
-              padding: EdgeInsets.fromLTRB(20,40,20,40),
-              child: DarkButton(
-                text: "REGISTRARSE",
-                action: () =>
-                {
-                   doRegister(context, formData)
-                },
-              ),
-            )
+            buildEmailField(),
+            buildPasswordField(),
+            buildRePasswordField(),
+            buildNameField(),
+            buildLastNameField(),
+            buildPhoneField(),
+            buildAddressField(),
+            buildProvinceSelector(state),
+            buildCheckboxPrivacy(),
+            buildRegisterButton()
           ],
         ));
   }
 
-  Future<void> doRegister(BuildContext context,
-      RegisterDataForm dataForm) async {
+  CheckboxListTile buildCheckboxPrivacy() {
+    return CheckboxListTile(
+        activeColor: Colors.black,
+        title: Text("Acepto la política de privacidad"),
+        value: formData.privacyCheck,
+        onChanged: (value) {
+          setState(() {
+            formData.privacyCheck = value;
+          });
+        });
+  }
 
+  Padding buildRegisterButton() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 40, 20, 40),
+      child: DarkButton(
+        text: "REGISTRARSE",
+        action: () => {doRegister(context, formData)},
+      ),
+    );
+  }
+
+  Padding buildProvinceSelector(RegisterState state) {
+    return Padding(
+        padding: EdgeInsets.all(20),
+        child: DropdownButton(
+          isExpanded: true,
+          hint: Text("La Habana"),
+          value:this.selectedProvince,
+          // icon: Icon(Icons.arrow_downward),
+          style: TextStyle(color: Colors.black54),
+          underline: Container(
+            height: 1,
+            color: Colors.black54,
+          ),
+          onChanged: (Province newProvince)  {
+            setState(() {
+              selectedProvince = newProvince;
+              formData.province = int.parse(newProvince.id);
+            });
+          },
+          items: (state as RegisterInitialState)
+              .provinces
+              .map<DropdownMenuItem<Province>>((Province value) {
+            return DropdownMenuItem<Province>(
+              value: value,
+              child: Text(value.province),
+            );
+          }).toList(),
+        ));
+  }
+
+  Padding buildAddressField() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: TextFormField(
+        onSaved: (newValue) => {formData.addressLines = newValue},
+        keyboardType: TextInputType.streetAddress,
+        textInputAction: TextInputAction.next,
+        decoration:
+            PluisAppTheme.textFormFieldDecoration(labelText:"Dirección",hintText: "Dirección"),
+      ),
+    );
+  }
+
+  Padding buildPhoneField() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: TextFormField(
+        onSaved: (newValue) => {formData.phone = newValue},
+        keyboardType: TextInputType.phone,
+        textInputAction: TextInputAction.next,
+        decoration: PluisAppTheme.textFormFieldDecoration(labelText:"Teléfono",hintText: "Teléfono"),
+      ),
+    );
+  }
+
+  Padding buildLastNameField() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: TextFormField(
+        onSaved: (newValue) => {formData.lastName = newValue},
+        keyboardType: TextInputType.text,
+        textInputAction: TextInputAction.next,
+        decoration:
+            PluisAppTheme.textFormFieldDecoration(labelText:"Apellidos",hintText: "Apellidos"),
+      ),
+    );
+  }
+
+  Padding buildNameField() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: TextFormField(
+        onSaved: (newValue) => {formData.firstName = newValue},
+        keyboardType: TextInputType.text,
+        textInputAction: TextInputAction.next,
+        decoration: PluisAppTheme.textFormFieldDecoration(labelText:"Nombre",hintText: "Nombre"),
+      ),
+    );
+  }
+
+  Padding buildRePasswordField() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: TextFormField(
+        onSaved: (newValue) => {formData.passwordConfirm = newValue},
+        keyboardType: TextInputType.visiblePassword,
+        obscureText: this._hideRePassword,
+        decoration: PluisAppTheme.textFormFieldDecoration(
+          labelText: "Verificar Contraseña",
+            hintText: "Verificar Contraseña",
+            suffixIcon: IconButton(
+                icon: Icon(this._hideRePassword
+                    ? Icons.remove_red_eye_outlined
+                    : Icons.remove_red_eye_rounded),
+                onPressed: () => {
+                      this.setState(() {
+                        this._hideRePassword = !this._hideRePassword;
+                      })
+                    })),
+      ),
+    );
+  }
+
+  Padding buildPasswordField() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: TextFormField(
+        onSaved: (newValue) => {formData.password = newValue},
+        keyboardType: TextInputType.visiblePassword,
+        obscureText: this._hidePassword,
+        decoration: PluisAppTheme.textFormFieldDecoration(
+          labelText: "Contraseña",
+            hintText: "Contraseña",
+            suffixIcon: IconButton(
+                icon: Icon(this._hidePassword
+                    ? Icons.remove_red_eye_outlined
+                    : Icons.remove_red_eye_rounded),
+                onPressed: () => {
+                      this.setState(() {
+                        this._hidePassword = !this._hidePassword;
+                      })
+                    })),
+      ),
+    );
+  }
+
+  Padding buildEmailField() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: TextFormField(
+        onSaved: (newValue) => {formData.email = newValue},
+        keyboardType: TextInputType.emailAddress,
+        textInputAction: TextInputAction.next,
+        decoration: PluisAppTheme.textFormFieldDecoration(labelText:"Correo",hintText: "Correo"),
+      ),
+    );
+  }
+
+  Future<void> doRegister(
+      BuildContext context, RegisterDataForm dataForm) async {
     _formKey.currentState.save();
 
-    var data = RegisterData(
-      email: dataForm.email,
-      password: dataForm.password,
-      passwordConfirm: dataForm.passwordConfirm,
-      firstName: dataForm.firstName,
-      lastName: dataForm.lastName,
-      phone: dataForm.phone,
-      privacyCheck: true,
-      province: dataForm.province,
-      addressLines: dataForm.addressLines,
-      addressLines_1: dataForm.addressLines,
-      isCompany: false,
-      activation: "phone_act"
-    );
-    await context.read<RegisterCubit>().register(data);
+    if (dataForm.privacyCheck) {
+      var data = RegisterData(
+          email: dataForm.email,
+          password: dataForm.password,
+          passwordConfirm: dataForm.passwordConfirm,
+          firstName: dataForm.firstName,
+          lastName: dataForm.lastName,
+          phone: dataForm.phone,
+          privacyCheck: dataForm.privacyCheck,
+          province: dataForm.province,
+          addressLines: dataForm.addressLines,
+          addressLines_1: dataForm.addressLines,
+          isCompany: false,
+          activation: "phone_act");
+      await context.read<RegisterCubit>().register(data);
+    }
+    else{
+      //TODO: shoe error card
+    }
   }
 }

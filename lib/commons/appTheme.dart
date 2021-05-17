@@ -179,11 +179,12 @@ class PluisAppTheme {
   }
 
   static InputDecoration textFormFieldDecoration({
+    String labelText,
     String hintText,
     Icon prefixIconData,
     IconButton suffixIcon
   }) =>
-      InputDecoration(
+      InputDecoration(labelText: labelText,
         hintText: hintText,
         prefixIcon: prefixIconData,
         suffixIcon: suffixIcon ,
