@@ -7,6 +7,7 @@ abstract class RegisterState extends Equatable{
   @override
   List<Object> get props => [];
 }
+class RegisterBuildingState extends RegisterState{}
 
 class RegisterInitialState extends RegisterState{
   final List<Province> provinces;
@@ -16,6 +17,12 @@ class RegisterInitialState extends RegisterState{
 
 class RegisterLoadingState extends RegisterState{
 
+}
+
+class RegisterReadyState extends RegisterState{
+  final List<Municipe> municipes;
+
+  RegisterReadyState({this.municipes});
 }
 
 class RegisterSuccessState extends RegisterState{

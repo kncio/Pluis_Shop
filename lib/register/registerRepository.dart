@@ -57,13 +57,14 @@ class RegisterRepository {
           addressLines: registerData.addressLines,
           addressLines_1: registerData.addressLines_1,
           phone: registerData.phone,
-          privacyCheck: registerData.privacyCheck);
+          privacyCheck: registerData.privacyCheck,
+          activation: registerData.activation);
       log("Register called" + registerFinalData.toMap().toString());
       var response = await api.post("user_register", registerFinalData.toMap());
 
       if (response.statusCode == 200) {
         log("Register called" + response.data.toString());
-
+        //TODO: RETRIVE ERRORS if Ocurred
         return Right(true);
       } else {
         log(response.statusCode.toString());
@@ -94,15 +95,16 @@ class RegisterRepository {
     }
   }
 
-  Future<Either<Failure, List<Municipe>>> getMunicipes() async {
+  Future<Either<Failure, List<Municipe>>> getMunicipes(String id) async {
     try {
       var apiTOken = await Settings.storedApiToken;
-      var response = await api.get("get_states", {});
+      var response = await api.get("get_city", {"id": id});
       if (response.statusCode == 200) {
         log("Register called" + response.data.toString());
-        var listProvinces = List<Municipe>();
+        var listMunicipes = List<Municipe>.from(
+            response.data["data"].map((x) => Municipe.fromJson(x)));
 
-        return Right(listProvinces);
+        return Right(listMunicipes);
       } else {
         log(response.statusCode.toString());
         return Left(Failure([response.data.toString()]));

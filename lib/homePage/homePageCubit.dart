@@ -41,6 +41,6 @@ class HomePageCubit extends Cubit<HomePageState> {
         (genres) => genres != null
             ? emit(HomePageGenresLoaded(genresInfo: genres))
             : emit(
-                HomePageErrorState(message: "No hay provincias disponibles")));
+                HomePageErrorState(message: "No hay información disponible")));
   }
 }

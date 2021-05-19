@@ -78,9 +78,9 @@ class Province {
 }
 
 class Municipe {
-  final int id;
+  final String id;
   final String name;
-  final int province_id;
+  final String province_id;
   final String price_delivery;
 
   Municipe({this.id, this.name, this.province_id, this.price_delivery});

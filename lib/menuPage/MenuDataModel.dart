@@ -16,4 +16,8 @@ class CategoryData {
     this.created_at,
     this.cat_row
   });
+
+  factory CategoryData.fromJson(Map<String, dynamic> json) => CategoryData(
+
+  );
 }

@@ -12,6 +12,10 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPage extends State<MenuPage> {
+
+  String selectedGenre;
+  List<Tab> tabs;
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -183,5 +187,8 @@ class _MenuPage extends State<MenuPage> {
   }
 
 //TODO: Implement get categories for collection expandable item and dynamic content
-  Future<void> fetchCategoryByGender(int genderId) async {}
+  Future<void> fetchCategoryByGender(int genderId) async {
+
+  }
+
 }

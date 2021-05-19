@@ -6,17 +6,21 @@ class HomePageDataModel {}
 class SlidesInfo {
   final String id;
   final String gender_id;
-  final String image;
+  final String image_full;
+  final String image_media;
+  final String image_small;
   final String description;
   final String text_color;
 
   SlidesInfo(
-      {this.id, this.gender_id, this.image, this.description, this.text_color});
+      {this.id, this.gender_id, this.image_full,this.image_media,this.image_small, this.description, this.text_color});
 
   factory SlidesInfo.fromJson(Map<String, dynamic> json) => SlidesInfo(
       id: json['id'],
       gender_id: json['gender_id'],
-      image: WEB_SLIDES_IMAGES + json['image'],
+      image_full: WEB_SLIDES_IMAGES + json['image_full'],
+      image_media: WEB_SLIDES_IMAGES + json['image_media'],
+      image_small: WEB_SLIDES_IMAGES + json['image_small'],
       description: json['description'],
       text_color: json['text_color']);
 }

@@ -23,12 +23,12 @@ void main() {
 
 Future<void> initialize() async {
 
-  LocalResources.menImages.add(AssetImage('assets/images/Bota Brantano azul1.jpg'));
-  LocalResources.menImages.add(AssetImage('assets/images/Bota Plana.jpg'));
-  LocalResources.menImages.add(AssetImage('assets/images/Bota Ziper Elástico1.jpg'));
-  LocalResources.menImages.add(AssetImage('assets/images/Colegial tegijo charol1.jpg'));
-  LocalResources.menImages.add(AssetImage('assets/images/Bota Dayi Hebilla NG1.jpg'));
-  LocalResources.menImages.add(AssetImage('assets/images/Bota Rojo 1.jpg'));
+  // LocalResources.menImages.add(AssetImage('assets/images/Bota Brantano azul1.jpg'));
+  // LocalResources.menImages.add(AssetImage('assets/images/Bota Plana.jpg'));
+  // LocalResources.menImages.add(AssetImage('assets/images/Bota Ziper Elástico1.jpg'));
+  // LocalResources.menImages.add(AssetImage('assets/images/Colegial tegijo charol1.jpg'));
+  // LocalResources.menImages.add(AssetImage('assets/images/Bota Dayi Hebilla NG1.jpg'));
+  // LocalResources.menImages.add(AssetImage('assets/images/Bota Rojo 1.jpg'));
 
   log('Initializing APk resources');
   injectorContainer.init();

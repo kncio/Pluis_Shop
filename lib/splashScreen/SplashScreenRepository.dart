@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
@@ -14,6 +16,8 @@ class SplashScreenRepository{
      //Set token on settings
      Settings.setApiToken(apiToken: response.data["message"]["token_hash"]);
      var sToken = await Settings.storedApiToken;
+
+     log(sToken);
      return Right(true);
    }
    catch(error){

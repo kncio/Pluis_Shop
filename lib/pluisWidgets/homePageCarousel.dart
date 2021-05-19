@@ -61,7 +61,7 @@ class _HomePageCarousel extends State<HomePageCarousel> {
                       items: List<Widget>.from(
                           (state as HomePageCarouselSuccess)
                               .imagesUrls
-                              .map((url) => createImage(url.image))),
+                              .map((url) => createImage(url.image_small))),
                       options: defaultOptions)),
             ]);
           default:
