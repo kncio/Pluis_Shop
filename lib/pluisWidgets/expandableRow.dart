@@ -13,12 +13,12 @@ class ExpandableRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    buildItem(String label, int id) {
+    buildItem(String label, String id) {
       return Padding(
         padding: const EdgeInsets.all(10.0),
         child: TextButton(
           onPressed: () => {
-            Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE, arguments: {id})
+            Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE, arguments:id)
           },
           child: Text(label),
         ),

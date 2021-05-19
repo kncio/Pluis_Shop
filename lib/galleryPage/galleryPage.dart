@@ -16,27 +16,28 @@ import 'package:uuid/uuid.dart';
 import 'galleryPageState.dart';
 
 class GalleryPage extends StatefulWidget {
-  final int categoryId;
-  final int genderId;
+  final String categoryId;
 
-  const GalleryPage({Key key, this.categoryId, this.genderId})
-      : super(key: key);
+  const GalleryPage({Key key, this.categoryId}) : super(key: key);
 
   @override
   _GalleryPage createState() {
-    return _GalleryPage(categoryId: this.categoryId, genderId: this.genderId);
+    return _GalleryPage(categoryId: this.categoryId);
   }
 }
 
 class _GalleryPage extends State<GalleryPage> {
-  final int categoryId;
-  final int genderId;
+  final String categoryId;
 
-  _GalleryPage({this.categoryId, this.genderId});
+  _GalleryPage({this.categoryId});
 
   @override
   void initState() {
-    context.bloc<GalleryPageCubit>().getAllProducts();
+    if (this.categoryId != null) {
+      context.read<GalleryPageCubit>().getProductsByCategory(this.categoryId);
+    } else {
+      context.read<GalleryPageCubit>().getAllProducts();
+    }
     super.initState();
   }
 

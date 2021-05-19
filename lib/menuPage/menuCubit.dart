@@ -7,17 +7,7 @@ class MenuCubit extends Cubit<MenuState> {
 
   MenuCubit({this.repository}) : super(MenuStateInitial());
 
-  Future<void> getCategoryByGender(String genderId) async {
-    emit(MenuStateLoading());
-    var eitherValue = await repository.getCategoryByGender(genderId);
-    eitherValue.fold(
-        (failure) => failure.properties.isEmpty
-            ? emit(MenuStateError("Server Unreachable"))
-            : emit(MenuStateError(failure.properties.first)),
-        (categories) => categories != null
-            ? emit(MenuStateSuccess(categories: categories))
-            : emit(MenuStateError("Error desconocido")));
-  }
+
 
   Future<void> loadGenres() async {
     emit(MenuStateLoading());
@@ -28,7 +18,11 @@ class MenuCubit extends Cubit<MenuState> {
             ? emit(MenuStateError("Server unreachable"))
             : emit(MenuStateError(failure.properties.first)),
         (genres) => genres != null
-            ? emit(MenuStateLoading())
+            ? emit(MenuStateLoaded(genres))
             : emit(MenuStateError("No hay información disponible")));
+  }
+
+  Future<void> setSuccess() async {
+    emit(MenuStateSuccess());
   }
 }

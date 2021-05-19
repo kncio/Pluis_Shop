@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pluis_hv_app/commons/apiClient.dart';
+import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
@@ -56,11 +57,11 @@ class GalleryRepository {
   }
 
   Future<Either<Failure, List<Product>>> getAllProductByCategory(
-      categoryId) async {
+      String categoryId) async {
     List<Product> allProducts = [];
     try {
       var response =
-          await api.get("getAllProductByCategory", {"id": categoryId});
+          await api.get(GET_ALL_PRODUCTS_BY_CATEGORY, {"id": categoryId});
 
       if (response.statusCode == 200) {
         for (var product in response.data["data"]) {

@@ -73,7 +73,7 @@ class ApiClient {
   Future<Response> get(String method, Map<String, dynamic> params) async {
     try {
       var url = this.serviceUri + method;
-      log(url);
+      log(params.toString());
       var response = await client.get(url, queryParameters: params);
 
       return response;

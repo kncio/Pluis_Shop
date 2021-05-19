@@ -1,7 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pluis_hv_app/homePage/homeDataModel.dart';
+import 'package:pluis_hv_app/menuPage/menuCubit.dart';
 import 'package:pluis_hv_app/pluisWidgets/expandableRow.dart';
+import '../injectorContainer.dart' as injectionContainer;
+
+import 'categoryExpandable.dart';
+import 'menuState.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -11,20 +18,49 @@ class MenuPage extends StatefulWidget {
   }
 }
 
-class _MenuPage extends State<MenuPage> {
-
+class _MenuPage extends State<MenuPage> with SingleTickerProviderStateMixin {
   String selectedGenre;
-  List<Tab> tabs;
+  List<Tab> _tabs;
+  TabController _tabController;
+  List<GenresInfo> genres;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<MenuCubit>().loadGenres();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: buildTabBar(),
-        body: buildBody(),
-      ),
-    );
+    return BlocConsumer<MenuCubit, MenuState>(listener: (context, state) async {
+      if (state is MenuStateLoaded) {
+        this.genres = state.genresTabs;
+        this._tabController = TabController(length: genres.length, vsync: this);
+        this._tabs = List<Tab>.from(genres.map((genre) => Tab(
+              child: Text(
+                genre.title,
+                style: TextStyle(fontSize: 18, color: Colors.black),
+              ),
+            )));
+        await context.read<MenuCubit>().setSuccess();
+      }
+    }, builder: (context, state) {
+      switch (state.runtimeType) {
+        case MenuStateSuccess:
+          return Scaffold(
+            appBar: buildTabBar(),
+            body: buildBody(),
+          );
+        default:
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+            ),
+          );
+      }
+    });
   }
 
   Widget buildTabBar() => AppBar(
@@ -39,156 +75,27 @@ class _MenuPage extends State<MenuPage> {
         ],
         title: Center(
           child: TabBar(
+            indicatorSize: TabBarIndicatorSize.label,
+            indicatorColor: Colors.black,
+            controller: this._tabController,
             isScrollable: true,
-            tabs: [
-              Tab(
-                child: Text(
-                  "Hombres",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-              Tab(
-                  child:
-                      Text("Mujeres", style: TextStyle(color: Colors.black))),
-              Tab(child: Text("Niños", style: TextStyle(color: Colors.black))),
-            ],
+            tabs: this._tabs,
           ),
         ),
       );
 
   Widget buildBody() => TabBarView(
-        children: [
-          buildListViewMen(),
-          buildListViewWomen(),
-          buildListViewChildren()
-        ],
+        controller: this._tabController,
+        children: List<BlocProvider<MenuCategoriesExpandableCubit>>.from(
+            this.genres.map((e) => buildMenuCategoriesExpandable(e))),
       );
 
-  ListView buildListViewWomen() {
-    return ListView(children: [
-      Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () => {},
-              child: Container(
-                padding: EdgeInsets.fromLTRB(10, 30, 0, 30),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "REBAJAS",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ExpandableRow(
-              headerName: "COLECCIONES",
-              itemsNames: [
-                {"categoryName": "ZAPATOS", "id": 1},
-                {"categoryName": "BOLSAS", "id": 1},
-                {"categoryName": "PANTALONES", "id": 1},
-                {"categoryName": "ACCESORIOS", "id": 1},
-                {"categoryName": "ABRIGOS", "id": 1}
-              ],
-            ),
-          ],
-        ),
-      )
-    ]);
+  BlocProvider buildMenuCategoriesExpandable(GenresInfo e) {
+    return BlocProvider<MenuCategoriesExpandableCubit>(
+      create: (_) => injectionContainer.sl<MenuCategoriesExpandableCubit>(),
+      child: MenuCategoriesExpandable(
+        genreId: e.id,
+      ),
+    );
   }
-
-  ListView buildListViewMen() {
-    return ListView(children: [
-      Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () => {},
-              child: Container(
-                padding: EdgeInsets.fromLTRB(10, 30, 0, 30),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "REBAJAS",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ExpandableRow(
-              headerName: "COLECCIONES",
-              itemsNames: [
-                {"categoryName": "ZAPATOS", "id": 1},
-                {"categoryName": "BOLSAS", "id": 1},
-                {"categoryName": "PANTALONES", "id": 1},
-                {"categoryName": "ACCESORIOS", "id": 1},
-                {"categoryName": "ABRIGOS", "id": 1}
-              ],
-            ),
-
-          ],
-        ),
-      )
-    ]);
-  }
-
-  buildListViewChildren() {
-    return ListView(children: [
-      Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () => {},
-              child: Container(
-                padding: EdgeInsets.fromLTRB(10, 30, 0, 30),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "REBAJAS",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ExpandableRow(
-              headerName: "COLECCIONES",
-              itemsNames: [
-                {"categoryName": "ZAPATOS", "id": 1},
-                {"categoryName": "BOLSAS", "id": 1},
-                {"categoryName": "PANTALONES", "id": 1},
-                {"categoryName": "ACCESORIOS", "id": 1},
-                {"categoryName": "ABRIGOS", "id": 1}
-              ],
-            ),
-
-          ],
-        ),
-      )
-    ]);
-  }
-
-//TODO: Implement get categories for collection expandable item and dynamic content
-  Future<void> fetchCategoryByGender(int genderId) async {
-
-  }
-
 }

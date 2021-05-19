@@ -40,7 +40,7 @@ class PluisApp extends StatelessWidget {
                 builder: (_) =>
                     BlocProvider<GalleryPageCubit>(
                       create: (_) => injectionContainer.sl<GalleryPageCubit>(),
-                      child: GalleryPage(categoryId: settings.arguments),
+                      child: GalleryPage(categoryId: (settings.arguments as String)),
                     ));
           case REGISTER_PAGE_ROUTE:
             return PLuisPageRoute(
