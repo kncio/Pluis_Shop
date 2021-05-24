@@ -1,11 +1,15 @@
 import 'dart:developer';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
+import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
+import 'package:pluis_hv_app/detailsPage/detailsPageState.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class DetailsPage extends StatefulWidget {
@@ -23,13 +27,16 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPage extends State<DetailsPage> {
   final Product product;
   bool addTapped = false;
+  PanelController _panelController;
 
   _DetailsPage({Key key, this.product});
 
   @override
   void initState() {
     super.initState();
-    // log(product.name);
+    context.read<DetailsCubit>().getColorsBy(this.product.row_id);
+    _panelController = PanelController();
+    log(product.row_id);
   }
 
   @override
@@ -41,36 +48,69 @@ class _DetailsPage extends State<DetailsPage> {
     );
   }
 
-  Column buildColumn() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-              child: Hero(
-            tag: '${this.product.name}',
-            child: FadeInImage.memoryNetwork(
-                image: this.product.image,
-                placeholder: kTransparentImage),
-          )),
-          Container(
-            padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
-            child: SizedBox(
-              height: 50,
-              child: ListTile(
-                title: Text(
-                  this.product.name,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(this.product.price),
-                trailing: IconButton(
-                  onPressed: () => {},
-                  icon:
-                      Icon(Icons.arrow_downward, color: Colors.black, size: 20),
-                ),
-              ),
-            ),
-          )
-        ],
-      );
+  SlidingUpPanel buildColumn() => SlidingUpPanel(
+      minHeight: (MediaQuery.of(context).size.height / 10),
+      maxHeight: (MediaQuery.of(context).size.height / 3),
+      controller: _panelController,
+      panelSnapping: true,
+      parallaxEnabled: true,
+      parallaxOffset: 0.4,
+      panel: buildPanel(),
+      body: buildDetailsBody(),
+      collapsed: buildCollapsed());
+
+  Widget buildPanel() {
+    return BlocConsumer<DetailsCubit, DetailsPageState>(
+        builder: (context, state) {
+          switch(state.runtimeType){
+            case DetailsPageSuccess:
+              return Center(
+                child: Text("TODO"),
+              );
+            default:
+              return Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+              );
+          }
+
+        },
+        listener: (context, state) async {
+
+        });
+  }
+
+  Widget buildDetailsBody() {
+    return Column(
+      children: [
+        Hero(
+          tag: '${this.product.name}',
+          child: FadeInImage.memoryNetwork(
+              image: this.product.image, placeholder: kTransparentImage),
+        ),
+      ],
+    );
+  }
+
+  Container buildCollapsed() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
+      child: SizedBox(
+        height: 50,
+        child: ListTile(
+          title: Text(
+            this.product.name,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(this.product.price),
+          trailing: IconButton(
+            onPressed: () => {this._panelController.open()},
+            icon: Icon(Icons.arrow_downward, color: Colors.black, size: 20),
+          ),
+        ),
+      ),
+    );
+  }
 
   SizedBox buildBottomNavigationBar() => SizedBox(
         height: 75,
@@ -110,9 +150,7 @@ class _DetailsPage extends State<DetailsPage> {
 
   AppBar buildAppBar() => AppBar(
         leading: IconButton(
-          onPressed: () => {
-            Navigator.of(context).pop()
-          },
+          onPressed: () => {Navigator.of(context).pop()},
           icon: Icon(Icons.clear_outlined),
           color: Colors.black,
         ),

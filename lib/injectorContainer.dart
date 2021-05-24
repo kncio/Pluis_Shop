@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
+import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
+import 'package:pluis_hv_app/detailsPage/detailsPageRepository.dart';
 import 'package:pluis_hv_app/galleryPage/galleryPageCubit.dart';
 import 'package:pluis_hv_app/galleryPage/galleryRepository.dart';
 import 'package:pluis_hv_app/homePage/homePageCubit.dart';
@@ -68,6 +70,12 @@ Future<void> init() async {
   sl.registerFactory(() => GalleryPageCubit(repository: sl()));
 
   sl.registerFactory(() => GalleryRepository(api:  sl()));
+  //endregion
+
+  //region DetailsPage
+  sl.registerFactory(() => DetailsCubit(repository: sl()));
+
+  sl.registerFactory(() => DetailsRepository(api:  sl()));
   //endregion
 
   //region ShopCart

@@ -8,3 +8,4 @@ const String GET_ALL_PRODUCTS = '/getallCategoryByGender';
 const String GET_ALL_PRODUCTS_BY_CATEGORY = '/getAllProductByCategory';
 const String GET_CHECK_DISCOUNT_PRODUCTS = '/getCheckDiscountProductIsGender';
 const String GET_SLIDES_IMAGES = '/get_slides';
+const String GET_COLORS_BY = '/get_colors_byProduct';

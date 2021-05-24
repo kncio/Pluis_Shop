@@ -57,20 +57,3 @@ class Product {
   }
 }
 
-// {
-// "id": "120",
-// "category_id": "15",
-// "name": "Producto de Prueba",
-// "description": "",
-// "price": "150.00",
-// "status": "1",
-// "visibility": "1",
-// "hit": "7",
-// "image": "bb5bec0c57955bc8466aa7ac0f5e5132d3309a44-Producto_de_Prueba-Store_Collection.jpg",
-// "is_discount": "0",
-// "discount_price": "0.00",
-// "discount_percentaje": "0",
-// "updated_at": null,
-// "created_at": "1616391649",
-// "row_id": "60582de153153"
-// }

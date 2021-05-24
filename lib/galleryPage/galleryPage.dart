@@ -3,38 +3,43 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pluis_hv_app/commons/argsClasses.dart';
 import 'package:pluis_hv_app/commons/localResourcesPool.dart';
+import 'package:pluis_hv_app/commons/pagesRoutes.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPage.dart';
+import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/galleryPage/galleryPageCubit.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisProductCard.dart';
 import 'package:uuid/uuid.dart';
-
+import '../injectorContainer.dart' as injectionContainer;
 import 'galleryPageState.dart';
 
 class GalleryPage extends StatefulWidget {
-  final String categoryId;
+  final GalleryArgs categoryInfo;
 
-  const GalleryPage({Key key, this.categoryId}) : super(key: key);
+  const GalleryPage({Key key, this.categoryInfo}) : super(key: key);
 
   @override
   _GalleryPage createState() {
-    return _GalleryPage(categoryId: this.categoryId);
+    return _GalleryPage(categoryInfo: this.categoryInfo);
   }
 }
 
 class _GalleryPage extends State<GalleryPage> {
-  final String categoryId;
+  final GalleryArgs categoryInfo;
 
-  _GalleryPage({this.categoryId});
+  _GalleryPage({this.categoryInfo});
 
   @override
   void initState() {
-    if (this.categoryId != null) {
-      context.read<GalleryPageCubit>().getProductsByCategory(this.categoryId);
+    if (this.categoryInfo != null) {
+      context
+          .read<GalleryPageCubit>()
+          .getProductsByCategory(this.categoryInfo.categoryId);
     } else {
       context.read<GalleryPageCubit>().getAllProducts();
     }
@@ -93,24 +98,16 @@ class _GalleryPage extends State<GalleryPage> {
           product: state.products[index],
           press: () => Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) => DetailsPage(
-                        product: state.products[index],
+              PLuisPageRoute(
+                  builder: (_) => BlocProvider<DetailsCubit>(
+                        create: (_) => injectionContainer.sl<DetailsCubit>(),
+                        child: DetailsPage(
+                          product: state.products[index],
+                        ),
                       ))),
         ),
       );
     }
-  }
-
-  //TODO: Set the fetched info
-  Product buildProduct(int index, String image) {
-    var product = Product(
-        image: image,
-        name: 'Prueba' + index.toString(),
-        id: index.toString(),
-        price: "22.0",
-        description: 'Descripción');
-    return product;
   }
 
   appBar() {
@@ -124,7 +121,9 @@ class _GalleryPage extends State<GalleryPage> {
       ),
       title: Padding(
           padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
-          child: Text('ZAPATOS', style: TextStyle(color: Colors.black))),
+          child: Text(
+              this.categoryInfo != null ? this.categoryInfo.name : "TODOS",
+              style: TextStyle(color: Colors.black))),
       actions: <Widget>[],
     );
   }

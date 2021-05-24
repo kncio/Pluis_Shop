@@ -2,11 +2,13 @@ import 'package:dartz/dartz.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pluis_hv_app/commons/argsClasses.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 
 class ExpandableRow extends StatelessWidget {
   final String headerName;
   final List<Map<String, dynamic>> itemsNames;
+
   //TODO: Introduce onClick action
   const ExpandableRow({Key key, this.headerName, this.itemsNames})
       : super(key: key);
@@ -18,7 +20,8 @@ class ExpandableRow extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         child: TextButton(
           onPressed: () => {
-            Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE, arguments:id)
+            Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE,
+                arguments: GalleryArgs(categoryId: id, name: label))
           },
           child: Text(label),
         ),
@@ -29,7 +32,8 @@ class ExpandableRow extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          for (var i in this.itemsNames) buildItem("${i['categoryName']}",i["id"]),
+          for (var i in this.itemsNames)
+            buildItem("${i['categoryName']}", i["id"]),
         ],
       );
     }
@@ -46,7 +50,6 @@ class ExpandableRow extends StatelessWidget {
                 hasIcon: false,
               ),
               header: Container(
-
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Row(
@@ -55,9 +58,7 @@ class ExpandableRow extends StatelessWidget {
                         child: Text(
                           this.headerName,
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24
-                          ),
+                              fontWeight: FontWeight.bold, fontSize: 24),
                         ),
                       ),
                     ],

@@ -15,7 +15,7 @@ import 'package:pluis_hv_app/commons/failure.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 
-//TODO: Currently for testing
+
 class GalleryRepository {
   final ApiClient api;
 
@@ -67,7 +67,6 @@ class GalleryRepository {
         for (var product in response.data["data"]) {
           allProducts.add(Product.fromMap(product));
         }
-        log("list lenght" + allProducts.length.toString());
         return Right(allProducts);
       } else {
         log(response.statusCode.toString());
