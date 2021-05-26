@@ -27,6 +27,7 @@ class ProductCard extends StatelessWidget {
               child: Hero(
                   tag: '${this.product.name}',
                   child: FadeInImage.memoryNetwork(
+                    imageScale: 0.5,
                       image: this.product.image,
                       placeholder: kTransparentImage)),
             ),

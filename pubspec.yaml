@@ -26,28 +26,27 @@ dependencies:
   flutter_full_pdf_viewer: ^1.0.6
   path_provider: ^1.6.14
   transparent_image: ^2.0.0
-  backdrop: ^0.4.3
+  #backdrop: ^0.4.3
   provider: ^4.3.2+2
   hydrated_bloc: ^6.0.1
   equatable: ^1.2.5
   dartz: ^0.9.1
   flutter_secure_storage: ^3.3.3
   shared_preferences: ^0.5.10
-  dio: ^3.0.10
+  #dio: ^3.0.10
+  dio: ^4.0.0
   bloc: ^6.0.3
   flutter_bloc: ^6.0.5
   uuid: ^2.2.2
   get_it: ^5.0.0
-  webview_flutter: ^0.3.24
   permission_handler: ^5.0.1+1
   # workmanager: ^0.2.3
   # connectivity: ^0.4.9+3
-  http: ^0.12.2
-  autocomplete_textfield: ^1.7.3
+  # http: ^0.12.2
   carousel_slider: ^2.3.1
   expandable: ^4.1.4
   sliding_up_panel: ^2.0.0+1
-  dio_cookie_manager: 1.0.0
+  dio_cookie_manager: ^2.0.0
 
 
   # The following adds the Cupertino Icons font to your application.

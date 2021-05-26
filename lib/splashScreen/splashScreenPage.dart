@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
+import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisLogo.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenCubit.dart';
@@ -69,7 +70,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                 ),
                 children: [
                   TextSpan(
-                    text: 'Version: 1.0\nCopyright \u00a9 2021 - ',
+                    text: 'Version: $ApplicationVersion\nCopyright \u00a9 2021 - ',
                   ),
                   TextSpan(
                     text: 'Tienda PLuis',

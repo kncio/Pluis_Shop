@@ -32,12 +32,9 @@ class _ShopCartPage extends State<ShopCartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<ShopCartCubit,ShopCartState>(
-        listener: (context, state) async{
-
-        },
-        builder: (contet,state)
-        {
+      body: BlocConsumer<ShopCartCubit, ShopCartState>(
+        listener: (context, state) async {},
+        builder: (contet, state) {
           return buildBody();
         },
       ),
@@ -93,7 +90,7 @@ class _ShopCartPage extends State<ShopCartPage> {
               SizedBox(
                 height: 25,
               ),
-              DarkButton(text:"COMPRAR")
+              DarkButton(text: "COMPRAR")
             ],
           ),
         ),
@@ -117,25 +114,33 @@ class _ShopCartPage extends State<ShopCartPage> {
         child: ListView(
           children: [
             ShopCartItem(
-              product: Product(image: LocalResources.menImages[4].assetName),
+              product: Product(
+                  image:
+                      "https://prod.highvistapromotions.com/pluis/writable/uploads/images/fceb6027fd7403443fbe753e46e10872b13294d6-Producto_de_Prueba_4-Store_Collection.jpg"),
             ),
             SizedBox(
               height: 10,
             ),
             ShopCartItem(
-              product: Product(image: LocalResources.menImages[2].assetName),
+              product: Product(
+                  image:
+                      "https://prod.highvistapromotions.com/pluis/writable/uploads/images/fceb6027fd7403443fbe753e46e10872b13294d6-Producto_de_Prueba_4-Store_Collection.jpg"),
             ),
             SizedBox(
               height: 10,
             ),
             ShopCartItem(
-              product: Product(image: LocalResources.menImages[1].assetName),
+              product: Product(
+                  image:
+                      "https://prod.highvistapromotions.com/pluis/writable/uploads/images/fceb6027fd7403443fbe753e46e10872b13294d6-Producto_de_Prueba_4-Store_Collection.jpg"),
             ),
             SizedBox(
               height: 10,
             ),
             ShopCartItem(
-              product: Product(image: LocalResources.menImages[4].assetName),
+              product: Product(
+                  image:
+                      "https://prod.highvistapromotions.com/pluis/writable/uploads/images/fceb6027fd7403443fbe753e46e10872b13294d6-Producto_de_Prueba_4-Store_Collection.jpg"),
             ),
             SizedBox(
               height: 10,
@@ -149,17 +154,13 @@ class _ShopCartPage extends State<ShopCartPage> {
   AppBar buildAppBar() => AppBar(
         leading: IconButton(
           icon: Icon(Icons.clear, color: Colors.black),
-          onPressed: () => {
-            Navigator.of(context).pop()
-          },
+          onPressed: () => {Navigator.of(context).pop()},
         ),
         actions: [
           TextButton(onPressed: this._onPressEdit, child: Text('EDITAR'))
         ],
       );
 }
-
-
 
 class ShopCartItem extends StatelessWidget {
   final Product product;
@@ -174,7 +175,7 @@ class ShopCartItem extends StatelessWidget {
         children: [
           Expanded(
               child: Image.network(
-             this.product.image,
+            this.product.image,
           )),
           Expanded(
               child: Column(
@@ -183,7 +184,7 @@ class ShopCartItem extends StatelessWidget {
               Padding(
                   padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
                   child: Text(
-                    'PANTALONES DE TELA',
+                    "Prueba",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   )),
               Padding(

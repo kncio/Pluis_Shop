@@ -16,7 +16,7 @@ class DetailsCubit extends Cubit<DetailsPageState> {
     eitherValue.fold(
         (errorFailure) => errorFailure.properties.isEmpty
             ? emit(DetailsError("Server unreachable"))
-            : emit(errorFailure.properties.first),
+            : emit(DetailsError(errorFailure.properties.first)),
         (colorsList) => colorsList.length > 0
             ? emit(DetailsPageSuccess(colorsBy: colorsList))
             : emit(DetailsError(

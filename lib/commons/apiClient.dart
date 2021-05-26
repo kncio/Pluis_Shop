@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import 'package:pluis_hv_app/commons/keyStorage.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 
@@ -24,9 +24,11 @@ class ApiClient {
   ApiClient({this.serviceUri}) {
     this.client = Dio();
     client.options.baseUrl = serviceUri;
-    // client.options.queryParameters = this.header;
+    client.options.headers = this.header;
+
     cookieJar = CookieJar();
     client.interceptors.add(CookieManager(cookieJar));
+
   }
 
   Future<Response> getToken(String method, Map<String, dynamic> params) async {

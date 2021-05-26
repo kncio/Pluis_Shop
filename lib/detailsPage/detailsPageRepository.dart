@@ -15,12 +15,12 @@ class DetailsRepository {
   Future<Either<Failure, List<ColorByProductsDataModel>>> getColorsByProduct(
       String productRowId) async {
     List<ColorByProductsDataModel> allColorsBy = [];
-
+    log("enter");
     try {
       var response = await api.get(GET_COLORS_BY, {'id': productRowId});
 
       if (response.statusCode == 200) {
-        log("getColorsByProduct called" + response.data["data"][0].toString());
+        log("getColorsByProduct called" + response.data["data"].toString());
 
         for (var colorInfo in response.data["data"]) {
           log(colorInfo.toString());
@@ -29,7 +29,7 @@ class DetailsRepository {
         log("list lenght" + allColorsBy.length.toString());
         return Right(allColorsBy);
       } else {
-        log(response.statusCode.toString());
+        log("Error");
         return Left(Failure([response.statusMessage]));
       }
     } catch (error) {

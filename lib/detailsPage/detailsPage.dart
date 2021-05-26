@@ -8,9 +8,12 @@ import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageState.dart';
+import 'package:pluis_hv_app/pluisWidgets/colorSelectorCheckbox.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+import 'detailsPageRemoteDataSource.dart';
 
 class DetailsPage extends StatefulWidget {
   final Product product;
@@ -57,27 +60,73 @@ class _DetailsPage extends State<DetailsPage> {
       parallaxOffset: 0.4,
       panel: buildPanel(),
       body: buildDetailsBody(),
-      collapsed: buildCollapsed());
+      header: buildCollapsed());
 
   Widget buildPanel() {
     return BlocConsumer<DetailsCubit, DetailsPageState>(
         builder: (context, state) {
-          switch(state.runtimeType){
-            case DetailsPageSuccess:
-              return Center(
-                child: Text("TODO"),
-              );
-            default:
-              return Center(
-                child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
-              );
-          }
+      switch (state.runtimeType) {
+        case DetailsPageSuccess:
+          return buildPanelProductInfo();
+        case DetailsError:
+          // return Center(
+          //   child: Text((state as DetailsError).message,
+          //       overflow: TextOverflow.clip,
+          //       style: TextStyle(
+          //           color: Colors.black,
+          //           fontSize: 14,
+          //           fontWeight: FontWeight.bold)),
+          // );
+          return buildPanelProductInfo();
+        default:
+          return Center(
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+          );
+      }
+    }, listener: (context, state) async {
+      if (state is DetailsError) {
+        log(state.message);
+      }
+    });
+  }
 
-        },
-        listener: (context, state) async {
-
-        });
+  Column buildPanelProductInfo() {
+    return Column(children: [
+      SizedBox(
+        height: 100,
+      ),
+      Center(
+        child: ColorCheckBoxList(
+          colorInfoList: [
+            ColorByProductsDataModel(
+                id: "1",
+                product_id: "1",
+                color_id: "1",
+                color_name: "Color Negro con estilo turco",
+                color_code: "ff"),
+            ColorByProductsDataModel(
+                id: "1",
+                product_id: "1",
+                color_id: "1",
+                color_name: "Color Negro con estilo turco",
+                color_code: "ff"),
+            ColorByProductsDataModel(
+                id: "1",
+                product_id: "1",
+                color_id: "1",
+                color_name: "Color Negro con estilo turco",
+                color_code: "ff"),
+            ColorByProductsDataModel(
+                id: "1",
+                product_id: "1",
+                color_id: "1",
+                color_name: "Color Negro con estilo turco",
+                color_code: "ff")
+          ],
+        ),
+      ),
+    ]);
   }
 
   Widget buildDetailsBody() {
@@ -94,6 +143,8 @@ class _DetailsPage extends State<DetailsPage> {
 
   Container buildCollapsed() {
     return Container(
+      height: 40,
+      width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
       child: SizedBox(
         height: 50,
@@ -120,29 +171,35 @@ class _DetailsPage extends State<DetailsPage> {
             label: 'AÑADIR',
           ),
           SizedBox(
-            width: 100,
+            width: MediaQuery.of(context).size.width / 5,
           ),
-          Container(
+          Expanded(
+            child: Container(
+                padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
+                child: IconButton(
+                  icon: Icon(Icons.ios_share),
+                  onPressed: () => {},
+                  color: Colors.black,
+                )),
+          ),
+          Expanded(
+            child: Container(
               padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
               child: IconButton(
-                icon: Icon(Icons.ios_share),
+                icon: Icon(Icons.bookmark_border_sharp),
                 onPressed: () => {},
                 color: Colors.black,
-              )),
-          Container(
-            padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
-            child: IconButton(
-              icon: Icon(Icons.bookmark_border_sharp),
-              onPressed: () => {},
-              color: Colors.black,
+              ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
-            child: IconButton(
-              onPressed: () => {},
-              color: Colors.black,
-              icon: Icon(Icons.shopping_bag_outlined),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
+              child: IconButton(
+                onPressed: () => {},
+                color: Colors.black,
+                icon: Icon(Icons.shopping_bag_outlined),
+              ),
             ),
           ),
         ]),
