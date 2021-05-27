@@ -12,7 +12,7 @@ class SplashScreenCubit extends Cubit<SplashScreenState> {
     var eitherValue = await initializeApp.initializeApp();
 
     eitherValue.fold(
-      (failure) => emit(SplashScreenError()),
+      (failure) => emit(SplashScreenError(failure.properties.first)),
       (credentials) {
         emit(SplashScreenAppInitializedSuccess());
       },

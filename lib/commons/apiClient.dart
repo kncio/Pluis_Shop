@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+
 // import 'package:http/http.dart' as http;
 import 'package:pluis_hv_app/commons/keyStorage.dart';
 import 'package:pluis_hv_app/commons/values.dart';
@@ -25,10 +26,12 @@ class ApiClient {
     this.client = Dio();
     client.options.baseUrl = serviceUri;
     client.options.headers = this.header;
+    // 60 seconds of timeout
+    client.options.connectTimeout = 60 * 1000;
+    client.options.receiveTimeout = 60 * 1000;
 
     cookieJar = CookieJar();
     client.interceptors.add(CookieManager(cookieJar));
-
   }
 
   Future<Response> getToken(String method, Map<String, dynamic> params) async {
@@ -39,7 +42,7 @@ class ApiClient {
 
       log(client.options.headers.toString());
 
-      var response = await client.get(get_method).timeout(Duration(milliseconds: 6000));
+      var response = await client.get(get_method);
       log("ON RESPONSE");
       //GEt the Cookies for later request
       var cookies = cookieJar.loadForRequest(Uri.parse(get_method));
@@ -47,10 +50,9 @@ class ApiClient {
       log("Response " + cookies.toString());
 
       return response;
-    } catch (error) {
-      var err = error as Response;
-      log("ONError  get token" + err.data.toString());
-      //TODO: Parse DIO.Error
+    } on DioError catch (error) {
+      log("ONError  get token" + error.message.toString() + error.type.toString());
+      throw Exception(error.message);
     }
   }
 
@@ -66,8 +68,10 @@ class ApiClient {
       log("Response " + response.data.toString());
 
       return response;
-    } catch (error) {
-      log("ONError " + error.toString());
+    } on DioError catch (error) {
+      if (error.type == DioErrorType.connectTimeout) {
+        throw Exception("Connection Timeout Exception");
+      }
       return Response(data: error.toString());
     }
   }
@@ -87,12 +91,10 @@ class ApiClient {
 
   Future<Response> post(String method, Map<String, dynamic> data) async {
     try {
-
       var url = this.serviceUri + method;
       log(url);
       var formData = FormData.fromMap(data);
       var response = await client.post(url, data: formData);
-
 
       log("Response " + response.data.toString());
       return response;
@@ -119,5 +121,4 @@ class ApiClient {
   int getSoTimeout() => this._httpSocketTimeout;
 
   int getConnectionTimeout() => this._httpConnectionTimeout;
-
 }

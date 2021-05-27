@@ -16,4 +16,8 @@ class SplashScreenAppInitializedSuccess extends SplashScreenState{
 
 }
 
-class SplashScreenError extends SplashScreenState{}
+class SplashScreenError extends SplashScreenState{
+  final String errorMessage;
+
+  SplashScreenError(this.errorMessage);
+}
