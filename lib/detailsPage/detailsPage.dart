@@ -10,6 +10,7 @@ import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageState.dart';
 import 'package:pluis_hv_app/pluisWidgets/colorSelectorCheckbox.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
+import 'package:pluis_hv_app/pluisWidgets/sizeSelectorList.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -31,6 +32,8 @@ class _DetailsPage extends State<DetailsPage> {
   final Product product;
   bool addTapped = false;
   PanelController _panelController;
+  String selectedColorId;
+  String selectedTall;
 
   _DetailsPage({Key key, this.product});
 
@@ -45,6 +48,7 @@ class _DetailsPage extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // extendBodyBehindAppBar: true,
       appBar: buildAppBar(),
       bottomNavigationBar: buildBottomNavigationBar(),
       body: buildColumn(),
@@ -60,7 +64,7 @@ class _DetailsPage extends State<DetailsPage> {
       parallaxOffset: 0.4,
       panel: buildPanel(),
       body: buildDetailsBody(),
-      header: buildCollapsed());
+      header: buildHeader());
 
   Widget buildPanel() {
     return BlocConsumer<DetailsCubit, DetailsPageState>(
@@ -92,40 +96,69 @@ class _DetailsPage extends State<DetailsPage> {
   }
 
   Column buildPanelProductInfo() {
+    //TODO:  Fetch color and size info from the web
+    // COlor size on innitial state then when a color is changed get the correct size information and set
     return Column(children: [
       SizedBox(
-        height: 100,
+        height: 90,
       ),
       Center(
         child: ColorCheckBoxList(
+          onIndexChange: (String value) {
+            this.selectedColorId = value;
+            //For Debug Only
+            log(this.selectedColorId);
+          },
           colorInfoList: [
             ColorByProductsDataModel(
                 id: "1",
                 product_id: "1",
-                color_id: "1",
-                color_name: "Color Negro con estilo turco",
+                color_id: "3",
+                color_name: "Negro",
                 color_code: "ff"),
             ColorByProductsDataModel(
                 id: "1",
                 product_id: "1",
                 color_id: "1",
-                color_name: "Color Negro con estilo turco",
+                color_name: "Negro",
                 color_code: "ff"),
             ColorByProductsDataModel(
                 id: "1",
                 product_id: "1",
                 color_id: "1",
-                color_name: "Color Negro con estilo turco",
+                color_name: "Negro",
                 color_code: "ff"),
             ColorByProductsDataModel(
                 id: "1",
                 product_id: "1",
                 color_id: "1",
-                color_name: "Color Negro con estilo turco",
+                color_name: "Negro",
                 color_code: "ff")
           ],
         ),
       ),
+      Spacer(flex: 1),
+      Expanded(
+        child: Center(
+          child: SizeSelectorList(
+            onSelecedSizeChange: (String tall) {
+              this.selectedTall = tall;
+              log(this.selectedTall);
+            },
+            aviableTallsList: [
+              SizeVariationByColor(id: "1", color_id: "11", tall: "41",qty: "1"),
+              SizeVariationByColor(id: "2", color_id: "22", tall: "42",qty: "0"),
+              SizeVariationByColor(id: "3", color_id: "33", tall: "43",qty: "3"),
+              SizeVariationByColor(id: "1", color_id: "11", tall: "41",qty: "1"),
+              SizeVariationByColor(id: "2", color_id: "22", tall: "42",qty: "0"),
+              SizeVariationByColor(id: "3", color_id: "33", tall: "43",qty: "3"),
+              SizeVariationByColor(id: "1", color_id: "11", tall: "41",qty: "1"),
+              SizeVariationByColor(id: "2", color_id: "22", tall: "42",qty: "0"),
+              SizeVariationByColor(id: "3", color_id: "33", tall: "43",qty: "3"),
+            ],
+          ),
+        ),
+      )
     ]);
   }
 
@@ -141,7 +174,7 @@ class _DetailsPage extends State<DetailsPage> {
     );
   }
 
-  Container buildCollapsed() {
+  Container buildHeader() {
     return Container(
       height: 40,
       width: MediaQuery.of(context).size.width,
@@ -155,8 +188,13 @@ class _DetailsPage extends State<DetailsPage> {
           ),
           subtitle: Text(this.product.price),
           trailing: IconButton(
-            onPressed: () => {this._panelController.open()},
-            icon: Icon(Icons.arrow_downward, color: Colors.black, size: 20),
+            onPressed: () => {
+              if (this._panelController.isPanelOpen)
+                {this._panelController.close()}
+              else
+                {this._panelController.open()}
+            },
+            icon: Icon(Icons.arrow_upward, color: Colors.black, size: 20),
           ),
         ),
       ),
@@ -206,6 +244,8 @@ class _DetailsPage extends State<DetailsPage> {
       );
 
   AppBar buildAppBar() => AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           onPressed: () => {Navigator.of(context).pop()},
           icon: Icon(Icons.clear_outlined),

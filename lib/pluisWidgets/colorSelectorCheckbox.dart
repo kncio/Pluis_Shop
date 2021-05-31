@@ -8,26 +8,30 @@ import 'package:pluis_hv_app/detailsPage/detailsPageRemoteDataSource.dart';
 class ColorCheckBoxList extends StatefulWidget {
   final List<ColorByProductsDataModel> colorInfoList;
 
-  const ColorCheckBoxList({Key key, this.colorInfoList}) : super(key: key);
+  final Function(String additive) onIndexChange;
+
+  ColorCheckBoxList({Key key, this.onIndexChange, this.colorInfoList}) : super(key: key);
 
   @override
   _ColorCheckBox createState() {
-    return _ColorCheckBox(colorInfoList: colorInfoList);
+    return _ColorCheckBox(colorInfoList: colorInfoList,onIndexChange: onIndexChange);
   }
 }
 
 class _ColorCheckBox extends State<ColorCheckBoxList> {
   final List<ColorByProductsDataModel> colorInfoList;
 
-  bool checked = false;
+  //Function Called when the user change the colorIndex
+  final Function onIndexChange;
+
   int selectedColor = 0;
 
-  _ColorCheckBox({this.colorInfoList});
+  _ColorCheckBox({this.onIndexChange, this.colorInfoList});
 
   @override
   void initState() {
     super.initState();
-    this.checked = false;
+
   }
 
   @override
@@ -50,7 +54,10 @@ class _ColorCheckBox extends State<ColorCheckBoxList> {
         onTap: () {
           setState(() {
             this.selectedColor = index;
+            //Set the color id of the selected color
+            onIndexChange.call(currentColorInfo.color_id);
           });
+
         },
         child: Wrap(children: [
           Column(
