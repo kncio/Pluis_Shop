@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:pluis_hv_app/commons/localResourcesPool.dart';
+
 
 class LogoImage extends StatelessWidget {
   const LogoImage({Key key}) : super(key: key);

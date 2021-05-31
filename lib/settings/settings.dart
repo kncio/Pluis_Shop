@@ -13,32 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../injectorContainer.dart';
 
 class Settings {
-  // url info
-  static Map<String, dynamic> get uriInfo {
-    final prefs = sl<SharedPreferences>();
-    String server = prefs?.getString(SERVER_ENTERED) ?? SERVER_DEBUG_IP;
-    String port = prefs?.getString(PORT_ENTERED) ?? SERVER_PORT;
-    // String server = '127.0.0.1';
-    // String port = SERVER_PORT;
-    log("configurando" + server);
-    bool httpProtocol = (prefs?.getBool(PROTOCOL_ENTERED) ?? false);
-    return {
-      SERVER_ENTERED: server,
-      PORT_ENTERED: port,
-      PROTOCOL_ENTERED: httpProtocol
-    };
-  }
-
-  static String get uri {
-    var info = Settings.uriInfo;
-    assert(info != null &&
-        info.values.where((element) => element != null).length == 3);
-
-    return (info[PROTOCOL_ENTERED] ? 'https://' : 'http://') +
-        info[SERVER_ENTERED] +
-        ':' +
-        info[PORT_ENTERED];
-  }
 
   static Future<void> setServerConfiguration({
     String server,
@@ -57,9 +31,7 @@ class Settings {
 
   static String get webService => WEB_SERVICE;
 
-  static String get previewZoomRepository => PREVIEW_ZOOM_REPOSITORY;
 
-  static String get previewZoomApp => PREVIEW_ZOOM_APP;
 
   /// in milliseconds
   static int get requestTimeLimit => REQUEST_TIME_LIMIT;

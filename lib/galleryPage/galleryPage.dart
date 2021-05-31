@@ -4,17 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pluis_hv_app/commons/argsClasses.dart';
-import 'package:pluis_hv_app/commons/localResourcesPool.dart';
 import 'package:pluis_hv_app/commons/pagesRoutes.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
-import 'package:pluis_hv_app/commons/productsModel.dart';
-import 'package:pluis_hv_app/commons/values.dart';
+
 import 'package:pluis_hv_app/detailsPage/detailsPage.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/galleryPage/galleryPageCubit.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisProductCard.dart';
-import 'package:uuid/uuid.dart';
+
 import '../injectorContainer.dart' as injectionContainer;
 import 'galleryPageState.dart';
 

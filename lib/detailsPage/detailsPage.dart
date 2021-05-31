@@ -4,15 +4,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageState.dart';
 import 'package:pluis_hv_app/pluisWidgets/colorSelectorCheckbox.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
+import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 import 'package:pluis_hv_app/pluisWidgets/sizeSelectorList.dart';
+import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
 
 import 'detailsPageRemoteDataSource.dart';
 
@@ -146,15 +150,24 @@ class _DetailsPage extends State<DetailsPage> {
               log(this.selectedTall);
             },
             aviableTallsList: [
-              SizeVariationByColor(id: "1", color_id: "11", tall: "41",qty: "1"),
-              SizeVariationByColor(id: "2", color_id: "22", tall: "42",qty: "0"),
-              SizeVariationByColor(id: "3", color_id: "33", tall: "43",qty: "3"),
-              SizeVariationByColor(id: "1", color_id: "11", tall: "41",qty: "1"),
-              SizeVariationByColor(id: "2", color_id: "22", tall: "42",qty: "0"),
-              SizeVariationByColor(id: "3", color_id: "33", tall: "43",qty: "3"),
-              SizeVariationByColor(id: "1", color_id: "11", tall: "41",qty: "1"),
-              SizeVariationByColor(id: "2", color_id: "22", tall: "42",qty: "0"),
-              SizeVariationByColor(id: "3", color_id: "33", tall: "43",qty: "3"),
+              SizeVariationByColor(
+                  id: "1", color_id: "11", tall: "41", qty: "1"),
+              SizeVariationByColor(
+                  id: "2", color_id: "22", tall: "42", qty: "0"),
+              SizeVariationByColor(
+                  id: "3", color_id: "33", tall: "43", qty: "3"),
+              SizeVariationByColor(
+                  id: "1", color_id: "11", tall: "41", qty: "1"),
+              SizeVariationByColor(
+                  id: "2", color_id: "22", tall: "42", qty: "0"),
+              SizeVariationByColor(
+                  id: "3", color_id: "33", tall: "43", qty: "3"),
+              SizeVariationByColor(
+                  id: "1", color_id: "11", tall: "41", qty: "1"),
+              SizeVariationByColor(
+                  id: "2", color_id: "22", tall: "42", qty: "0"),
+              SizeVariationByColor(
+                  id: "3", color_id: "33", tall: "43", qty: "3"),
             ],
           ),
         ),
@@ -205,7 +218,7 @@ class _DetailsPage extends State<DetailsPage> {
         height: 75,
         child: Row(children: [
           PLuisButton(
-            press: () => {},
+            press: addProduct,
             label: 'AÑADIR',
           ),
           SizedBox(
@@ -216,7 +229,9 @@ class _DetailsPage extends State<DetailsPage> {
                 padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
                 child: IconButton(
                   icon: Icon(Icons.ios_share),
-                  onPressed: () => {},
+                  onPressed: () => {
+                    //TODO: DeepLinks
+                  },
                   color: Colors.black,
                 )),
           ),
@@ -234,7 +249,9 @@ class _DetailsPage extends State<DetailsPage> {
             child: Container(
               padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
               child: IconButton(
-                onPressed: () => {},
+                onPressed: () {
+                  Navigator.of(context).pushNamed(SHOP_CART);
+                },
                 color: Colors.black,
                 icon: Icon(Icons.shopping_bag_outlined),
               ),
@@ -252,4 +269,23 @@ class _DetailsPage extends State<DetailsPage> {
           color: Colors.black,
         ),
       );
+
+  void addProduct() {
+    if (this.selectedTall == null) {
+      this._panelController.open();
+      showSnackbar(context, text: "Debe seleccionar una talla");
+    } else {
+      var instance = injectorContainer.sl<ShoppingCart>();
+      instance.shoppingList.add(ShoppingOrder(
+          productData: this.product,
+          product_price: this.product.price,
+          id: this.product.row_id,
+          name: this.product.name,
+          color: this.selectedColorId,
+          tall: this.selectedTall,
+          qty: 1));
+      log("Product Added");
+      Navigator.of(context).pushNamed(SHOP_CART);
+    }
+  }
 }

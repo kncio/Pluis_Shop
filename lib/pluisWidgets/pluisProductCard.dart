@@ -3,7 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:pluis_hv_app/commons/localResourcesPool.dart';
+
 import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:transparent_image/transparent_image.dart';
 

@@ -15,6 +15,7 @@ import 'package:pluis_hv_app/menuPage/MenuRepository.dart';
 import 'package:pluis_hv_app/menuPage/categoryExpandable.dart';
 import 'package:pluis_hv_app/menuPage/menuCubit.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
+import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
 import 'package:pluis_hv_app/register/registerRepository.dart';
 import 'package:pluis_hv_app/shopCart/shopCartCubit.dart';
@@ -22,7 +23,6 @@ import 'package:pluis_hv_app/splashScreen/SplashScreenRepository.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenCubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'commons/jsonRpc.dart';
 import 'commons/values.dart';
 
 final sl = GetIt.instance;
@@ -50,7 +50,6 @@ Future<void> init() async {
 
   sl.registerFactory(() => HomePageRepository(api: sl()));
 
-
   //endregion
 
   //region Login
@@ -63,19 +62,19 @@ Future<void> init() async {
   //region Register
   sl.registerFactory(() => RegisterCubit(repository: sl()));
 
-  sl.registerFactory(() => RegisterRepository(api:sl()));
+  sl.registerFactory(() => RegisterRepository(api: sl()));
   //endregion
 
   //region GalleryPage
   sl.registerFactory(() => GalleryPageCubit(repository: sl()));
 
-  sl.registerFactory(() => GalleryRepository(api:  sl()));
+  sl.registerFactory(() => GalleryRepository(api: sl()));
   //endregion
 
   //region DetailsPage
   sl.registerFactory(() => DetailsCubit(repository: sl()));
 
-  sl.registerFactory(() => DetailsRepository(api:  sl()));
+  sl.registerFactory(() => DetailsRepository(api: sl()));
   //endregion
 
   //region ShopCart
@@ -86,29 +85,21 @@ Future<void> init() async {
   sl.registerFactory(() => MenuCubit(repository: sl()));
 
   sl.registerFactory(() => MenuCategoriesExpandableCubit(repository: sl()));
-  
+
   sl.registerFactory(() => MenuPageRepository(api: sl()));
   //endregion
 
-  //region Json Http Client
-  sl.registerLazySingleton<JsonRPCClient>(
-    () => JsonRPCClient.jsonRPCHTTPClient(
-      rpcVersion: DEFAULT_RPC_VERSION,
-    ),
-  );
-  //endregion
-
   //region Dio Client Instance
-  sl.registerLazySingleton<ApiClient>(() => ApiClient(
-    serviceUri: WEB_SERVICE
-  ));
+  sl.registerLazySingleton<ApiClient>(() => ApiClient(serviceUri: WEB_SERVICE));
   //endregion
 
   sl.registerLazySingleton(
-        () => FlutterSecureStorage(),
+    () => FlutterSecureStorage(),
   );
 
   sl.registerSingletonAsync(
-        () async => await SharedPreferences.getInstance(),
+    () async => await SharedPreferences.getInstance(),
   );
+
+  sl.registerLazySingleton<ShoppingCart>(() => ShoppingCart(shoppingList: []));
 }

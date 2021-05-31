@@ -1,33 +1,41 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pluis_hv_app/commons/localResourcesPool.dart';
-import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
-import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
+import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
+
+import 'package:pluis_hv_app/pluisWidgets/shoppingCartItem.dart';
 import 'package:pluis_hv_app/shopCart/shopCartCubit.dart';
 import 'package:pluis_hv_app/shopCart/shopCartState.dart';
 
+import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
+
 class ShopCartPage extends StatefulWidget {
   final Function appBarCancelOnPressFunc;
-  final int totalProducts;
 
-  const ShopCartPage(
-      {Key key, this.appBarCancelOnPressFunc, this.totalProducts})
-      : super(key: key);
+  const ShopCartPage({Key key, this.appBarCancelOnPressFunc}) : super(key: key);
 
   @override
   _ShopCartPage createState() {
-    return _ShopCartPage(this.appBarCancelOnPressFunc, () => {}, totalProducts);
+    return _ShopCartPage(this.appBarCancelOnPressFunc);
   }
 }
 
 class _ShopCartPage extends State<ShopCartPage> {
   final Function _onPress;
-  final Function _onPressEdit;
-  final int totalProducts;
 
-  _ShopCartPage(this._onPress, this._onPressEdit, this.totalProducts);
+  bool editing;
+
+  ShoppingCart shoppingCartReference;
+
+  _ShopCartPage(this._onPress);
+
+  @override
+  void initState() {
+    shoppingCartReference = injectorContainer.sl<ShoppingCart>();
+    this.editing = false;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +67,7 @@ class _ShopCartPage extends State<ShopCartPage> {
           padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
           child: SizedBox(
               child: Text(
-            '${this.totalProducts != null ? this.totalProducts : 3} productos',
+            '${this.shoppingCartReference.shoppingList.length != null ? this.shoppingCartReference.shoppingList.length : 3} productos',
             style: TextStyle(fontSize: 14, color: Colors.black54),
           )),
         ),
@@ -84,13 +92,16 @@ class _ShopCartPage extends State<ShopCartPage> {
               Container(
                   padding: EdgeInsets.all(5),
                   child: Text(
-                    'Total  ' + '750  CUP',
+                    'TOTAL  ' + totalPice().toString(),
                     style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
                   )),
               SizedBox(
                 height: 25,
               ),
-              DarkButton(text: "COMPRAR")
+              DarkButton(
+                text: "COMPRAR",
+                action: () {}, //TODO:
+              )
             ],
           ),
         ),
@@ -106,49 +117,48 @@ class _ShopCartPage extends State<ShopCartPage> {
     );
   }
 
-  //TODO: EL carrito tiene que ser persistente, o ser un endpoint de la api
   Widget itemsBody() {
     return Expanded(
       child: Container(
         // height: MediaQuery.of(context).size.height-300,
-        child: ListView(
-          children: [
-            ShopCartItem(
-              product: Product(
-                  image:
-                      "https://prod.highvistapromotions.com/pluis/writable/uploads/images/fceb6027fd7403443fbe753e46e10872b13294d6-Producto_de_Prueba_4-Store_Collection.jpg"),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            ShopCartItem(
-              product: Product(
-                  image:
-                      "https://prod.highvistapromotions.com/pluis/writable/uploads/images/fceb6027fd7403443fbe753e46e10872b13294d6-Producto_de_Prueba_4-Store_Collection.jpg"),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            ShopCartItem(
-              product: Product(
-                  image:
-                      "https://prod.highvistapromotions.com/pluis/writable/uploads/images/fceb6027fd7403443fbe753e46e10872b13294d6-Producto_de_Prueba_4-Store_Collection.jpg"),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            ShopCartItem(
-              product: Product(
-                  image:
-                      "https://prod.highvistapromotions.com/pluis/writable/uploads/images/fceb6027fd7403443fbe753e46e10872b13294d6-Producto_de_Prueba_4-Store_Collection.jpg"),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
+        child: ListView.builder(
+            itemCount: this.shoppingCartReference.shoppingList.length,
+            itemBuilder: (context, index) {
+              return Wrap(alignment: WrapAlignment.end, children: [
+                this.editing
+                    ? IconButton(
+                        icon: Icon(Icons.clear, color: Colors.black),
+                        onPressed: () {
+                          setState(() {
+                            this.shoppingCartReference.shoppingList.removeAt(index);
+                          });
+                        })
+                    : SizedBox.shrink(),
+                ShopCartItem(
+                  selectedTall:
+                      this.shoppingCartReference.shoppingList[index].tall,
+                  product: this
+                      .shoppingCartReference
+                      .shoppingList[index]
+                      .productData,
+                )
+              ]);
+            }),
       ),
     );
+  }
+
+  //TODO: Implementar la formula para calcular los descuentos por productos y los cupones
+  // Idea: Sacar el precio total sumando los productos, luego sacar
+  // el descuento total pot cada producto, y por ultimo los cupones
+  double totalPice() {
+    double sum = 0;
+
+    this.shoppingCartReference.shoppingList.forEach((product) {
+      sum += double.tryParse(product.productData.price);
+    });
+
+    return sum;
   }
 
   AppBar buildAppBar() => AppBar(
@@ -157,54 +167,13 @@ class _ShopCartPage extends State<ShopCartPage> {
           onPressed: () => {Navigator.of(context).pop()},
         ),
         actions: [
-          TextButton(onPressed: this._onPressEdit, child: Text('EDITAR'))
+          TextButton(
+              onPressed: () {
+                setState(() {
+                  this.editing = !this.editing;
+                });
+              },
+              child: Text('EDITAR'))
         ],
       );
-}
-
-class ShopCartItem extends StatelessWidget {
-  final Product product;
-
-  const ShopCartItem({Key key, this.product}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height / 4,
-      child: Row(
-        children: [
-          Expanded(
-              child: Image.network(
-            this.product.image,
-          )),
-          Expanded(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                  padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  child: Text(
-                    "Prueba",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  )),
-              Padding(
-                  padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  child: Text('32',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 18))),
-              Expanded(
-                  child: Container(
-                child: SizedBox(),
-              )),
-              Padding(
-                  padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  child: Text('375 cup',
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal, fontSize: 14))),
-            ],
-          ))
-        ],
-      ),
-    );
-  }
 }

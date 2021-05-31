@@ -10,14 +10,7 @@ const RPCVersion DEFAULT_RPC_VERSION = RPCVersion.VERSION_2;
 
 //Network Constants
 const String WEB_URI = 'https://www.calzadopluis.com/api/';
-const String SERVER_ONLINE_IP = 'localhost';
-const String SERVER_DEBUG_IP = '192.168.1.2';
-const String SERVER_PORT = '81';
 const String WEB_SERVICE = 'https://www.calzadopluis.com/api/store/';
-const String URI_HTTP = 'http://' + SERVER_DEBUG_IP + ':' + SERVER_PORT;
-const String URI_HTTPS = 'https://' + SERVER_DEBUG_IP + ':' + SERVER_PORT;
-const String PREVIEW_ZOOM_APP = '/previewZoomApp';
-const String PREVIEW_ZOOM_REPOSITORY = '/repository/files/app/previewZoom';
 const String WEB_IMAGES=  'https://www.calzadopluis.com/writable/uploads/images/';
 const String WEB_SLIDES_IMAGES=  'https://www.calzadopluis.com/writable/uploads/slides/';
 //
