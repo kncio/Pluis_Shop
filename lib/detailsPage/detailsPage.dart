@@ -46,7 +46,7 @@ class _DetailsPage extends State<DetailsPage> {
     super.initState();
     context.read<DetailsCubit>().getColorsBy(this.product.row_id);
     _panelController = PanelController();
-    log(product.row_id);
+    log( "caca " + product.row_id);
   }
 
   @override
