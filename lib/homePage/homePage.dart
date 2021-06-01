@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 // import 'package:http/http.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/homePage/homeDataModel.dart';
@@ -23,7 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   TabController _tabController;
   String selectedGenre = "0";
-  List<Tab> tabs;
+  List<Tab> tabs = [];
   List<GenresInfo> genres;
   List<List<SlidesInfo>> slidersInfoByGender;
 
@@ -42,6 +43,20 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
     return Scaffold(
       body: buildBody(context),
       bottomNavigationBar: buildBottomNavigationBar(),
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      title: Center(
+        child: TabBar(
+            controller: _tabController,
+            indicatorSize: TabBarIndicatorSize.label,
+            indicatorColor: Colors.black,
+            isScrollable: true,
+            tabs: this.tabs),
+      ),
     );
   }
 
@@ -85,25 +100,14 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
             );
           case HomePageSuccessState:
-            return Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / 18,
-                ),
-                Center(
-                  child: TabBar(
-                      controller: _tabController,
-                      indicatorSize: TabBarIndicatorSize.label,
-                      indicatorColor: Colors.black,
-                      isScrollable: true,
-                      tabs: this.tabs),
-                ),
-                Expanded(
-                  child: TabBarView(
-                      controller: this._tabController,
-                      children: createCarouselFromGenres()),
-                )
-              ],
+            return Scaffold(
+              extendBodyBehindAppBar: true,
+              appBar: buildAppBar(),
+              body: Container(
+                child: TabBarView(
+                    controller: this._tabController,
+                    children: createCarouselFromGenres()),
+              ),
             );
           default:
             return Center(
@@ -116,14 +120,14 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   }
 
   List<BlocProvider<HomePageCarouselCubit>> createCarouselFromGenres() {
-    return List<BlocProvider<HomePageCarouselCubit>>.from(this.genres.map((e) => createCarouselProvider(e.gender_id)));
+    return List<BlocProvider<HomePageCarouselCubit>>.from(
+        this.genres.map((e) => createCarouselProvider(e.gender_id)));
   }
 
-  BlocProvider createCarouselProvider(String genreId){
+  BlocProvider createCarouselProvider(String genreId) {
     return BlocProvider<HomePageCarouselCubit>(
       create: (_) => injectionContainer.sl<HomePageCarouselCubit>(),
       child: HomePageCarousel(genreId: genreId),
     );
   }
-
 }
