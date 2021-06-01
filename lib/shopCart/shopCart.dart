@@ -9,6 +9,7 @@ import 'package:pluis_hv_app/shopCart/shopCartCubit.dart';
 import 'package:pluis_hv_app/shopCart/shopCartState.dart';
 
 import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class ShopCartPage extends StatefulWidget {
   final Function appBarCancelOnPressFunc;
@@ -50,32 +51,49 @@ class _ShopCartPage extends State<ShopCartPage> {
     );
   }
 
-  Column buildBody() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildAppBar(),
-        Padding(
-          padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-          child: SizedBox(
-              child: Text(
-            'CARRITO DE COMPRAS',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          )),
-        ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-          child: SizedBox(
-              child: Text(
-            '${this.shoppingCartReference.shoppingList.length != null ? this.shoppingCartReference.shoppingList.length : 3} productos',
-            style: TextStyle(fontSize: 14, color: Colors.black54),
-          )),
-        ),
-        SizedBox(
-          height: 16,
-        ),
-        itemsBody(),
-      ],
+  Widget buildBody() {
+    return SlidingUpPanel(
+      minHeight: 25,
+      panel: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: Container(
+              width: 70,
+              height: 5,
+              decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.all(Radius.circular(12.0))),
+            ),
+          ),
+        ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildAppBar(),
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+            child: SizedBox(
+                child: Text(
+              'CARRITO DE COMPRAS',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            )),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+            child: SizedBox(
+                child: Text(
+              '${this.shoppingCartReference.shoppingList.length != null ? this.shoppingCartReference.shoppingList.length : 3} productos',
+              style: TextStyle(fontSize: 14, color: Colors.black54),
+            )),
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          itemsBody(),
+        ],
+      ),
     );
   }
 
@@ -130,7 +148,10 @@ class _ShopCartPage extends State<ShopCartPage> {
                         icon: Icon(Icons.clear, color: Colors.black),
                         onPressed: () {
                           setState(() {
-                            this.shoppingCartReference.shoppingList.removeAt(index);
+                            this
+                                .shoppingCartReference
+                                .shoppingList
+                                .removeAt(index);
                           });
                         })
                     : SizedBox.shrink(),

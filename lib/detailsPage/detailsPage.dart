@@ -85,7 +85,7 @@ class _DetailsPage extends State<DetailsPage> {
           //           fontSize: 14,
           //           fontWeight: FontWeight.bold)),
           // );
-          return buildPanelProductInfo();
+          return buildPanelProductInfo();//TODO: remover esto y poner el error
         default:
           return Center(
             child: CircularProgressIndicator(
