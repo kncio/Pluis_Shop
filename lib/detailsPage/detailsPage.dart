@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -34,10 +35,19 @@ class DetailsPage extends StatefulWidget {
 //TODO: FAlta maquetar el carousel para mostrar las diferentes fotos,
 class _DetailsPage extends State<DetailsPage> {
   final Product product;
+  List<ProductDetailsImages> imagesList = [];
   bool addTapped = false;
   PanelController _panelController;
   String selectedColorId;
   String selectedTall;
+
+  int index = 0;
+
+  CarouselOptions defaultOptions = CarouselOptions(
+    viewportFraction: 1.0,
+    enlargeCenterPage: false,
+    scrollDirection: Axis.horizontal,
+  );
 
   _DetailsPage({Key key, this.product});
 
@@ -46,6 +56,8 @@ class _DetailsPage extends State<DetailsPage> {
     super.initState();
     context.read<DetailsCubit>().getColorsBy(this.product.row_id);
     _panelController = PanelController();
+    this.imagesList.add(ProductDetailsImages(product.image));
+    context.read<DetailsCubit>().getDetailsImages(this.product.row_id);
     log( "caca " + product.row_id);
   }
 
@@ -77,15 +89,14 @@ class _DetailsPage extends State<DetailsPage> {
         case DetailsPageSuccess:
           return buildPanelProductInfo();
         case DetailsError:
-          // return Center(
-          //   child: Text((state as DetailsError).message,
-          //       overflow: TextOverflow.clip,
-          //       style: TextStyle(
-          //           color: Colors.black,
-          //           fontSize: 14,
-          //           fontWeight: FontWeight.bold)),
-          // );
-          return buildPanelProductInfo();//TODO: remover esto y poner el error
+          return Center(
+            child: Text((state as DetailsError).message,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold)),
+          );
         default:
           return Center(
             child: CircularProgressIndicator(
@@ -95,6 +106,12 @@ class _DetailsPage extends State<DetailsPage> {
     }, listener: (context, state) async {
       if (state is DetailsError) {
         log(state.message);
+      }
+      if(state is DetailsImagesLoaded){
+        setState(() {
+          this.imagesList.addAll(state.imagesList) ;
+        });
+
       }
     });
   }
@@ -178,11 +195,14 @@ class _DetailsPage extends State<DetailsPage> {
   Widget buildDetailsBody() {
     return Column(
       children: [
-        Hero(
-          tag: '${this.product.name}',
-          child: FadeInImage.memoryNetwork(
-              image: this.product.image, placeholder: kTransparentImage),
-        ),
+        GestureDetector(
+          child: createImage(this.imagesList[index].imageUrlName),
+          onHorizontalDragEnd: (value){
+            setState(() {
+              index = (index + 1)%this.imagesList.length;//TODO: improve to only change when horizontal
+            });
+          },
+        )
       ],
     );
   }
@@ -287,5 +307,13 @@ class _DetailsPage extends State<DetailsPage> {
       log("Product Added");
       Navigator.of(context).pushNamed(SHOP_CART);
     }
+  }
+
+  Widget createImage(String url) {
+    return  Hero(
+      tag: url,
+      child: FadeInImage.memoryNetwork(
+          image: url, placeholder: kTransparentImage),
+    );
   }
 }

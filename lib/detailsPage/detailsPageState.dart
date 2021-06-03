@@ -24,6 +24,12 @@ class DetailsLoading extends DetailsPageState{
   final String message = "Cargando...";
 }
 
+class DetailsImagesLoaded extends DetailsPageState{
+  final List<ProductDetailsImages> imagesList;
+
+  DetailsImagesLoaded(this.imagesList);
+}
+
 class DetailsError extends DetailsPageState{
   final String message;
 

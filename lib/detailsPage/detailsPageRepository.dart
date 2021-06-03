@@ -36,4 +36,25 @@ class DetailsRepository {
       return Left(Failure([error.toString()]));
     }
   }
+
+  Future<Either<Failure, List<ProductDetailsImages>>> getDetailsImages(
+      String productRowId) async {
+    List<ProductDetailsImages> imagesList = [];
+    try {
+      var response = await api.get(GET_PRODUCT_IMAGES, {"id": productRowId});
+
+
+      if (response.statusCode == 200) {
+
+        imagesList = List.from(response.data["data"])
+            .map((jsonData) => ProductDetailsImages.fromJson(jsonData)).toList();
+
+        return Right(imagesList);
+      } else {
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
 }

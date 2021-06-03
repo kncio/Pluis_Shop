@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'detailsPageRepository.dart';
 import 'detailsPageState.dart';
@@ -21,5 +22,22 @@ class DetailsCubit extends Cubit<DetailsPageState> {
             ? emit(DetailsPageSuccess(colorsBy: colorsList))
             : emit(DetailsError(
                 "Actualmente no existen ejemplares de este producto")));
+  }
+  Future<void> getDetailsImages(String productRowId) async {
+    emit(DetailsLoading());
+
+    var eitherValue = await repository.getDetailsImages(productRowId);
+
+    eitherValue.fold(
+            (errorFailure) => errorFailure.properties.isEmpty
+            ? emit(DetailsError("Server unreachable"))
+            : emit(DetailsError(errorFailure.properties.first)),
+            (imagesList) => imagesList.length >= 0
+            ? emit(DetailsImagesLoaded( imagesList))
+            : emit(DetailsError(
+            "Actualmente no existen ejemplares de este producto")));
+  }
+  Future<void> setSuccess() async {
+    // emit();
   }
 }

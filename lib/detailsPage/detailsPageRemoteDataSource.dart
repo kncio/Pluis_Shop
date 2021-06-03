@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:pluis_hv_app/commons/values.dart';
+
 class ColorByProductsDataModel {
   final String id;
   final String product_id;
@@ -37,4 +40,13 @@ class SizeVariationByColor {
           color_id: json['color_id'],
           tall: json['tall'],
           qty: json['qty']);
+}
+
+class ProductDetailsImages {
+  final String imageUrlName;
+
+  ProductDetailsImages(this.imageUrlName);
+
+  factory ProductDetailsImages.fromJson(Map<String, dynamic> json) =>
+      ProductDetailsImages( WEB_IMAGES + json["image"]);
 }

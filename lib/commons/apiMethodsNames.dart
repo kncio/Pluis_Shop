@@ -13,3 +13,4 @@ const String GET_USER_CUPON = '/get_cuponByUser';
 const String GET_CLIENT_ADDRESS = '/get_AddressLibraries';
 const String GET_DELIVERY_PRICE_BY_STATE_ID = '/getPriceDelivery';
 const String GET_CURRENCY = '/get_currency';
+const String GET_PRODUCT_IMAGES = '/get_images_product';
