@@ -43,6 +43,8 @@ class Settings {
     return isLoggedIn;
   }
 
+
+
   static bool get remember {
     final prefs = sl<SharedPreferences>();
     bool remember = prefs?.getBool(REMEMBER) ?? false;
@@ -54,6 +56,12 @@ class Settings {
     final secureStorage = sl<FlutterSecureStorage>();
     var token = await secureStorage.read(key: USER_TOKEN_KEY);
     return token;
+  }
+  static Future<String> get userId async {
+    if (!isLoggedIn) return '';
+    final secureStorage = sl<FlutterSecureStorage>();
+    var userId = await secureStorage.read(key: USER_ID_KEY);
+    return userId;
   }
 
   static Future<String> get storedApiToken async {
@@ -106,6 +114,7 @@ class Settings {
   static Future<void> setCredentials({
     @required userEmail,
     @required String token,
+    @required String id,
     bool rememberMe,
   }) async {
     Settings.setIsLoggedIn(value: true);
@@ -119,6 +128,10 @@ class Settings {
     await secureStorage.write(
       key: USER_TOKEN_KEY,
       value: token,
+    );
+    await secureStorage.write(
+      key: USER_ID_KEY,
+      value: id,
     );
   }
 

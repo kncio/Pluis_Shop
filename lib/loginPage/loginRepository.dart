@@ -7,6 +7,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
 // import 'package:http/http.dart' as http;
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
@@ -116,9 +117,14 @@ class LoginRepository {
       if (result.statusCode == 200) {
         //TODO: STORE THE INFO ON SHAREDPREFERENCES
         // log("Login sussces + ${result.data.toString()}");
-        if(result.data['status']){
+        if (result.data['status']) {
           var loginResponse = LoginResponse.fromMap(result.data['data']);
-          await Settings.setCredentials(userEmail: loginResponse.email, token: loginResponse.token, rememberMe: false);
+          await Settings.setCredentials(
+              userEmail: loginResponse.email,
+              token: loginResponse.token,
+              rememberMe: false,
+              id: loginResponse.user_id);
+
           log(loginResponse.email);
         }
         return Right(true);

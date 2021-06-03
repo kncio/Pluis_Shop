@@ -15,6 +15,7 @@ const String USER_INFO_LOADED = NAMESPACE + '.user.loaded';
 const String USER_RIGHTS = NAMESPACE + ".user.rights";
 const String USER_PASSWORD = NAMESPACE + '.user.password';
 const String USER_TOKEN_KEY = NAMESPACE + '.user.token';
+const String USER_ID_KEY = NAMESPACE + '.user.id';
 //> #endregion
 
 //< #region Settings (KEYS)

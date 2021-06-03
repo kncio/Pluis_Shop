@@ -19,6 +19,7 @@ import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
 import 'package:pluis_hv_app/register/registerRepository.dart';
 import 'package:pluis_hv_app/shopCart/shopCartCubit.dart';
+import 'package:pluis_hv_app/shopCart/shopCartRepository.dart';
 import 'package:pluis_hv_app/splashScreen/SplashScreenRepository.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenCubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,7 +79,9 @@ Future<void> init() async {
   //endregion
 
   //region ShopCart
-  sl.registerFactory(() => ShopCartCubit());
+  sl.registerFactory(() => ShopCartCubit(repository: sl()));
+
+  sl.registerFactory(() => ShopCartRepository(api: sl()));
   //endregion
 
   //region MenuPage
