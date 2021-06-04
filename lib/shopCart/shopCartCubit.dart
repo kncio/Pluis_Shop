@@ -66,4 +66,7 @@ class ShopCartCubit extends Cubit<ShopCartState> {
   Future<void> setSuccess()async {
     emit(ShopCartSuccessState());
   }
+  Future<void> postBuyOrder() async {
+
+  }
 }

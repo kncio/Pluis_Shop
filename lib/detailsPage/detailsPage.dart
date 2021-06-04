@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -41,6 +42,9 @@ class _DetailsPage extends State<DetailsPage> {
   String selectedColorId;
   String selectedTall;
 
+  List<SizeVariationByColor> sizesByColor = [];
+  List<ColorByProductsDataModel> colorList = [];
+
   int index = 0;
 
   CarouselOptions defaultOptions = CarouselOptions(
@@ -58,7 +62,7 @@ class _DetailsPage extends State<DetailsPage> {
     _panelController = PanelController();
     this.imagesList.add(ProductDetailsImages(product.image));
     context.read<DetailsCubit>().getDetailsImages(this.product.row_id);
-    log( "caca " + product.row_id);
+    log("caca " + product.row_id);
   }
 
   @override
@@ -86,7 +90,7 @@ class _DetailsPage extends State<DetailsPage> {
     return BlocConsumer<DetailsCubit, DetailsPageState>(
         builder: (context, state) {
       switch (state.runtimeType) {
-        case DetailsPageSuccess:
+        case DetailsSizesLoaded:
           return buildPanelProductInfo();
         case DetailsError:
           return Center(
@@ -107,11 +111,27 @@ class _DetailsPage extends State<DetailsPage> {
       if (state is DetailsError) {
         log(state.message);
       }
-      if(state is DetailsImagesLoaded){
+      if (state is DetailsImagesLoaded) {
         setState(() {
-          this.imagesList.addAll(state.imagesList) ;
+          this.imagesList.addAll(state.imagesList);
         });
+      }
+      if (state is DetailsPageSuccessColor) {
+        log("Called");
+        this.colorList = (state as DetailsPageSuccessColor).colorsBy;
+        log(this.colorList[0].toString());
 
+        context
+            .read<DetailsCubit>()
+            .getSizeByColor(this.colorList[0].color_id);
+
+        // context.read<DetailsCubit>().setSuccess();
+      }
+      if (state is DetailsSizesLoaded) {
+        setState(() {
+          this.sizesByColor = (state as DetailsSizesLoaded).sizeList;
+        });
+        log("??");
       }
     });
   }
@@ -127,35 +147,14 @@ class _DetailsPage extends State<DetailsPage> {
         child: ColorCheckBoxList(
           onIndexChange: (String value) {
             this.selectedColorId = value;
+            context
+                .read<DetailsCubit>()
+                .getSizeByColor(this.selectedColorId)
+                .then((value) => this.sizesByColor = value);
             //For Debug Only
             log(this.selectedColorId);
           },
-          colorInfoList: [
-            ColorByProductsDataModel(
-                id: "1",
-                product_id: "1",
-                color_id: "3",
-                color_name: "Negro",
-                color_code: "ff"),
-            ColorByProductsDataModel(
-                id: "1",
-                product_id: "1",
-                color_id: "1",
-                color_name: "Negro",
-                color_code: "ff"),
-            ColorByProductsDataModel(
-                id: "1",
-                product_id: "1",
-                color_id: "1",
-                color_name: "Negro",
-                color_code: "ff"),
-            ColorByProductsDataModel(
-                id: "1",
-                product_id: "1",
-                color_id: "1",
-                color_name: "Negro",
-                color_code: "ff")
-          ],
+          colorInfoList: this.colorList,
         ),
       ),
       Spacer(flex: 1),
@@ -166,26 +165,7 @@ class _DetailsPage extends State<DetailsPage> {
               this.selectedTall = tall;
               log(this.selectedTall);
             },
-            aviableTallsList: [
-              SizeVariationByColor(
-                  id: "1", color_id: "11", tall: "41", qty: "1"),
-              SizeVariationByColor(
-                  id: "2", color_id: "22", tall: "42", qty: "0"),
-              SizeVariationByColor(
-                  id: "3", color_id: "33", tall: "43", qty: "3"),
-              SizeVariationByColor(
-                  id: "1", color_id: "11", tall: "41", qty: "1"),
-              SizeVariationByColor(
-                  id: "2", color_id: "22", tall: "42", qty: "0"),
-              SizeVariationByColor(
-                  id: "3", color_id: "33", tall: "43", qty: "3"),
-              SizeVariationByColor(
-                  id: "1", color_id: "11", tall: "41", qty: "1"),
-              SizeVariationByColor(
-                  id: "2", color_id: "22", tall: "42", qty: "0"),
-              SizeVariationByColor(
-                  id: "3", color_id: "33", tall: "43", qty: "3"),
-            ],
+            aviableTallsList: this.sizesByColor,
           ),
         ),
       )
@@ -197,9 +177,12 @@ class _DetailsPage extends State<DetailsPage> {
       children: [
         GestureDetector(
           child: createImage(this.imagesList[index].imageUrlName),
-          onHorizontalDragEnd: (value){
+          onHorizontalDragEnd: (value) {
             setState(() {
-              index = (index + 1)%this.imagesList.length;//TODO: improve to only change when horizontal
+              index = (index + 1) %
+                  this
+                      .imagesList
+                      .length; //TODO: improve to only change when horizontal
             });
           },
         )
@@ -219,7 +202,7 @@ class _DetailsPage extends State<DetailsPage> {
             this.product.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(this.product.price),
+          subtitle: Text(this.product.price + "CUP"),
           trailing: IconButton(
             onPressed: () => {
               if (this._panelController.isPanelOpen)
@@ -255,16 +238,16 @@ class _DetailsPage extends State<DetailsPage> {
                   color: Colors.black,
                 )),
           ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
-              child: IconButton(
-                icon: Icon(Icons.bookmark_border_sharp),
-                onPressed: () => {},
-                color: Colors.black,
-              ),
-            ),
-          ),
+          // Expanded(
+          //   child: Container(
+          //     padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
+          //     child: IconButton(
+          //       icon: Icon(Icons.bookmark_border_sharp),
+          //       onPressed: () => {},
+          //       color: Colors.black,
+          //     ),
+          //   ),
+          // ),
           Expanded(
             child: Container(
               padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
@@ -310,10 +293,10 @@ class _DetailsPage extends State<DetailsPage> {
   }
 
   Widget createImage(String url) {
-    return  Hero(
+    return Hero(
       tag: url,
-      child: FadeInImage.memoryNetwork(
-          image: url, placeholder: kTransparentImage),
+      child:
+          FadeInImage.memoryNetwork(image: url, placeholder: kTransparentImage),
     );
   }
 }

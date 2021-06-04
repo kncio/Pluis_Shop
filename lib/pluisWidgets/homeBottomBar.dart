@@ -31,7 +31,7 @@ class BottomBar extends StatelessWidget {
                 child: IconButton(
                     onPressed: this.onPressSearch,
                     color: Colors.black,
-                    icon: Icon(Icons.search)),
+                    icon: Icon(Icons.home_outlined)),
               ),
             ),
             Expanded(

@@ -8,13 +8,12 @@ class Cupon {
 
   Cupon({this.id, this.row_ticket, this.user_id, this.qty, this.qty_asing});
 
-  factory Cupon.fromJson(Map<String, dynamic> json) =>
-      Cupon(
-          id: json["id"],
-          row_ticket: json["row_ticket"],
-          user_id: json["user_id"],
-          qty: json["qty"],
-          qty_asing: json["qty_asing"]);
+  factory Cupon.fromJson(Map<String, dynamic> json) => Cupon(
+      id: json["id"],
+      row_ticket: json["row_ticket"],
+      user_id: json["user_id"],
+      qty: json["qty"],
+      qty_asing: json["qty_asing"]);
 }
 
 class ClientAddress {
@@ -28,18 +27,18 @@ class ClientAddress {
   final String address;
   final String address_number;
 
-  ClientAddress({this.id,
-    this.user_id,
-    this.name,
-    this.lastName,
-    this.phone_number,
-    this.state_id,
-    this.city_id,
-    this.address,
-    this.address_number});
+  ClientAddress(
+      {this.id,
+      this.user_id,
+      this.name,
+      this.lastName,
+      this.phone_number,
+      this.state_id,
+      this.city_id,
+      this.address,
+      this.address_number});
 
-  factory ClientAddress.fromJson(Map<String, dynamic> json) =>
-      ClientAddress(
+  factory ClientAddress.fromJson(Map<String, dynamic> json) => ClientAddress(
         id: json["id"],
         user_id: json["user_id"],
         name: json["name"],
@@ -52,32 +51,51 @@ class ClientAddress {
       );
 }
 
-class DeliveryPrice{
+class DeliveryPrice {
   final String status;
   final String message;
+
   //Price
   final String data;
 
   DeliveryPrice({this.status, this.message, this.data});
 
   factory DeliveryPrice.fromJson(Map<String, dynamic> json) => DeliveryPrice(
-    status: json["status"],
-    message: json["message"],
-    data: json["data"]
-  );
+      status: json["status"], message: json["message"], data: json["data"]);
 }
 
-class SiteCurrency{
+class SiteCurrency {
   final String id;
   final String coin_nomenclature;
   final String exchange_rate;
 
   SiteCurrency({this.id, this.coin_nomenclature, this.exchange_rate});
 
-  factory SiteCurrency.fromJson(Map<String,dynamic> json)=> SiteCurrency(
-    id: json["id"],
-    coin_nomenclature: json["coin_nomenclature"],
-    exchange_rate: json["exchange_rate"]
-  );
+  factory SiteCurrency.fromJson(Map<String, dynamic> json) => SiteCurrency(
+      id: json["id"],
+      coin_nomenclature: json["coin_nomenclature"],
+      exchange_rate: json["exchange_rate"]);
 }
 
+class BuyOrderData {
+  final String token_csrf;
+  final String shippingMethod;
+  final String shippingCurrency;
+  final String cupon;
+  final Map<String, dynamic> cart_session;
+
+  BuyOrderData(
+      {this.token_csrf,
+      this.shippingMethod,
+      this.shippingCurrency,
+      this.cupon,
+      this.cart_session});
+
+  toMap() => {
+        "token_csrf": this.token_csrf,
+        "shippingMethod": this.shippingMethod,
+        "shippingCurrency": this.shippingCurrency,
+        "cupon": this.cupon,
+        "cart_session": this.cart_session
+      };
+}

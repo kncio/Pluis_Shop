@@ -3,7 +3,10 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
+import 'package:pluis_hv_app/commons/buyOrderModel.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
+import 'package:pluis_hv_app/commons/keyStorage.dart';
+import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 
 class ShopCartRepository {
@@ -36,7 +39,6 @@ class ShopCartRepository {
     List<ClientAddress> alladdress = [];
 
     try {
-
       var response = await api.get(GET_CLIENT_ADDRESS, {'id': userId});
 
       if (response.statusCode == 200) {
@@ -84,16 +86,8 @@ class ShopCartRepository {
       if (response.statusCode == 200) {
         log(response.data.toString());
         response.data["data"] = [
-          {
-            "id": "18",
-            "coin_nomenclature": "EUR",
-            "exchange_rate": "0.0410"
-          },
-          {
-            "id": "19",
-            "coin_nomenclature": "USD",
-            "exchange_rate": "0.0810"
-          }
+          {"id": "18", "coin_nomenclature": "EUR", "exchange_rate": "0.0410"},
+          {"id": "19", "coin_nomenclature": "USD", "exchange_rate": "0.0810"}
         ];
         for (var currencyInfo in response.data["data"]) {
           log(currencyInfo.toString());
@@ -103,6 +97,30 @@ class ShopCartRepository {
         return Right(currencys);
       } else {
         log("Error");
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, bool>> postShopCart(
+      String tokenCsrf, BuyOrderData body) async {
+    try {
+      var sessionTOken = await Settings.storedToken;
+      api.client.options.headers = {
+        '$API_KEY_NAME': '$API_KEY',
+        'Authorization': sessionTOken
+      };
+      var response = await api.post(CREATE_BUY_ORDER, body.toMap());
+
+      if (response.statusCode == 200) {
+        if (response.data["success"].toString() == "1") {
+          return Right(true);
+        }
+        log(response.data.toString());
+        return Right(false);
+      } else {
         return Left(Failure([response.statusMessage]));
       }
     } catch (error) {

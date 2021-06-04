@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:pluis_hv_app/addressBook/addressBookCubit.dart';
+import 'package:pluis_hv_app/addressBook/addressBookRepository.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageRepository.dart';
@@ -42,6 +44,12 @@ Future<void> init() async {
   //endregion
 
   //region LoginPage
+  //endregion
+
+  //region AddressBookPage
+  sl.registerFactory(() => AddressBookCubit(repository: sl()));
+
+  sl.registerFactory(() => AddressBookRepository(api: sl()));
   //endregion
 
   //region HomePage

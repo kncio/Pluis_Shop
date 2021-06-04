@@ -9,6 +9,7 @@ import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/homePage/homeDataModel.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
+import 'package:pluis_hv_app/settings/settings.dart';
 import '../injectorContainer.dart' as injectionContainer;
 
 import 'homePageCubit.dart';
@@ -31,6 +32,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    Settings.invalidateCredentials();
     context.read<HomePageCubit>().loadGenres();
   }
 
@@ -62,8 +64,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
 
   BottomBar buildBottomNavigationBar() {
     return BottomBar(
-      onPressSearch: () =>
-          Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE),
+      onPressBookmark: () => Navigator.of(context).pushNamed(ADDRESS_BOOK_ROUTE),
       onPressShopBag: () => Navigator.of(context).pushNamed(SHOP_CART),
       onPressAccount: () => Navigator.of(context).pushNamed(LOGIN_PAGE_ROUTE),
       onPressMenu: () => Navigator.of(context).pushNamed(MENU_PAGE),

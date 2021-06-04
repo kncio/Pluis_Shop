@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pluis_hv_app/addressBook/addressBookCubit.dart';
+import 'package:pluis_hv_app/addressBook/addressBookPage.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
 import 'package:pluis_hv_app/commons/argsClasses.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
@@ -42,6 +44,11 @@ class PluisApp extends StatelessWidget {
                     create: (_) => injectionContainer.sl<GalleryPageCubit>(),
                     child: GalleryPage(
                         categoryInfo: (settings.arguments as GalleryArgs))));
+          case ADDRESS_BOOK_ROUTE:
+            return PLuisPageRoute(
+                builder: (_) => BlocProvider<AddressBookCubit>(
+                    create: (_) => injectionContainer.sl<AddressBookCubit>(),
+                    child: AddressBookPage()));
           case REGISTER_PAGE_ROUTE:
             return PLuisPageRoute(
                 builder: (_) => BlocProvider<RegisterCubit>(

@@ -50,6 +50,8 @@ class _GalleryPage extends State<GalleryPage> {
       appBar: appBar(),
       body: buildBody(),
       bottomNavigationBar: BottomBar(
+        onPressBookmark: () => Navigator.of(context).pushNamed(ADDRESS_BOOK_ROUTE),
+        onPressSearch: ()=> Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE),
         onPressShopBag: () => Navigator.of(context).pushNamed(SHOP_CART),
         onPressAccount: () => Navigator.of(context).pushNamed(LOGIN_PAGE_ROUTE),
         onPressMenu: () => Navigator.of(context).pushNamed(MENU_PAGE),

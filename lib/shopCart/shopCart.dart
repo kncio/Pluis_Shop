@@ -147,7 +147,7 @@ class _ShopCartPage extends State<ShopCartPage> {
                   setState(() {
                     this.details = !this.details;
                   });
-                }, //TODO:
+                },
               )
             ],
           ),

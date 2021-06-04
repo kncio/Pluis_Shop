@@ -19,6 +19,8 @@ class SplashScreenPage extends StatefulWidget {
 }
 
 class _SplashScreenPageState extends State<SplashScreenPage> {
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,7 +153,9 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   @override
   void initState() {
     super.initState();
+
     initializeApp();
+
   }
 
   Future<void> initializeApp() async {

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pluis_hv_app/PluisApp.dart';
+import 'package:pluis_hv_app/settings/settings.dart';
 
 import 'injectorContainer.dart' as injectorContainer;
 

@@ -37,6 +37,31 @@ class DetailsRepository {
     }
   }
 
+  Future<Either<Failure, List<SizeVariationByColor>>> getColorsVariation(String colorRowId) async {
+    List<SizeVariationByColor> sizeList = [];
+
+    try{
+      var response = await api.get(GET_COLORS_VARIATION, {'id': colorRowId});
+
+      if (response.statusCode == 200) {
+        log("get size called" + response.data["data"].toString());
+
+        for (var colorSizeInfo in response.data["data"]) {
+          log(colorSizeInfo.toString());
+          sizeList.add(SizeVariationByColor.fromMap(colorSizeInfo));
+        }
+        log("list lenght" + sizeList.length.toString());
+        return Right(sizeList);
+      } else {
+        log("Error");
+        return Left(Failure([response.statusMessage]));
+      }
+    }
+    catch(error){
+      return Left(Failure([error.toString()]));
+    }
+  }
+
   Future<Either<Failure, List<ProductDetailsImages>>> getDetailsImages(
       String productRowId) async {
     List<ProductDetailsImages> imagesList = [];

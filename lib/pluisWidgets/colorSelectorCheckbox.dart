@@ -93,6 +93,6 @@ class _ColorCheckBox extends State<ColorCheckBoxList> {
     String xFormat = "0xff" + colorCodeString;
     xFormat = xFormat.replaceAll('#', '');
     int xIntFormat = int.parse(xFormat);
-    return 0xffADD8E6;
+    return xIntFormat;
   }
 }

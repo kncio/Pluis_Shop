@@ -13,10 +13,15 @@ class DetailsPageInitialState extends DetailsPageState{
 
 }
 
-class DetailsPageSuccess extends DetailsPageState{
+class DetailsPageSuccessColor extends DetailsPageState{
     final List<ColorByProductsDataModel> colorsBy;
 
-  DetailsPageSuccess({this.colorsBy});
+    DetailsPageSuccessColor({this.colorsBy});
+
+}
+
+class DetailsPageSuccess extends DetailsPageState{
+
 
 }
 
@@ -28,6 +33,12 @@ class DetailsImagesLoaded extends DetailsPageState{
   final List<ProductDetailsImages> imagesList;
 
   DetailsImagesLoaded(this.imagesList);
+}
+
+class DetailsSizesLoaded extends DetailsPageState{
+  final List<SizeVariationByColor> sizeList;
+
+  DetailsSizesLoaded({this.sizeList});
 }
 
 class DetailsError extends DetailsPageState{
