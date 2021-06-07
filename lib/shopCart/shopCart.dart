@@ -183,7 +183,7 @@ class _ShopCartPage extends State<ShopCartPage> {
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
                 child: DropdownButton(
                   isExpanded: true,
-                  hint: Text("Sin Cupon"),
+                  hint: Text("Sin Direcciones"),
                   value: this.selectedAddress,
                   // icon: Icon(Icons.arrow_downward),
                   style: TextStyle(color: Colors.black54),
@@ -316,7 +316,8 @@ class _ShopCartPage extends State<ShopCartPage> {
                             });
                           })
                       : SizedBox.shrink(),
-                  ShopCartItem(
+                  ShopCartItem(index: index,
+                    hexColorCode: this.shoppingCartReference.shoppingList[index].hexColorInfo,
                     selectedTall:
                         this.shoppingCartReference.shoppingList[index].tall,
                     product: this

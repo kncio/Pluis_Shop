@@ -37,8 +37,9 @@ class DetailsImagesLoaded extends DetailsPageState{
 
 class DetailsSizesLoaded extends DetailsPageState{
   final List<SizeVariationByColor> sizeList;
+  final int selectedColorIndex;
 
-  DetailsSizesLoaded({this.sizeList});
+  DetailsSizesLoaded({this.sizeList, this.selectedColorIndex});
 }
 
 class DetailsError extends DetailsPageState{

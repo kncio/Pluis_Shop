@@ -23,11 +23,13 @@ class ShoppingOrder {
   /// Product selected color ID
   final String color;
 
+  final String hexColorInfo;
+
   /// Product selected Tall
   final String tall;
 
   /// Product selected tall, forced to by 1 on apk
-  final int qty;
+  int qty;
 
   ShoppingOrder(
       {this.id,
@@ -36,8 +38,9 @@ class ShoppingOrder {
       this.color,
       this.tall,
       this.qty,
-      this.productData});
+      this.productData, this.hexColorInfo});
 
+  //TO map for post buy order
   toMap() => {
         "id": this.id,
         "name": this.name,

@@ -39,7 +39,11 @@ class _DetailsPage extends State<DetailsPage> {
   List<ProductDetailsImages> imagesList = [];
   bool addTapped = false;
   PanelController _panelController;
+
+
+  String selectedCoclorHexString;
   String selectedColorId;
+  int selectedColorIndex;
   String selectedTall;
 
   List<SizeVariationByColor> sizesByColor = [];
@@ -91,7 +95,10 @@ class _DetailsPage extends State<DetailsPage> {
         builder: (context, state) {
       switch (state.runtimeType) {
         case DetailsSizesLoaded:
-          return buildPanelProductInfo();
+          this.selectedColorIndex =
+              (state as DetailsSizesLoaded).selectedColorIndex;
+
+          return buildPanelProductInfo(this.selectedColorIndex);
         case DetailsError:
           return Center(
             child: Text((state as DetailsError).message,
@@ -123,7 +130,7 @@ class _DetailsPage extends State<DetailsPage> {
 
         context
             .read<DetailsCubit>()
-            .getSizeByColor(this.colorList[0].color_id);
+            .getSizeByColor(this.colorList[0].color_id, 0);
 
         // context.read<DetailsCubit>().setSuccess();
       }
@@ -136,20 +143,22 @@ class _DetailsPage extends State<DetailsPage> {
     });
   }
 
-  Column buildPanelProductInfo() {
+  Column buildPanelProductInfo(int currentIndex) {
     //TODO:  Fetch color and size info from the web
     // COlor size on innitial state then when a color is changed get the correct size information and set
-    return Column(children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(
         height: 90,
       ),
       Center(
         child: ColorCheckBoxList(
-          onIndexChange: (String value) {
+          selectedColor: currentIndex,
+          onIndexChange: (String value, String hexCode) {
             this.selectedColorId = value;
+            this.selectedCoclorHexString = hexCode;
             context
                 .read<DetailsCubit>()
-                .getSizeByColor(this.selectedColorId)
+                .getSizeByColor(this.selectedColorId, this.selectedColorIndex)
                 .then((value) => this.sizesByColor = value);
             //For Debug Only
             log(this.selectedColorId);
@@ -157,7 +166,12 @@ class _DetailsPage extends State<DetailsPage> {
           colorInfoList: this.colorList,
         ),
       ),
-      Spacer(flex: 1),
+      Padding(
+          padding: EdgeInsets.fromLTRB(30, 32, 0, 16),
+          child: Text(
+            "Tallas:",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          )),
       Expanded(
         child: Center(
           child: SizeSelectorList(
@@ -202,7 +216,7 @@ class _DetailsPage extends State<DetailsPage> {
             this.product.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(this.product.price + "CUP"),
+          subtitle: Text(this.product.price + "  USD"),
           trailing: IconButton(
             onPressed: () => {
               if (this._panelController.isPanelOpen)
@@ -238,16 +252,6 @@ class _DetailsPage extends State<DetailsPage> {
                   color: Colors.black,
                 )),
           ),
-          // Expanded(
-          //   child: Container(
-          //     padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
-          //     child: IconButton(
-          //       icon: Icon(Icons.bookmark_border_sharp),
-          //       onPressed: () => {},
-          //       color: Colors.black,
-          //     ),
-          //   ),
-          // ),
           Expanded(
             child: Container(
               padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
@@ -286,7 +290,9 @@ class _DetailsPage extends State<DetailsPage> {
           name: this.product.name,
           color: this.selectedColorId,
           tall: this.selectedTall,
-          qty: 1));
+          qty: 1,
+          hexColorInfo:selectedCoclorHexString
+      ));
       log("Product Added");
       Navigator.of(context).pushNamed(SHOP_CART);
     }

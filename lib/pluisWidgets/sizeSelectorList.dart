@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageRemoteDataSource.dart';
 
 class SizeSelectorList extends StatefulWidget {
@@ -51,17 +52,24 @@ class _SizeSelectorList extends State<SizeSelectorList> {
                 }
               });
             },
-            child: Text(
-              this.aviableTallsList[index].tall,
-              style: TextStyle(
-                  fontSize: 18,
-                  color: (int.parse(this.aviableTallsList[index].qty) > 0)
-                      ? Colors.black
-                      : Colors.black12,
-                  decoration: (this.selecctedTallIndex == index)
-                      ? TextDecoration.underline
-                      : TextDecoration.none,
-                  decorationColor: Colors.black),
-            )),
+            child: Wrap(children: [
+              Container(
+                padding: EdgeInsets.all(4),
+                decoration: (this.selecctedTallIndex == index)
+                    ? BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                      )
+                    : null,
+                child: Text(
+                  this.aviableTallsList[index].tall,
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: (int.parse(this.aviableTallsList[index].qty) > 0)
+                          ? Colors.black
+                          : Colors.black12,
+                      decorationColor: Colors.black),
+                ),
+              ),
+            ])),
       );
 }

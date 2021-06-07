@@ -10,7 +10,7 @@ class DetailsCubit extends Cubit<DetailsPageState> {
 
   DetailsCubit({this.repository}) : super(DetailsPageInitialState());
 
-  Future<List<SizeVariationByColor>> getSizeByColor(String colorRowId) async {
+  Future<List<SizeVariationByColor>> getSizeByColor(String colorRowId, int selectedColorIndex) async {
     emit(DetailsLoading());
     List<SizeVariationByColor> returnvalue = [];
 
@@ -21,7 +21,7 @@ class DetailsCubit extends Cubit<DetailsPageState> {
             ? emit(DetailsError("Server unreachable"))
             : emit(DetailsError(errorFailure.properties.first)),
             (sizes) => sizes.length >= 0
-            ? emit(DetailsSizesLoaded(sizeList: sizes))
+            ? emit(DetailsSizesLoaded(sizeList: sizes, selectedColorIndex: selectedColorIndex))
             : emit(DetailsError(
             "Actualmente no existen ejemplares de este producto")));
 

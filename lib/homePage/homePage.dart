@@ -32,7 +32,6 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    Settings.invalidateCredentials();
     context.read<HomePageCubit>().loadGenres();
   }
 
