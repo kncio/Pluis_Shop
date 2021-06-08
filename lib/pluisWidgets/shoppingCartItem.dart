@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
+import 'package:pluis_hv_app/observables/totalBloc.dart';
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
 
@@ -12,9 +13,13 @@ class ShopCartItem extends StatefulWidget {
   //An index tha represet the object on the cartSingleton
   final int index;
 
-  const ShopCartItem(
-      {Key key, this.product, this.selectedTall, this.hexColorCode, this.index})
-      : super(key: key);
+  const ShopCartItem({
+    Key key,
+    this.product,
+    this.selectedTall,
+    this.hexColorCode,
+    this.index,
+  }) : super(key: key);
 
   @override
   _ShopCartItem createState() {
@@ -35,6 +40,7 @@ class _ShopCartItem extends State<ShopCartItem> {
   final int index;
 
   ShoppingCart shoppingCartReference;
+  TotalBloc _totalBloc = injectorContainer.sl<TotalBloc>();
 
   _ShopCartItem(
       {Key key,
@@ -103,9 +109,9 @@ class _ShopCartItem extends State<ShopCartItem> {
                           setState(() {
                             this
                                 .shoppingCartReference
-                                .shoppingList[this.index]
-                                .qty -= 1;
+                                .substractProductQty(index);
                           });
+                          this._totalBloc.updateTotal();
                         }
                       }),
                   Text(this
@@ -121,12 +127,11 @@ class _ShopCartItem extends State<ShopCartItem> {
                       onPressed: () {
                         //validar si hay existencias
                         setState(() {
-                          this
-                              .shoppingCartReference
-                              .shoppingList[this.index]
-                              .qty += 1;
+                          this.shoppingCartReference.addProductQty(index);
                         });
-                      })
+                        this._totalBloc.updateTotal();
+                      }),
+                  Text("Unidades")
                 ],
               ),
               Padding(

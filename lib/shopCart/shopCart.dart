@@ -1,8 +1,10 @@
 import 'dart:developer';
 
+import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pluis_hv_app/observables/totalBloc.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 
@@ -34,7 +36,6 @@ class _ShopCartPage extends State<ShopCartPage> {
   List<SiteCurrency> currencys;
 
   //State vars
-
   bool editing = false;
   bool details = true;
   SiteCurrency selectedCurrency;
@@ -43,11 +44,26 @@ class _ShopCartPage extends State<ShopCartPage> {
 
   ShoppingCart shoppingCartReference;
 
+  //Metodos de entrega checkbox Values
+  bool onSore = true;
+  bool onDefaultAddress = false;
+  bool onCustomAddress = false;
+
+  //Cash values
+  double subTotal = 0;
+  double discount = 0;
+  double shipmentPrice = 0;
+  double total = 0;
+
+  //TOTal bloc observable
+  TotalBloc _totalBloc = injectorContainer.sl<TotalBloc>();
+
   _ShopCartPage();
 
   @override
   void initState() {
     shoppingCartReference = injectorContainer.sl<ShoppingCart>();
+
     this.editing = false;
     super.initState();
     context.read<ShopCartCubit>().getCurrency();
@@ -61,6 +77,7 @@ class _ShopCartPage extends State<ShopCartPage> {
         listener: (context, state) async {
           switch (state.runtimeType) {
             case ShopCartCuponsLoadedState:
+              calculateTotal();
               log("GEt CUpon Succes");
               //CAll to getAddress
               Settings.userId.then((value) =>
@@ -68,15 +85,19 @@ class _ShopCartPage extends State<ShopCartPage> {
               return this.userCupons =
                   (state as ShopCartCuponsLoadedState).cupons;
             case ShopCartAddressLoadedState:
-              this.userAddress =
-                  (state as ShopCartAddressLoadedState).address;
+              this.userAddress = (state as ShopCartAddressLoadedState).address;
               context.read<ShopCartCubit>().setSuccess();
               return null;
             case ShopCartDeliveryLoadedState:
               return this.shipPrice =
                   (state as ShopCartDeliveryLoadedState).price;
             case ShopCartCurrencyLoadedState:
-              log((state as ShopCartCurrencyLoadedState).currencys.toString());
+              setState(() {
+                this.selectedCurrency = (state as ShopCartCurrencyLoadedState)
+                    .currencys
+                    .firstWhere(
+                        (element) => element.coin_nomenclature == 'USD');
+              });
               return this.currencys =
                   (state as ShopCartCurrencyLoadedState).currencys;
             default:
@@ -90,7 +111,8 @@ class _ShopCartPage extends State<ShopCartPage> {
             case ShopCartCurrencyLoadedState:
               if (Settings.isLoggedIn) {
                 Settings.userId.then(
-                    (value) => context.read<ShopCartCubit>().getCupons(value));
+                        (value) =>
+                        context.read<ShopCartCubit>().getCupons(value));
                 return Center(
                   child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
@@ -124,26 +146,20 @@ class _ShopCartPage extends State<ShopCartPage> {
         padding: EdgeInsets.all(10),
         child: SizedBox(
           height: 50,
-          width: MediaQuery.of(context).size.width,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
           child: Column(
             children: [
               Container(
-                  padding: EdgeInsets.all(5),
-                  child: Text(
-                    'TOTAL  ' + totalPice().toString(),
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-                  )),
+                  padding: EdgeInsets.all(5), child: buildTotalFormatText()),
               SizedBox(
                 height: 25,
               ),
               DarkButton(
                 text: (this.details) ? "DATOS DE COMPRA" : "VER LISTADO",
                 action: () {
-                  // showModalBottomSheet(
-                  //     context: context,
-                  //     builder: (BuildContext context) {
-                  //       return buildDetailsSelector(context);
-                  //     });
                   setState(() {
                     this.details = !this.details;
                   });
@@ -164,12 +180,34 @@ class _ShopCartPage extends State<ShopCartPage> {
     );
   }
 
+  Widget buildTotalFormatText() {
+    // return Text(
+    //   'TOTAL  ' +
+    //       this.total.toString() +
+    //       ((this.selectedCurrency != null)
+    //           ? "  " + this.selectedCurrency.coin_nomenclature
+    //           : ""),
+    //   style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+    // );
+    return new StreamBuilder(stream: _totalBloc.counterObservable,
+      builder: (context, AsyncSnapshot<double> snapshot) {
+        return Text(
+            'TOTAL  ' +
+                '${snapshot.data}' +
+                ((this.selectedCurrency != null)
+                    ? "  " + this.selectedCurrency.coin_nomenclature
+                    : ""),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+        );
+      },);
+  }
+
   Widget buildDetailsSelector(BuildContext context) {
-    return Column(
+    return ListView(
+      // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //METODO DE ENTREGA
-        Expanded(
-            child: Wrap(
+        Wrap(
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(20, 10, 0, 20),
@@ -179,36 +217,99 @@ class _ShopCartPage extends State<ShopCartPage> {
                       fontWeight: FontWeight.bold,
                       color: Colors.black)),
             ),
-            Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: DropdownButton(
-                  isExpanded: true,
-                  hint: Text("Sin Direcciones"),
-                  value: this.selectedAddress,
-                  // icon: Icon(Icons.arrow_downward),
-                  style: TextStyle(color: Colors.black54),
-                  underline: Container(
-                    height: 1,
-                    color: Colors.black54,
-                  ),
-                  onChanged: (ClientAddress address) {
-                    setState(() {
-                      this.selectedAddress = address;
-                    });
-                  },
-                  items: this.userAddress.map<DropdownMenuItem<ClientAddress>>(
-                      (ClientAddress value) {
-                    return DropdownMenuItem<ClientAddress>(
-                      value: value,
-                      child: Text(value.address),
-                    );
-                  }).toList(),
-                ))
+            Wrap(
+              children: [
+                Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+                  Checkbox(
+                      activeColor: Colors.black,
+                      value: this.onSore,
+                      onChanged: (value) {
+                        setState(() {
+                          if (!this.onSore) {
+                            this.onSore = !this.onSore;
+
+                            this.onCustomAddress = !this.onSore;
+                            this.onDefaultAddress = !this.onSore;
+                          }
+                        });
+                      }),
+                  Text(
+                    "Recoger en tienda",
+                  )
+                ]),
+                Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+                  Checkbox(
+                      activeColor: Colors.black,
+                      value: this.onDefaultAddress,
+                      onChanged: (value) {
+                        setState(() {
+                          if (!this.onDefaultAddress) {
+                            this.onDefaultAddress = !this.onDefaultAddress;
+
+                            this.onSore = !this.onDefaultAddress;
+                            this.onCustomAddress = !this.onDefaultAddress;
+                          }
+                        });
+                      }),
+                  Text(
+                    "Mi dirección de registro",
+                  )
+                ]),
+                Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+                  Checkbox(
+                      activeColor: Colors.black,
+                      value: (this.onCustomAddress),
+                      onChanged: (value) {
+                        setState(() {
+                          if (!this.onCustomAddress) {
+                            this.onCustomAddress = !this.onCustomAddress;
+
+                            this.onDefaultAddress = !this.onCustomAddress;
+                            this.onSore = !this.onCustomAddress;
+                          }
+                        });
+                      }),
+                  Text(
+                    "Otra dirección",
+                  )
+                ]),
+              ],
+            ),
           ],
-        )),
+        ),
+        Wrap(children: [
+          (this.onCustomAddress)
+              ? Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 64),
+              child: DropdownButton(
+                isExpanded: true,
+                hint: Text("Sin Direcciones"),
+                value: this.selectedAddress,
+                // icon: Icon(Icons.arrow_downward),
+                style: TextStyle(color: Colors.black54),
+                underline: Container(
+                  height: 1,
+                  color: Colors.black54,
+                ),
+                onChanged: (ClientAddress address) {
+                  setState(() {
+                    this.selectedAddress = address;
+                  });
+                },
+                items: this
+                    .userAddress
+                    .map<DropdownMenuItem<ClientAddress>>(
+                        (ClientAddress value) {
+                      return DropdownMenuItem<ClientAddress>(
+                        value: value,
+                        child: Text(value.address),
+                      );
+                    }).toList(),
+              ))
+              : SizedBox.shrink(),
+        ]),
         //CUPONES
-        Expanded(
-            child: Wrap(
+        Wrap(
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 0, 20),
@@ -245,45 +346,44 @@ class _ShopCartPage extends State<ShopCartPage> {
                   }).toList(),
                 ))
           ],
-        )),
-        //MONEDAS
-        Expanded(
-          child: Wrap(children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 0, 20),
-              child: Text("Tipo de moneda",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
-            ),
-            Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: DropdownButton(
-                  isExpanded: true,
-                  hint: Text("Moneda"),
-                  value: this.selectedCurrency,
-                  // icon: Icon(Icons.arrow_downward),
-                  style: TextStyle(color: Colors.black54),
-                  underline: Container(
-                    height: 1,
-                    color: Colors.black54,
-                  ),
-                  onChanged: (SiteCurrency currency) {
-                    setState(() {
-                      this.selectedCurrency = currency;
-                    });
-                  },
-                  items: this.currencys.map<DropdownMenuItem<SiteCurrency>>(
-                      (SiteCurrency value) {
-                    return DropdownMenuItem<SiteCurrency>(
-                      value: value,
-                      child: Text(value.coin_nomenclature),
-                    );
-                  }).toList(),
-                ))
-          ]),
         ),
+        //MONEDAS
+        Wrap(children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 0, 20),
+            child: Text("Tipo de moneda",
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black)),
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: DropdownButton(
+                isExpanded: true,
+                hint: Text("Moneda"),
+                value: this.selectedCurrency,
+                // icon: Icon(Icons.arrow_downward),
+                style: TextStyle(color: Colors.black54),
+                underline: Container(
+                  height: 1,
+                  color: Colors.black54,
+                ),
+                onChanged: (SiteCurrency currency) {
+                  setState(() {
+                    this.selectedCurrency = currency;
+                  });
+                },
+                items: this
+                    .currencys
+                    .map<DropdownMenuItem<SiteCurrency>>((SiteCurrency value) {
+                  return DropdownMenuItem<SiteCurrency>(
+                    value: value,
+                    child: Text(value.coin_nomenclature),
+                  );
+                }).toList(),
+              ))
+        ]),
         Padding(
           padding: EdgeInsets.all(10),
           child: DarkButton(
@@ -301,50 +401,65 @@ class _ShopCartPage extends State<ShopCartPage> {
     return Container(
       child: (this.details)
           ? ListView.builder(
-              itemCount: this.shoppingCartReference.shoppingList.length,
-              itemBuilder: (context, index) {
-                return Wrap(alignment: WrapAlignment.end, children: [
-                  this.editing
-                      ? IconButton(
-                          icon: Icon(Icons.clear, color: Colors.black),
-                          onPressed: () {
-                            setState(() {
-                              this
-                                  .shoppingCartReference
-                                  .shoppingList
-                                  .removeAt(index);
-                            });
-                          })
-                      : SizedBox.shrink(),
-                  ShopCartItem(index: index,
-                    hexColorCode: this.shoppingCartReference.shoppingList[index].hexColorInfo,
-                    selectedTall:
-                        this.shoppingCartReference.shoppingList[index].tall,
-                    product: this
-                        .shoppingCartReference
-                        .shoppingList[index]
-                        .productData,
-                  )
-                ]);
-              })
+          itemCount: this.shoppingCartReference.shoppingList.length,
+          itemBuilder: (context, index) {
+            return Wrap(alignment: WrapAlignment.end, children: [
+              this.editing
+                  ? IconButton(
+                  icon: Icon(Icons.clear, color: Colors.black),
+                  onPressed: () {
+                    setState(() {
+                      this
+                          .shoppingCartReference
+                          .shoppingList
+                          .removeAt(index);
+                    });
+                  })
+                  : SizedBox.shrink(),
+              ShopCartItem(
+                index: index,
+                hexColorCode: this
+                    .shoppingCartReference
+                    .shoppingList[index]
+                    .hexColorInfo,
+                selectedTall:
+                this.shoppingCartReference.shoppingList[index].tall,
+                product: this
+                    .shoppingCartReference
+                    .shoppingList[index]
+                    .productData,
+              )
+            ]);
+          })
           : buildDetailsSelector(context),
     );
   }
 
-  //TODO: Implementar la formula para calcular los descuentos por productos y los cupones
-  // Idea: Sacar el precio total sumando los productos, luego sacar
-  // el descuento total pot cada producto, y por ultimo los cupones
-  double totalPice() {
-    double sum = 0;
-
-    this.shoppingCartReference.shoppingList.forEach((product) {
-      sum += double.tryParse(product.productData.price);
-    });
-
-    return sum;
+  @override
+  void dispose() {
+    _totalBloc.dispose();
+    super.dispose();
   }
 
-  AppBar buildAppBar() => AppBar(
+  void calculateTotal() {
+    double sum = 0;
+    setState(() {
+      this.shoppingCartReference.shoppingList.forEach((product) {
+        sum += double.tryParse(product.productData.price) * product.qty;
+      });
+      this.subTotal = sum;
+
+      // var discValue = (this.selectedCupon != null) ? double.tryParse(this.selectedCupon.qty) : 0;
+      //
+      // this.discount = (this.subTotal * discValue)/100;
+
+      //TODO: Añadir precio de envio
+      this.total = this.subTotal - this.discount;
+    });
+  }
+
+  AppBar buildAppBar() =>
+      AppBar(
         leading: IconButton(
           icon: Icon(Icons.clear, color: Colors.black),
           onPressed: () => {Navigator.of(context).pop()},
@@ -358,29 +473,34 @@ class _ShopCartPage extends State<ShopCartPage> {
               },
               child: (this.details)
                   ? Text(
-                      'EDITAR',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    )
+                'EDITAR',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+              )
                   : SizedBox.shrink())
         ],
         bottom: PreferredSize(
-          preferredSize: Size(MediaQuery.of(context).size.width, 50),
+          preferredSize: Size(MediaQuery
+              .of(context)
+              .size
+              .width, 50),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
                   child: Text(
-                'CARRITO DE COMPRAS',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              )),
+                    'CARRITO DE COMPRAS',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  )),
               SizedBox(
                   child: Text(
-                '${this.shoppingCartReference.shoppingList.length != null ? this.shoppingCartReference.shoppingList.length : 3} producto(s)',
-                style: TextStyle(fontSize: 14, color: Colors.black54),
-              )),
+                    '${this.shoppingCartReference.shoppingList.length != null
+                        ? this.shoppingCartReference.shoppingList.length
+                        : 3} producto(s)',
+                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                  )),
             ],
           ),
         ),

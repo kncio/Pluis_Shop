@@ -1,9 +1,27 @@
+import 'package:dartz/dartz_unsafe.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 
 class ShoppingCart {
   final List<ShoppingOrder> shoppingList;
 
   ShoppingCart({this.shoppingList});
+
+  List<Function> subscribers = [];
+
+  //Add 1 unity to the product on the index index
+  void addProductQty(int index){
+    this.shoppingList[index].qty += 1;
+    this.subscribers.forEach((func) {
+      func.call();
+    });
+  }
+  //substract 1 unity to the product on the index index
+  void substractProductQty(int index){
+    this.shoppingList[index].qty -= 1;
+    this.subscribers.forEach((func) {
+      func.call();
+    });
+  }
 
 }
 
