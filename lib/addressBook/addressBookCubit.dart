@@ -17,7 +17,22 @@ class AddressBookCubit extends Cubit<AddressBookState> {
       emit(AddressBookNotLoggedState());
     } else {
       log((await Settings.userId));
-      emit(AddressBookLoadingState());
+      var userId = await Settings.userId;
+      emit(AddressBookLoggedState(userId: userId));
     }
+  }
+
+  Future<void> getClientAddress(String userId) async {
+    emit(AddressBookLoadingState());
+
+    var eitherValue = await repository.getClientAddress(userId);
+
+    eitherValue.fold(
+            (errorFailure) => errorFailure.properties.isEmpty
+            ? emit(AddressBookErrorState("Server unreachable"))
+            : emit(AddressBookErrorState(errorFailure.properties.first)),
+            (address) => address.length >= 0
+            ? emit(AddressBookSuccessState(address: address))
+            : emit(AddressBookErrorState("No hay direcciones disponibles")));
   }
 }

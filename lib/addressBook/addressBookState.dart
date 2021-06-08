@@ -31,6 +31,11 @@ class AddressBookErrorState extends AddressBookState{
 class AddressBookNotLoggedState extends AddressBookState{
 
 }
+class AddressBookLoggedState extends AddressBookState{
+  final String userId;
+
+  AddressBookLoggedState({this.userId});
+}
 class AddressBookLoadingState extends AddressBookState{
 
 }

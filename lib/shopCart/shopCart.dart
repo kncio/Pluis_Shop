@@ -77,8 +77,6 @@ class _ShopCartPage extends State<ShopCartPage> {
         listener: (context, state) async {
           switch (state.runtimeType) {
             case ShopCartCuponsLoadedState:
-              calculateTotal();
-              log("GEt CUpon Succes");
               //CAll to getAddress
               Settings.userId.then((value) =>
                   context.read<ShopCartCubit>().getClientAddress(value));
@@ -181,14 +179,6 @@ class _ShopCartPage extends State<ShopCartPage> {
   }
 
   Widget buildTotalFormatText() {
-    // return Text(
-    //   'TOTAL  ' +
-    //       this.total.toString() +
-    //       ((this.selectedCurrency != null)
-    //           ? "  " + this.selectedCurrency.coin_nomenclature
-    //           : ""),
-    //   style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-    // );
     return new StreamBuilder(stream: _totalBloc.counterObservable,
       builder: (context, AsyncSnapshot<double> snapshot) {
         return Text(
@@ -439,23 +429,6 @@ class _ShopCartPage extends State<ShopCartPage> {
   void dispose() {
     _totalBloc.dispose();
     super.dispose();
-  }
-
-  void calculateTotal() {
-    double sum = 0;
-    setState(() {
-      this.shoppingCartReference.shoppingList.forEach((product) {
-        sum += double.tryParse(product.productData.price) * product.qty;
-      });
-      this.subTotal = sum;
-
-      // var discValue = (this.selectedCupon != null) ? double.tryParse(this.selectedCupon.qty) : 0;
-      //
-      // this.discount = (this.subTotal * discValue)/100;
-
-      //TODO: Añadir precio de envio
-      this.total = this.subTotal - this.discount;
-    });
   }
 
   AppBar buildAppBar() =>

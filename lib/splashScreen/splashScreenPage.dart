@@ -34,6 +34,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       if (state is SplashScreenAppInitializedSuccess) {
         Future.delayed(Duration(seconds: 1)).whenComplete(
           () {
+            Settings.invalidateCredentials();
             Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE);
           },
         );
