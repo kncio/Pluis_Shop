@@ -107,7 +107,7 @@ class _AddressBookPage extends State<AddressBookPage> {
 
   BottomBar buildBottomNavigationBar() {
     return BottomBar(
-      onPressSearch: () => Navigator.of(context).pushNamed(HOME_PAGE_ROUTE),
+      onPressSearch: () => Navigator.of(context).pushNamedAndRemoveUntil(HOME_PAGE_ROUTE,ModalRoute.withName('/')),
       onPressShopBag: () => Navigator.of(context).pushNamed(SHOP_CART),
       onPressAccount: () => Navigator.of(context).pushNamed(LOGIN_PAGE_ROUTE),
       onPressMenu: () => Navigator.of(context).pushNamed(MENU_PAGE),
