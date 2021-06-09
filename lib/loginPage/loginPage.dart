@@ -75,7 +75,11 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
       if (state is LoginErrorState) {
         //ShowSnackbar
         log("error");
-        await showSnackbar(context, text: state.message, timeLimit: 5);
+        if (state.message.contains("Connection timed out")) {
+          await showSnackbar(context, text: "El servidor está tardando en responder. Intente denuevo", timeLimit: 5);
+        } else {
+          await showSnackbar(context, text: state.message, timeLimit: 5);
+        }
       } else if (state is LoginSuccessfulState) {
         var token = await Settings.storedToken;
         log("Secured : ${token}");
@@ -211,9 +215,10 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     if (order.status == "0" || order.status == "3") {
       return PLuisButton(
         press: () {
-          context.read<LoginCubit>().postCancelOrder(order.order_number).then(
-              (value) =>
-                  context.read<LoginCubit>().isLogged());
+          context
+              .read<LoginCubit>()
+              .postCancelOrder(order.order_number)
+              .then((value) => context.read<LoginCubit>().isLogged());
         },
         label: "CANCELAR",
       );
@@ -233,7 +238,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
       case "4":
         return "TRASNPORTACION";
       case "5":
-        return "CANCELADO_POR_USUARIO";
+        return "CANCELADO POR USUARIO";
       default:
         return "PENDIENTE";
     }

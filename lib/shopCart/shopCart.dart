@@ -66,7 +66,7 @@ class _ShopCartPage extends State<ShopCartPage> {
   @override
   void initState() {
     shoppingCartReference = injectorContainer.sl<ShoppingCart>();
-
+    _totalBloc.updateTotal();
     this.editing = false;
     super.initState();
     context.read<ShopCartCubit>().getCurrency();
@@ -138,7 +138,11 @@ class _ShopCartPage extends State<ShopCartPage> {
                         fontWeight: FontWeight.bold,
                         color: Colors.black)),
               );
-
+            case ShopCartErrorState:
+              if((state as ShopCartErrorState).message.contains("timeout")){
+                showSnackbar(context, text: "Intente denuevo. El servidor está tardando en responder", timeLimit: 5);
+              }
+              return itemsBody();
             default:
               return Center(
                 child: CircularProgressIndicator(
@@ -195,7 +199,7 @@ class _ShopCartPage extends State<ShopCartPage> {
       builder: (context, AsyncSnapshot<double> snapshot) {
         return Text(
           'TOTAL  ' +
-              '${snapshot.data}' +
+              '${applyDiscountAndDelivery(snapshot.data)}' +
               ((this.selectedCurrency != null)
                   ? "  " + this.selectedCurrency.coin_nomenclature
                   : ""),
@@ -203,6 +207,23 @@ class _ShopCartPage extends State<ShopCartPage> {
         );
       },
     );
+  }
+
+  String applyDiscountAndDelivery(double subTotal) {
+    // if(){
+    //
+    // }
+    double sicount = 0;
+    if (this.selectedCupon != null) {
+      if (this.selectedCupon.type_discount == "1") {
+        sicount =
+            (subTotal * double.parse(this.selectedCupon.value_discount)) / 100;
+      } else if (this.selectedCupon.type_discount == "2") {
+        sicount = double.parse(this.selectedCupon.value_discount);
+      }
+    }
+
+    return (subTotal - sicount).toString();
   }
 
   Widget buildDetailsSelector(BuildContext context) {
@@ -487,22 +508,25 @@ class _ShopCartPage extends State<ShopCartPage> {
       );
 
   Future<void> postBuyOrder() async {
-    if(this.shoppingCartReference.shoppingList.length > 0){
+    if (this.shoppingCartReference.shoppingList.length > 0) {
       var token = await Settings.storedApiToken;
+      var pickUp = storePickUp;
+      if(this.onDefaultAddress){
+        pickUp = userDefaultAddress;
+      }
       //Retrieve buy data
       BuyOrderData buyOrder = BuyOrderData(
           token_csrf: token,
-          shippingMethod: storePickUp,
+          shippingMethod: pickUp,
           shippingCurrency: this.selectedCurrency.id,
-          cupon:
-          (this.selectedCupon != null) ? this.selectedCupon.row_ticket : "0",
+          cupon: (this.selectedCupon != null)
+              ? this.selectedCupon.row_ticket
+              : "0",
           cart_session: this.shoppingCartReference.toMap());
 
       await context.read<ShopCartCubit>().postBuyOrder(buyOrder);
+    } else {
+      showSnackbar(context, text: "No hay productos en el carrito");
     }
-    else {
-      showSnackbar(context, text:"No hay productos en el carrito");
-    }
-
   }
 }
