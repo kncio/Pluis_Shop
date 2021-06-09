@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz_unsafe.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 
@@ -21,6 +23,21 @@ class ShoppingCart {
     this.subscribers.forEach((func) {
       func.call();
     });
+  }
+
+  String toMap(){
+    Map<String, dynamic> cartSession = {};
+    int index = 0;
+    this.shoppingList.forEach((product) {
+      cartSession[index.toString()] = product.toMap();
+      index++;
+    });
+    var item = jsonEncode(cartSession);
+    return item;
+  }
+
+  void resetCart(){
+    this.shoppingList.clear();
   }
 
 }

@@ -3,17 +3,33 @@ class Cupon {
   final String row_ticket;
   final String user_id;
   final String qty;
-
   final String qty_asing;
+  final String status;
+  final String value_discount;
 
-  Cupon({this.id, this.row_ticket, this.user_id, this.qty, this.qty_asing});
+  //1 porcentual 2 fixed value
+  final String type_discount;
+
+  Cupon({
+    this.id,
+    this.row_ticket,
+    this.user_id,
+    this.qty,
+    this.qty_asing,
+    this.status,
+    this.value_discount,
+    this.type_discount,
+  });
 
   factory Cupon.fromJson(Map<String, dynamic> json) => Cupon(
       id: json["id"],
       row_ticket: json["row_ticket"],
       user_id: json["user_id"],
       qty: json["qty"],
-      qty_asing: json["qty_asing"]);
+      qty_asing: json["qty_asing"],
+      status: json["status"],
+      value_discount: json["value_discount"],
+      type_discount: json["type_discount"]);
 }
 
 class ClientAddress {
@@ -82,7 +98,7 @@ class BuyOrderData {
   final String shippingMethod;
   final String shippingCurrency;
   final String cupon;
-  final Map<String, dynamic> cart_session;
+  final String cart_session;
 
   BuyOrderData(
       {this.token_csrf,

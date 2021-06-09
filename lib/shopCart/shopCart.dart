@@ -4,11 +4,14 @@ import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
+import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/observables/totalBloc.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartItem.dart';
+import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/shopCart/shopCartCubit.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
@@ -76,6 +79,15 @@ class _ShopCartPage extends State<ShopCartPage> {
       body: BlocConsumer<ShopCartCubit, ShopCartState>(
         listener: (context, state) async {
           switch (state.runtimeType) {
+            case ShopCartOrderSentSuccess:
+              showSnackbar(context, text: "Orden Creada satisfactoriamente");
+              this.shoppingCartReference.resetCart();
+              Future.delayed(Duration(seconds: 4)).whenComplete(() =>
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      HOME_PAGE_ROUTE, ModalRoute.withName('/')));
+
+              return log("Cambio!");
+
             case ShopCartCuponsLoadedState:
               //CAll to getAddress
               Settings.userId.then((value) =>
@@ -98,6 +110,9 @@ class _ShopCartPage extends State<ShopCartPage> {
               });
               return this.currencys =
                   (state as ShopCartCurrencyLoadedState).currencys;
+            case ShopCartErrorState:
+              log("Error" + (state as ShopCartErrorState).message);
+              return null;
             default:
               log(state.runtimeType.toString());
           }
@@ -109,8 +124,7 @@ class _ShopCartPage extends State<ShopCartPage> {
             case ShopCartCurrencyLoadedState:
               if (Settings.isLoggedIn) {
                 Settings.userId.then(
-                        (value) =>
-                        context.read<ShopCartCubit>().getCupons(value));
+                    (value) => context.read<ShopCartCubit>().getCupons(value));
                 return Center(
                   child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
@@ -144,10 +158,7 @@ class _ShopCartPage extends State<ShopCartPage> {
         padding: EdgeInsets.all(10),
         child: SizedBox(
           height: 50,
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
+          width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
               Container(
@@ -179,17 +190,19 @@ class _ShopCartPage extends State<ShopCartPage> {
   }
 
   Widget buildTotalFormatText() {
-    return new StreamBuilder(stream: _totalBloc.counterObservable,
+    return new StreamBuilder(
+      stream: _totalBloc.counterObservable,
       builder: (context, AsyncSnapshot<double> snapshot) {
         return Text(
-            'TOTAL  ' +
-                '${snapshot.data}' +
-                ((this.selectedCurrency != null)
-                    ? "  " + this.selectedCurrency.coin_nomenclature
-                    : ""),
-            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+          'TOTAL  ' +
+              '${snapshot.data}' +
+              ((this.selectedCurrency != null)
+                  ? "  " + this.selectedCurrency.coin_nomenclature
+                  : ""),
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
         );
-      },);
+      },
+    );
   }
 
   Widget buildDetailsSelector(BuildContext context) {
@@ -270,32 +283,32 @@ class _ShopCartPage extends State<ShopCartPage> {
         Wrap(children: [
           (this.onCustomAddress)
               ? Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 64),
-              child: DropdownButton(
-                isExpanded: true,
-                hint: Text("Sin Direcciones"),
-                value: this.selectedAddress,
-                // icon: Icon(Icons.arrow_downward),
-                style: TextStyle(color: Colors.black54),
-                underline: Container(
-                  height: 1,
-                  color: Colors.black54,
-                ),
-                onChanged: (ClientAddress address) {
-                  setState(() {
-                    this.selectedAddress = address;
-                  });
-                },
-                items: this
-                    .userAddress
-                    .map<DropdownMenuItem<ClientAddress>>(
-                        (ClientAddress value) {
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 64),
+                  child: DropdownButton(
+                    isExpanded: true,
+                    hint: Text("Sin Direcciones"),
+                    value: this.selectedAddress,
+                    // icon: Icon(Icons.arrow_downward),
+                    style: TextStyle(color: Colors.black54),
+                    underline: Container(
+                      height: 1,
+                      color: Colors.black54,
+                    ),
+                    onChanged: (ClientAddress address) {
+                      setState(() {
+                        this.selectedAddress = address;
+                      });
+                    },
+                    items: this
+                        .userAddress
+                        .map<DropdownMenuItem<ClientAddress>>(
+                            (ClientAddress value) {
                       return DropdownMenuItem<ClientAddress>(
                         value: value,
                         child: Text(value.address),
                       );
                     }).toList(),
-              ))
+                  ))
               : SizedBox.shrink(),
         ]),
         //CUPONES
@@ -378,8 +391,8 @@ class _ShopCartPage extends State<ShopCartPage> {
           padding: EdgeInsets.all(10),
           child: DarkButton(
             text: "COMPRAR",
-            action: () {
-              //TODO: perform buy operation
+            action: () async {
+              await postBuyOrder();
             },
           ),
         )
@@ -391,48 +404,47 @@ class _ShopCartPage extends State<ShopCartPage> {
     return Container(
       child: (this.details)
           ? ListView.builder(
-          itemCount: this.shoppingCartReference.shoppingList.length,
-          itemBuilder: (context, index) {
-            return Wrap(alignment: WrapAlignment.end, children: [
-              this.editing
-                  ? IconButton(
-                  icon: Icon(Icons.clear, color: Colors.black),
-                  onPressed: () {
-                    setState(() {
-                      this
-                          .shoppingCartReference
-                          .shoppingList
-                          .removeAt(index);
-                    });
-                  })
-                  : SizedBox.shrink(),
-              ShopCartItem(
-                index: index,
-                hexColorCode: this
-                    .shoppingCartReference
-                    .shoppingList[index]
-                    .hexColorInfo,
-                selectedTall:
-                this.shoppingCartReference.shoppingList[index].tall,
-                product: this
-                    .shoppingCartReference
-                    .shoppingList[index]
-                    .productData,
-              )
-            ]);
-          })
+              itemCount: this.shoppingCartReference.shoppingList.length,
+              itemBuilder: (context, index) {
+                return Wrap(alignment: WrapAlignment.end, children: [
+                  this.editing
+                      ? IconButton(
+                          icon: Icon(Icons.clear, color: Colors.black),
+                          onPressed: () {
+                            setState(() {
+                              this
+                                  .shoppingCartReference
+                                  .shoppingList
+                                  .removeAt(index);
+                            });
+                          })
+                      : SizedBox.shrink(),
+                  ShopCartItem(
+                    index: index,
+                    hexColorCode: this
+                        .shoppingCartReference
+                        .shoppingList[index]
+                        .hexColorInfo,
+                    selectedTall:
+                        this.shoppingCartReference.shoppingList[index].tall,
+                    product: this
+                        .shoppingCartReference
+                        .shoppingList[index]
+                        .productData,
+                  )
+                ]);
+              })
           : buildDetailsSelector(context),
     );
   }
 
   @override
   void dispose() {
-    _totalBloc.dispose();
+    // _totalBloc.dispose();
     super.dispose();
   }
 
-  AppBar buildAppBar() =>
-      AppBar(
+  AppBar buildAppBar() => AppBar(
         leading: IconButton(
           icon: Icon(Icons.clear, color: Colors.black),
           onPressed: () => {Navigator.of(context).pop()},
@@ -446,36 +458,51 @@ class _ShopCartPage extends State<ShopCartPage> {
               },
               child: (this.details)
                   ? Text(
-                'EDITAR',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
-              )
+                      'EDITAR',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    )
                   : SizedBox.shrink())
         ],
         bottom: PreferredSize(
-          preferredSize: Size(MediaQuery
-              .of(context)
-              .size
-              .width, 50),
+          preferredSize: Size(MediaQuery.of(context).size.width, 50),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
                   child: Text(
-                    'CARRITO DE COMPRAS',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  )),
+                'CARRITO DE COMPRAS',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              )),
               SizedBox(
                   child: Text(
-                    '${this.shoppingCartReference.shoppingList.length != null
-                        ? this.shoppingCartReference.shoppingList.length
-                        : 3} producto(s)',
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
-                  )),
+                '${this.shoppingCartReference.shoppingList.length != null ? this.shoppingCartReference.shoppingList.length : 3} producto(s)',
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              )),
             ],
           ),
         ),
       );
+
+  Future<void> postBuyOrder() async {
+    if(this.shoppingCartReference.shoppingList.length > 0){
+      var token = await Settings.storedApiToken;
+      //Retrieve buy data
+      BuyOrderData buyOrder = BuyOrderData(
+          token_csrf: token,
+          shippingMethod: storePickUp,
+          shippingCurrency: this.selectedCurrency.id,
+          cupon:
+          (this.selectedCupon != null) ? this.selectedCupon.row_ticket : "0",
+          cart_session: this.shoppingCartReference.toMap());
+
+      await context.read<ShopCartCubit>().postBuyOrder(buyOrder);
+    }
+    else {
+      showSnackbar(context, text:"No hay productos en el carrito");
+    }
+
+  }
 }

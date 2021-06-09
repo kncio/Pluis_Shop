@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRepository.dart';
 import 'package:pluis_hv_app/shopCart/shopCartState.dart';
@@ -63,10 +64,21 @@ class ShopCartCubit extends Cubit<ShopCartState> {
             : emit(ShopCartErrorState("No hay precios disponibles")));
   }
 
-  Future<void> setSuccess()async {
+  Future<void> setSuccess() async {
     emit(ShopCartSuccessState());
   }
-  Future<void> postBuyOrder() async {
 
+  Future<void> postBuyOrder(BuyOrderData orderData) async {
+    emit(ShopCartLoadingState());
+    var tokenCsrf = await Settings.storedToken;
+    var eitherValue = await repository.postShopCart(tokenCsrf, orderData);
+
+    eitherValue.fold(
+        (failure) => failure.properties.isEmpty
+            ? emit(ShopCartErrorState("Server unreachable"))
+            : emit(ShopCartErrorState(failure.properties.first)),
+        (success) => success
+            ? emit(ShopCartOrderSentSuccess("SUccess"))
+            : emit(ShopCartErrorState("Error al intentar crear la orden")));
   }
 }

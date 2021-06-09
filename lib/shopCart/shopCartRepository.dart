@@ -112,19 +112,22 @@ class ShopCartRepository {
         '$API_KEY_NAME': '$API_KEY',
         'Authorization': sessionTOken
       };
+      log(sessionTOken);
+      log("Se enviará: \n ${body.toMap()}");
       var response = await api.post(CREATE_BUY_ORDER, body.toMap());
 
+
       if (response.statusCode == 200) {
-        if (response.data["success"].toString() == "1") {
-          return Right(true);
-        }
-        log(response.data.toString());
-        return Right(false);
+        log("agghh");
+        return Right(true);
       } else {
+        log(response.data);
         return Left(Failure([response.statusMessage]));
       }
     } catch (error) {
       return Left(Failure([error.toString()]));
     }
   }
+
+
 }

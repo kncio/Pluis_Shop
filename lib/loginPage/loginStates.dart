@@ -18,6 +18,15 @@ class LoginSendingState extends LoginState{
 class LoginSuccessfulState extends LoginState{
   final String message = "Acceso satisfactorio!";
 }
+
+class LoginIsLoggedState extends LoginState{
+  final String message;
+
+  LoginIsLoggedState(this.message);
+}
+class LoginLoadingState extends LoginState{
+
+}
 class LoginErrorState extends LoginState{
   final String message;
 

@@ -16,3 +16,5 @@ const String GET_CURRENCY = '/get_currency';
 const String GET_PRODUCT_IMAGES = '/get_images_product';
 const String GET_COLORS_VARIATION = '/get_colors_variations';
 const String CREATE_BUY_ORDER= '/checkout';
+const String GET_PENDING_ORDERS = '/get_orders_pending';
+const String POST_CANCEL_ORDER = '/cancel_order';

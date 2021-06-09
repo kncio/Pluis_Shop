@@ -40,6 +40,12 @@ class ShopCartSuccessState extends ShopCartState {
   //TODO: info
 }
 
+class ShopCartOrderSentSuccess extends ShopCartState{
+  final String message;
+
+  ShopCartOrderSentSuccess(this.message);
+}
+
 class ShopCartErrorState extends ShopCartState {
   final String message;
 
