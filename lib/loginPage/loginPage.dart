@@ -20,6 +20,7 @@ import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 
 import 'cuponListViewWidget.dart';
 import 'loginRepository.dart';
+import 'loginUtils.dart';
 
 enum OrderStatus {
   COMPLETADO,
@@ -56,7 +57,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     _pendingOrdersBloc = PendingOrdersBloc(pendingOrders: []);
-    this._tabController = TabController(length: 2, vsync: this);
+    this._tabController = TabController(length: 6, vsync: this);
     context.read<LoginCubit>().isLogged();
     super.initState();
   }
@@ -118,7 +119,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           return Scaffold(
             body: Column(
               children: [
-                TabBar(
+                TabBar(isScrollable: true,
                   controller: this._tabController,
                   indicatorSize: TabBarIndicatorSize.label,
                   indicatorColor: Colors.black,
@@ -136,6 +137,33 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                           color: Colors.black),
+                    ),Text(
+                      "COMPRAS",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black),
+                    ),
+                    Text(
+                      "FACTURAS",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black),
+                    ),
+                    Text(
+                      "SUBSCRIPCIONES",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black),
+                    ),
+                    Text(
+                      "ACCESO",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black),
                     )
                   ],
                 ),
@@ -145,7 +173,12 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                         controller: this._tabController,
                         children: [
                           CuponsListView(userCupons: userCupons),
-                          buildPendingOrdersListView()
+                          buildPendingOrdersListView(),
+                          Column(children: [Center(child: Text("Compras"),)],),
+                          Column(children: [Center(child: Text("FACTURAS"),)],),
+                          Column(children: [Center(child: Text("SUBSCRIPCIONES"),)],),
+                          Column(children: [Center(child: Text("ACCESO"),)],),
+
                         ]),
                   ),
                 )
@@ -227,22 +260,6 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     }
   }
 
-  String statusToString(String statusOrder) {
-    switch (statusOrder) {
-      case "1":
-        return "COMPLETADO";
-      case "2":
-        return "RECHAZADO";
-      case "3":
-        return "PROCESANDO";
-      case "4":
-        return "TRASNPORTACION";
-      case "5":
-        return "CANCELADO POR USUARIO";
-      default:
-        return "PENDIENTE";
-    }
-  }
 
   Widget buildDarkButton() {
     return Padding(

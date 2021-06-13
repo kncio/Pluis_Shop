@@ -27,8 +27,16 @@ class CuponsListView extends StatelessWidget {
                     itemCount:
                         (this.userCupons != null) ? this.userCupons.length : 0,
                     itemBuilder: (context, index) {
-                      return Text(
-                          'Descuento de ${this.userCupons[index].value_discount}');
+                      return ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          Text(
+                              'Descuento de ${this.userCupons[index].value_discount}' +
+                                  ' ${discountTipe(this.userCupons[index])}'),
+                          Divider()
+                        ]),
+                      );
                     }),
               )
             ],
@@ -36,8 +44,15 @@ class CuponsListView extends StatelessWidget {
         : Center(
             child: Text(
               "Usted no posee cupones de descuento",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
             ),
           );
+  }
+
+  String discountTipe(Cupon cupon) {
+    return (cupon.type_discount == "1")
+        ? "porciento."
+        : "unidades de la moneda seleccionada";
   }
 }
