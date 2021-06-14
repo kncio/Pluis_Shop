@@ -54,6 +54,14 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   List<PendingOrder> pendingOrders;
   PendingOrdersBloc _pendingOrdersBloc;
 
+  //Subscription checkboxs
+  bool man = false;
+  bool woman = false;
+  bool boy = false;
+  bool girl = false;
+  bool sms = false;
+  bool email = false;
+
   @override
   void initState() {
     _pendingOrdersBloc = PendingOrdersBloc(pendingOrders: []);
@@ -77,7 +85,9 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         //ShowSnackbar
         log("error");
         if (state.message.contains("Connection timed out")) {
-          await showSnackbar(context, text: "El servidor está tardando en responder. Intente denuevo", timeLimit: 5);
+          await showSnackbar(context,
+              text: "El servidor está tardando en responder. Intente denuevo",
+              timeLimit: 5);
         } else {
           await showSnackbar(context, text: state.message, timeLimit: 5);
         }
@@ -119,7 +129,8 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           return Scaffold(
             body: Column(
               children: [
-                TabBar(isScrollable: true,
+                TabBar(
+                  isScrollable: true,
                   controller: this._tabController,
                   indicatorSize: TabBarIndicatorSize.label,
                   indicatorColor: Colors.black,
@@ -137,7 +148,8 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                           color: Colors.black),
-                    ),Text(
+                    ),
+                    Text(
                       "COMPRAS",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -169,17 +181,33 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 ),
                 Expanded(
                   child: Container(
-                    child: TabBarView(
-                        controller: this._tabController,
+                    child:
+                        TabBarView(controller: this._tabController, children: [
+                      CuponsListView(userCupons: userCupons),
+                      buildPendingOrdersListView(),
+                      Column(
                         children: [
-                          CuponsListView(userCupons: userCupons),
-                          buildPendingOrdersListView(),
-                          Column(children: [Center(child: Text("Compras"),)],),
-                          Column(children: [Center(child: Text("FACTURAS"),)],),
-                          Column(children: [Center(child: Text("SUBSCRIPCIONES"),)],),
-                          Column(children: [Center(child: Text("ACCESO"),)],),
-
-                        ]),
+                          Center(
+                            child: Text("Compras"),
+                          )
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Center(
+                            child: Text("FACTURAS"),
+                          )
+                        ],
+                      ),
+                      buildSubs(),
+                      Column(
+                        children: [
+                          Center(
+                            child: Text("ACCESO"),
+                          )
+                        ],
+                      ),
+                    ]),
                   ),
                 )
               ],
@@ -195,6 +223,149 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           );
       }
     });
+  }
+
+  ListView buildSubs() {
+    return ListView(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(20),
+          child: Center(
+            child: Text(
+              "Configura tu newsletter y, semanalmente, recibirás novedades y tendencias de las secciones que hayas seleccionado.",
+              style: TextStyle(fontSize: 16, color: Colors.black),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(20),
+          child: Text(
+            "Subscribirse al contenido de:",
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(10),
+          child: Wrap(
+            children: [
+              CheckboxListTile(
+                activeColor: Colors.black,
+                value: this.man,
+                onChanged: (bool value) {
+                  setState(() {
+                    this.man = value;
+                  });
+                },
+                title: Text("Hombre"),
+              ),
+              CheckboxListTile(
+                activeColor: Colors.black,
+                value: this.woman,
+                onChanged: (bool value) {
+                  setState(() {
+                    this.woman = value;
+                  });
+                },
+                title: Text("Mujer"),
+              ),
+              CheckboxListTile(
+                activeColor: Colors.black,
+                value: this.boy,
+                onChanged: (bool value) {
+                  setState(() {
+                    this.boy = value;
+                  });
+                },
+                title: Text("Niño"),
+              ),
+              CheckboxListTile(
+                activeColor: Colors.black,
+                value: this.girl,
+                onChanged: (bool value) {
+                  setState(() {
+                    this.girl = value;
+                  });
+                },
+                title: Text("Niña"),
+              )
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(20),
+          child: Text(
+            "Deseo recibir notificaciones mediante:	:",
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(10),
+          child: Wrap(
+            children: [
+              CheckboxListTile(
+                activeColor: Colors.black,
+                value: this.email,
+                onChanged: (bool value) {
+                  setState(() {
+                    this.email = value;
+                  });
+                },
+                title: Text("Correo"),
+              ),
+              CheckboxListTile(
+                activeColor: Colors.black,
+                value: this.sms,
+                onChanged: (bool value) {
+                  setState(() {
+                    this.sms = value;
+                  });
+                },
+                title: Text("Sms"),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.all(20),
+            child: DarkButton(
+              text: "ACEPTAR",
+              action: () {
+                context
+                    .read<LoginCubit>()
+                    .postSubmissions(userId)
+                    .then((value) => showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            height: 200,
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Center(
+                                    child: Text(
+                                      (value)? "A partir de ahora recibirá notificaciones mediante la vía solicitada.": "Ha ocurrido un error, Intente nuevamente.",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding:EdgeInsets.all(20),
+                                  child: DarkButton(text:"CANCELAR",action: (){
+                                    Navigator.of(context).pop();
+                                  },),
+                                )
+                              ],
+                            ),
+                          );
+                        }));
+              },
+            ))
+      ],
+    );
   }
 
   Widget buildPendingOrdersListView() {
@@ -259,7 +430,6 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
       return SizedBox.shrink();
     }
   }
-
 
   Widget buildDarkButton() {
     return Padding(

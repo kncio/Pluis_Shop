@@ -104,4 +104,19 @@ class LoginCubit extends Cubit<LoginState> {
 
     return returnList;
   }
+  Future<bool> postSubmissions(String userId) async {
+    var value = true;
+
+    // var eitherValue = await repository.postCancelOrder(orderNumber);
+    //
+    // eitherValue.fold(
+    //         (errorFailure) => errorFailure.properties.isEmpty
+    //         ? emit(LoginErrorState("Server unreachable"))
+    //         : emit(LoginErrorState(errorFailure.properties.first)),
+    //         (success) => success
+    //         ? value = success
+    //         : emit(LoginErrorState("No hay cupones disponibles")));
+
+    return value;
+  }
 }
