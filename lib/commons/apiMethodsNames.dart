@@ -18,3 +18,4 @@ const String CREATE_BUY_ORDER = '/checkout';
 const String GET_PENDING_ORDERS = '/get_orders_pending';
 const String GET_COMPLETE_ORDERS = '/get_orders';
 const String POST_CANCEL_ORDER = '/cancel_order';
+const String GET_BILLS = '';

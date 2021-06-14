@@ -61,3 +61,22 @@ class PendingOrder {
         buff: json["buff"],
       );
 }
+
+class BillData {
+  final String link;
+  final String info;
+
+  BillData({this.link, this.info});
+  //TODO: fill with correct information
+}
+
+class UpdatePasswordDataForm{
+  String currentPassword;
+  String newPassword;
+  String reNewPassword;
+}
+class UpdateEmailDataForm{
+  String currentPassword;
+  String newEmail;
+  String reNewEmail;
+}

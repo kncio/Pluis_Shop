@@ -7,7 +7,7 @@
 
     <application
         android:icon="@mipmap/launcher_icon"
-        android:label="Tienda Pluis"
+        android:label="Calzado Pluis"
         >
         <meta-data
             android:name="io.flutter.network-policy"
