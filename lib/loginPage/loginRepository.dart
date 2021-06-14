@@ -179,6 +179,26 @@ class LoginRepository {
     }
   }
 
+  Future<Either<Failure, List<PendingOrder>>> getUserCompleteOrders(
+      String userId) async {
+    List<PendingOrder> pendingOrders = [];
+    try {
+      var response = await api.get(GET_COMPLETE_ORDERS, {'id': userId});
+
+      if (response.statusCode == 200) {
+        for (var orderInfo in response.data["data"]) {
+          pendingOrders.add(PendingOrder.fromJson(orderInfo));
+        }
+        return Right(pendingOrders);
+      } else {
+        log("Error");
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
   Future<Either<Failure, bool>> postCancelOrder(String orderNumber) async {
     try {
       var sessionTOken = await Settings.storedToken;

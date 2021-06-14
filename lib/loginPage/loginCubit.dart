@@ -91,15 +91,15 @@ class LoginCubit extends Cubit<LoginState> {
   Future<List<PendingOrder>> getFinishedOrders(String userId) async {
 
     var returnList = <PendingOrder>[];
-    // var eitherValue = await repository.getUserPendingOrders(userId);
-    //TODO
-    // eitherValue.fold(
-    //         (errorFailure) => errorFailure.properties.isEmpty
-    //         ? emit(LoginErrorState("Server unreachable"))
-    //         : emit(LoginErrorState(errorFailure.properties.first)),
-    //         (ordersPending) => ordersPending.length >= 0
-    //         ? returnList = ordersPending
-    //         : emit(LoginErrorState("No hay cupones disponibles")));
+    var eitherValue = await repository.getUserCompleteOrders(userId);
+
+    eitherValue.fold(
+            (errorFailure) => errorFailure.properties.isEmpty
+            ? emit(LoginErrorState("Server unreachable"))
+            : emit(LoginErrorState(errorFailure.properties.first)),
+            (ordersPending) => ordersPending.length >= 0
+            ? returnList = ordersPending
+            : emit(LoginErrorState("No hay cupones disponibles")));
 
 
     return returnList;

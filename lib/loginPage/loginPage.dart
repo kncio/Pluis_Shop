@@ -11,6 +11,7 @@ import 'package:pluis_hv_app/loginPage/loginCubit.dart';
 import 'package:pluis_hv_app/loginPage/loginLocalDataSource.dart';
 import 'package:pluis_hv_app/loginPage/loginRemoteDatasource.dart';
 import 'package:pluis_hv_app/loginPage/loginStates.dart';
+import 'package:pluis_hv_app/observables/buysObservable.dart';
 import 'package:pluis_hv_app/observables/pendingOrdersObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
@@ -54,6 +55,9 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   List<PendingOrder> pendingOrders;
   PendingOrdersBloc _pendingOrdersBloc;
 
+  //Buys
+  BuysBloc _buysBloc;
+
   //Subscription checkboxs
   bool man = false;
   bool woman = false;
@@ -65,6 +69,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     _pendingOrdersBloc = PendingOrdersBloc(pendingOrders: []);
+    _buysBloc = BuysBloc(buys: []);
     this._tabController = TabController(length: 6, vsync: this);
     context.read<LoginCubit>().isLogged();
     super.initState();
@@ -111,6 +116,10 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
             .read<LoginCubit>()
             .getPendingOrders((state as LoginIsLoggedState).message)
             .then((list) => this._pendingOrdersBloc.updateOrders(list));
+        context
+            .read<LoginCubit>()
+            .getFinishedOrders(state.message)
+            .then((list) => this._buysBloc.updateOrders(list));
       }
     }, builder: (context, state) {
       switch (state.runtimeType) {
@@ -185,13 +194,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                         TabBarView(controller: this._tabController, children: [
                       CuponsListView(userCupons: userCupons),
                       buildPendingOrdersListView(),
-                      Column(
-                        children: [
-                          Center(
-                            child: Text("Compras"),
-                          )
-                        ],
-                      ),
+                      buildBuys(),
                       Column(
                         children: [
                           Center(
@@ -223,6 +226,58 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           );
       }
     });
+  }
+
+  Column buildBuys() {
+    return Column(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 32, 0, 0),
+            child: StreamBuilder(
+              stream: this._buysBloc.bysObservable,
+              builder: (context, AsyncSnapshot<List<PendingOrder>> snapshot) {
+                return ListView.builder(
+                    itemCount:
+                        (snapshot.data != null) ? snapshot.data.length : 0,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
+                            child: Wrap(
+                              children: [
+                                Text(
+                                  "NÚMERO DE PEDIDO: ",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text('${snapshot.data[index].order_number}')
+                              ],
+                            ),
+                          ),
+                          Padding(
+                              padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                              child: Wrap(children: [
+                                Text("ESTADO DE PEDIDO: ",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                Text(statusToString(
+                                    snapshot.data[index].status)),
+                                showCancelButton(snapshot.data[index])
+                              ])),
+                          Padding(
+                              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              child: Divider())
+                        ],
+                      );
+                    });
+              },
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   ListView buildSubs() {
@@ -346,17 +401,24 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                                   padding: EdgeInsets.all(20),
                                   child: Center(
                                     child: Text(
-                                      (value)? "A partir de ahora recibirá notificaciones mediante la vía solicitada.": "Ha ocurrido un error, Intente nuevamente.",
+                                      (value)
+                                          ? "A partir de ahora recibirá notificaciones mediante la vía solicitada."
+                                          : "Ha ocurrido un error, Intente nuevamente.",
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Colors.black),
                                     ),
                                   ),
                                 ),
                                 Padding(
-                                  padding:EdgeInsets.all(20),
-                                  child: DarkButton(text:"CANCELAR",action: (){
-                                    Navigator.of(context).pop();
-                                  },),
+                                  padding: EdgeInsets.all(20),
+                                  child: DarkButton(
+                                    text: "CANCELAR",
+                                    action: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
                                 )
                               ],
                             ),
@@ -399,6 +461,13 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                               Text("ESTADO DE PEDIDO: ",
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
+                              (snapshot.data[index].status == '5')
+                                  ? Icon(
+                                      Icons.cancel_outlined,
+                                      color: Colors.red,
+                                      size: 14,
+                                    )
+                                  : SizedBox.shrink(),
                               Text(statusToString(snapshot.data[index].status)),
                               showCancelButton(snapshot.data[index])
                             ])),
