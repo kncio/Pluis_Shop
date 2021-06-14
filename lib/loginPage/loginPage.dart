@@ -101,43 +101,42 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   Widget buildBody(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
         listener: (context, state) async {
-          if (state is LoginErrorState) {
-            //ShowSnackbar
-            log("error");
-            if (state.message.contains("Connection timed out")) {
-              await showSnackbar(context,
-                  text: "El servidor está tardando en responder. Intente denuevo",
-                  timeLimit: 5);
-            } else {
-              await showSnackbar(context, text: state.message, timeLimit: 5);
-            }
-          } else if (state is LoginSuccessfulState) {
-            var token = await Settings.storedToken;
-            log("Secured : ${token}");
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil(
-                HOME_PAGE_ROUTE, ModalRoute.withName("/"));
-          }
-          if (state is LoginIsLoggedState) {
-            log("Called here");
-            setState(() {
-              this.isLogged = true;
-              this.userId = (state as LoginIsLoggedState).message;
-            });
-            context
-                .read<LoginCubit>()
-                .getCupons((state as LoginIsLoggedState).message)
-                .then((value) => this.userCupons = value);
-            context
-                .read<LoginCubit>()
-                .getPendingOrders((state as LoginIsLoggedState).message)
-                .then((list) => this._pendingOrdersBloc.updateOrders(list));
-            context
-                .read<LoginCubit>()
-                .getFinishedOrders(state.message)
-                .then((list) => this._buysBloc.updateOrders(list));
-          }
-        }, builder: (context, state) {
+      if (state is LoginErrorState) {
+        //ShowSnackbar
+        log("error");
+        if (state.message.contains("Connection timed out")) {
+          await showSnackbar(context,
+              text: "El servidor está tardando en responder. Intente denuevo",
+              timeLimit: 5);
+        } else {
+          await showSnackbar(context, text: state.message, timeLimit: 5);
+        }
+      } else if (state is LoginSuccessfulState) {
+        var token = await Settings.storedToken;
+        log("Secured : ${token}");
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(HOME_PAGE_ROUTE, ModalRoute.withName("/"));
+      }
+      if (state is LoginIsLoggedState) {
+        log("Called here");
+        setState(() {
+          this.isLogged = true;
+          this.userId = (state as LoginIsLoggedState).message;
+        });
+        context
+            .read<LoginCubit>()
+            .getCupons((state as LoginIsLoggedState).message)
+            .then((value) => this.userCupons = value);
+        context
+            .read<LoginCubit>()
+            .getPendingOrders((state as LoginIsLoggedState).message)
+            .then((list) => this._pendingOrdersBloc.updateOrders(list));
+        context
+            .read<LoginCubit>()
+            .getFinishedOrders(state.message)
+            .then((list) => this._buysBloc.updateOrders(list));
+      }
+    }, builder: (context, state) {
       switch (state.runtimeType) {
         case LoginSendingState:
           return ListView(
@@ -207,7 +206,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 Expanded(
                   child: Container(
                     child:
-                    TabBarView(controller: this._tabController, children: [
+                        TabBarView(controller: this._tabController, children: [
                       CuponsListView(userCupons: userCupons),
                       buildPendingOrdersListView(),
                       buildBuys(),
@@ -248,11 +247,13 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           padding: EdgeInsets.all(20),
           child: Center(
             child: Text(
-                " Si deseas cambiar la dirección de correo electrónico asociada a tu cuenta rellena los campos siguientes. Se solicita tu contraseña por motivos de seguridad."
-                , style: TextStyle(fontSize: 14)),
+                " Si deseas cambiar la dirección de correo electrónico asociada a tu cuenta rellena los campos siguientes. Se solicita tu contraseña por motivos de seguridad.",
+                style: TextStyle(fontSize: 14)),
           ),
         ),
-        Center(child: Text(" Tu email actual es ejemplo@gmail.com "),),
+        Center(
+          child: Text(" Tu email actual es ejemplo@gmail.com "),
+        ),
         Form(
             key: this._formEditEmailKey,
             child: Column(
@@ -261,7 +262,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
                     onSaved: (newValue) =>
-                    {this._updateEmailDataForm.currentPassword = newValue},
+                        {this._updateEmailDataForm.currentPassword = newValue},
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.next,
                     decoration: PluisAppTheme.textFormFieldDecoration(
@@ -291,17 +292,24 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 ),
                 Padding(
                   padding: EdgeInsets.all(20),
-                  child: DarkButton(text: "ACTUALIZAR EMAIL", action: () {
-                    //TODO: call  the cubit for post the infotrmation
-                  },),
+                  child: DarkButton(
+                    text: "ACTUALIZAR EMAIL",
+                    action: () {
+                      //TODO: call  the cubit for post the infotrmation
+                    },
+                  ),
                 )
               ],
             )),
-        Padding(padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
+        Padding(
+          padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
           child: Center(
-            child: Text("Cambio de contraseña",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
-          ),),
+            child: Text(
+              "Cambio de contraseña",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+        ),
         Form(
             key: this._formEditPassKey,
             child: Column(
@@ -310,7 +318,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
                     onSaved: (newValue) =>
-                    {this._updateEmailDataForm.currentPassword = newValue},
+                        {this._updateEmailDataForm.currentPassword = newValue},
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.next,
                     decoration: PluisAppTheme.textFormFieldDecoration(
@@ -340,9 +348,12 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 ),
                 Padding(
                   padding: EdgeInsets.all(20),
-                  child: DarkButton(text: "ACTUALIZAR CONTRASEÑA", action: () {
-                    //TODO: call  the cubit for post the infotrmation
-                  },),
+                  child: DarkButton(
+                    text: "ACTUALIZAR CONTRASEÑA",
+                    action: () {
+                      //TODO: call  the cubit for post the infotrmation
+                    },
+                  ),
                 )
               ],
             )),
@@ -363,7 +374,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
               builder: (context, AsyncSnapshot<List<BillData>> snapshot) {
                 return ListView.builder(
                     itemCount:
-                    (snapshot.data != null) ? snapshot.data.length : 0,
+                        (snapshot.data != null) ? snapshot.data.length : 0,
                     itemBuilder: (context, index) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,7 +396,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                               child: Wrap(children: [
                                 Text("ESTADO DE PEDIDO: ",
                                     style:
-                                    TextStyle(fontWeight: FontWeight.bold)),
+                                        TextStyle(fontWeight: FontWeight.bold)),
                                 Text(statusToString(snapshot.data[index].info)),
                               ])),
                           Padding(
@@ -413,7 +424,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
               builder: (context, AsyncSnapshot<List<PendingOrder>> snapshot) {
                 return ListView.builder(
                     itemCount:
-                    (snapshot.data != null) ? snapshot.data.length : 0,
+                        (snapshot.data != null) ? snapshot.data.length : 0,
                     itemBuilder: (context, index) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,7 +446,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                               child: Wrap(children: [
                                 Text("ESTADO DE PEDIDO: ",
                                     style:
-                                    TextStyle(fontWeight: FontWeight.bold)),
+                                        TextStyle(fontWeight: FontWeight.bold)),
                                 Text(statusToString(
                                     snapshot.data[index].status)),
                                 showCancelButton(snapshot.data[index])
@@ -564,8 +575,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 context
                     .read<LoginCubit>()
                     .postSubmissions(userId)
-                    .then((value) =>
-                    showModalBottomSheet(
+                    .then((value) => showModalBottomSheet(
                         context: context,
                         builder: (context) {
                           return Container(
@@ -635,13 +645,13 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                             child: Wrap(children: [
                               Text("ESTADO DE PEDIDO: ",
                                   style:
-                                  TextStyle(fontWeight: FontWeight.bold)),
+                                      TextStyle(fontWeight: FontWeight.bold)),
                               (snapshot.data[index].status == '5')
                                   ? Icon(
-                                Icons.cancel_outlined,
-                                color: Colors.red,
-                                size: 14,
-                              )
+                                      Icons.cancel_outlined,
+                                      color: Colors.red,
+                                      size: 14,
+                                    )
                                   : SizedBox.shrink(),
                               Text(statusToString(snapshot.data[index].status)),
                               showCancelButton(snapshot.data[index])
@@ -696,7 +706,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           TextSpan(
               text: "   Regístrate",
               style:
-              TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
               recognizer: TapGestureRecognizer()
                 ..onTap = () async {
                   Navigator.of(context).pushNamed(REGISTER_PAGE_ROUTE);
@@ -759,8 +769,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         ));
   }
 
-  AppBar buildAppBar() =>
-      AppBar(
+  AppBar buildAppBar() => AppBar(
         leading: IconButton(
           icon: Icon(
             Icons.clear,
@@ -770,11 +779,11 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         ),
         title: (this.isLogged)
             ? Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-            child: Text(
-              "INFORMACIÓN PERSONAL",
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ))
+                padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                child: Text(
+                  "INFORMACIÓN PERSONAL",
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ))
             : SizedBox.shrink(),
       );
 
