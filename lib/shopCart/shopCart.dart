@@ -208,20 +208,20 @@ class _ShopCartPage extends State<ShopCartPage> {
   }
 
   String applyDiscountAndDelivery(double subTotal) {
-    // if(){
-    //
-    // }
-    double sicount = 0;
-    if (this.selectedCupon != null) {
-      if (this.selectedCupon.type_discount == "1") {
-        sicount =
-            (subTotal * double.parse(this.selectedCupon.value_discount)) / 100;
-      } else if (this.selectedCupon.type_discount == "2") {
-        sicount = double.parse(this.selectedCupon.value_discount);
+    if(subTotal != null){
+      double sicount = 0;
+      if (this.selectedCupon != null) {
+        if (this.selectedCupon.type_discount == "1") {
+          sicount =
+              (subTotal * double.parse(this.selectedCupon.value_discount)) / 100;
+        } else if (this.selectedCupon.type_discount == "2") {
+          sicount = double.parse(this.selectedCupon.value_discount);
+        }
       }
-    }
 
-    return (subTotal - sicount).toString();
+      return (subTotal - sicount).toString();
+    }
+    return "0.00";
   }
 
   Widget buildDetailsSelector(BuildContext context) {

@@ -21,12 +21,6 @@ class GalleryRepository {
 
   GalleryRepository({this.api});
 
-  static Future<void> testGetAllProduct() async {
-    var api = ApiClient(serviceUri: WEB_SERVICE);
-    Response response = await api.get("getAllProduct", {});
-    log(response.data.toString());
-  }
-
   Future<Either<Failure, List<Product>>> getAllProducts() async {
     List<Product> allProducts = [];
 
@@ -50,11 +44,6 @@ class GalleryRepository {
     }
   }
 
-  static Future<void> testGetAllProductByCategory() async {
-    var api = ApiClient(serviceUri: WEB_SERVICE);
-    Response response = await api.get("getAllProductByCategory", {"id": 15});
-    log(response.data.toString());
-  }
 
   Future<Either<Failure, List<Product>>> getAllProductByCategory(
       String categoryId) async {
@@ -65,6 +54,7 @@ class GalleryRepository {
 
       if (response.statusCode == 200) {
         for (var product in response.data["data"]) {
+          log(product.toString());
           allProducts.add(Product.fromMap(product));
         }
         return Right(allProducts);
