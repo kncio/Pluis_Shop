@@ -11,6 +11,7 @@ import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageState.dart';
+import 'package:pluis_hv_app/observables/aviableSizesObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/colorSelectorCheckbox.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
@@ -40,12 +41,12 @@ class _DetailsPage extends State<DetailsPage> {
   bool addTapped = false;
   PanelController _panelController;
 
-
   String selectedCoclorHexString;
   String selectedColorId;
   int selectedColorIndex;
   String selectedTall;
 
+  AviableSizesBloc _aviableSizesByColorBloc;
   List<SizeVariationByColor> sizesByColor = [];
   List<ColorByProductsDataModel> colorList = [];
 
@@ -62,6 +63,7 @@ class _DetailsPage extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
+    this._aviableSizesByColorBloc = AviableSizesBloc(aviableSizes: []);
     context.read<DetailsCubit>().getColorsBy(this.product.row_id);
     _panelController = PanelController();
     this.imagesList.add(ProductDetailsImages(product.image));
@@ -94,10 +96,9 @@ class _DetailsPage extends State<DetailsPage> {
     return BlocConsumer<DetailsCubit, DetailsPageState>(
         builder: (context, state) {
       switch (state.runtimeType) {
-        case DetailsSizesLoaded:
-          this.selectedColorIndex =
-              (state as DetailsSizesLoaded).selectedColorIndex;
-
+        case DetailsPageSuccessColor:
+          return buildPanelProductInfo(this.selectedColorIndex);
+        case DetailsImagesLoaded:
           return buildPanelProductInfo(this.selectedColorIndex);
         case DetailsError:
           return Center(
@@ -126,26 +127,22 @@ class _DetailsPage extends State<DetailsPage> {
       if (state is DetailsPageSuccessColor) {
         log("Called");
         this.colorList = (state as DetailsPageSuccessColor).colorsBy;
-        log(this.colorList[0].toString());
-
         context
             .read<DetailsCubit>()
-            .getSizeByColor(this.colorList[0].color_id, 0);
+            .getSizeByColor(this.colorList[0].color_id)
+            .then((list) => this._aviableSizesByColorBloc.updateBills(list));
 
         // context.read<DetailsCubit>().setSuccess();
       }
-      if (state is DetailsSizesLoaded) {
-        setState(() {
-          this.sizesByColor = (state as DetailsSizesLoaded).sizeList;
-        });
-        log("??");
-      }
+      // if (state is DetailsSizesLoaded) {
+      //   setState(() {
+      //     this.sizesByColor = (state as DetailsSizesLoaded).sizeList;
+      //   });
+      // }
     });
   }
 
   Column buildPanelProductInfo(int currentIndex) {
-    //TODO:  Fetch color and size info from the web
-    // COlor size on innitial state then when a color is changed get the correct size information and set
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(
         height: 90,
@@ -158,8 +155,8 @@ class _DetailsPage extends State<DetailsPage> {
             this.selectedCoclorHexString = hexCode;
             context
                 .read<DetailsCubit>()
-                .getSizeByColor(this.selectedColorId, this.selectedColorIndex)
-                .then((value) => this.sizesByColor = value);
+                .getSizeByColor(this.selectedColorId)
+                .then((list) => this._aviableSizesByColorBloc.updateBills(list));
             //For Debug Only
             log(this.selectedColorId);
           },
@@ -179,7 +176,7 @@ class _DetailsPage extends State<DetailsPage> {
               this.selectedTall = tall;
               log(this.selectedTall);
             },
-            aviableTallsList: this.sizesByColor,
+            aviableSizesByColorBloc: this._aviableSizesByColorBloc,
           ),
         ),
       )
@@ -291,8 +288,7 @@ class _DetailsPage extends State<DetailsPage> {
           color: this.selectedColorId,
           tall: this.selectedTall,
           qty: 1,
-          hexColorInfo:selectedCoclorHexString
-      ));
+          hexColorInfo: selectedCoclorHexString));
       log("Product Added");
       Navigator.of(context).pushNamed(SHOP_CART);
     }

@@ -68,7 +68,7 @@ class ClientAddress {
 }
 
 class DeliveryPrice {
-  final String status;
+  final int status;
   final String message;
 
   //Price
@@ -84,12 +84,14 @@ class SiteCurrency {
   final String id;
   final String coin_nomenclature;
   final String exchange_rate;
+  final String status;
 
-  SiteCurrency({this.id, this.coin_nomenclature, this.exchange_rate});
+  SiteCurrency({this.status,this.id, this.coin_nomenclature, this.exchange_rate});
 
   factory SiteCurrency.fromJson(Map<String, dynamic> json) => SiteCurrency(
       id: json["id"],
       coin_nomenclature: json["coin_nomenclature"],
+      status: json['status'],
       exchange_rate: json["exchange_rate"]);
 }
 

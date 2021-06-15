@@ -98,15 +98,10 @@ class _ShopCartPage extends State<ShopCartPage> {
               this.userAddress = (state as ShopCartAddressLoadedState).address;
               context.read<ShopCartCubit>().setSuccess();
               return null;
-            case ShopCartDeliveryLoadedState:
-              return this.shipPrice =
-                  (state as ShopCartDeliveryLoadedState).price;
             case ShopCartCurrencyLoadedState:
               setState(() {
                 this.selectedCurrency = (state as ShopCartCurrencyLoadedState)
-                    .currencys
-                    .firstWhere(
-                        (element) => element.coin_nomenclature == 'USD');
+                    .currencys[0];
               });
               return this.currencys =
                   (state as ShopCartCurrencyLoadedState).currencys;
@@ -139,8 +134,11 @@ class _ShopCartPage extends State<ShopCartPage> {
                         color: Colors.black)),
               );
             case ShopCartErrorState:
-              if((state as ShopCartErrorState).message.contains("timeout")){
-                showSnackbar(context, text: "Intente denuevo. El servidor está tardando en responder", timeLimit: 5);
+              if ((state as ShopCartErrorState).message.contains("timeout")) {
+                showSnackbar(context,
+                    text:
+                        "Intente denuevo. El servidor está tardando en responder",
+                    timeLimit: 5);
               }
               return itemsBody();
             default:
@@ -319,6 +317,10 @@ class _ShopCartPage extends State<ShopCartPage> {
                       setState(() {
                         this.selectedAddress = address;
                       });
+                      context
+                          .read<ShopCartCubit>()
+                          .getDeliveryPrice(address.state_id)
+                          .then((value) => this.shipmentPrice = value);
                     },
                     items: this
                         .userAddress
@@ -511,8 +513,15 @@ class _ShopCartPage extends State<ShopCartPage> {
     if (this.shoppingCartReference.shoppingList.length > 0) {
       var token = await Settings.storedApiToken;
       var pickUp = storePickUp;
-      if(this.onDefaultAddress){
+      if (this.onDefaultAddress) {
         pickUp = userDefaultAddress;
+      }
+      if (this.onCustomAddress) {
+        pickUp = '${this.shipmentPrice}|${this.selectedAddress.state_id}';
+        log(pickUp);
+      }
+      if (this.onDefaultAddress) {
+        pickUp = '${this.shipmentPrice}' + userDefaultAddress;
       }
       //Retrieve buy data
       BuyOrderData buyOrder = BuyOrderData(

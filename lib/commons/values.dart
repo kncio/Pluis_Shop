@@ -22,5 +22,5 @@ const String ApplicationVersion = "0.0.1";
 
 //region Metodos de entrega
 const String storePickUp = '0|null';
-const String userDefaultAddress = 'price_city_user|0';
+const String userDefaultAddress = '|0';
 //endregion

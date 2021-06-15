@@ -66,7 +66,9 @@ class ShopCartRepository {
           await api.get(GET_DELIVERY_PRICE_BY_STATE_ID, {'id': stateId});
 
       if (response.statusCode == 200) {
+
         deliveryPrice = DeliveryPrice.fromJson(response.data);
+
         return Right(deliveryPrice);
       } else {
         log("Error");
@@ -85,10 +87,10 @@ class ShopCartRepository {
 
       if (response.statusCode == 200) {
         log(response.data.toString());
-        response.data["data"] = [
-          {"id": "18", "coin_nomenclature": "EUR", "exchange_rate": "0.0410"},
-          {"id": "19", "coin_nomenclature": "USD", "exchange_rate": "0.0810"}
-        ];
+        // response.data["data"] = [
+        //   {"id": "18", "coin_nomenclature": "EUR", "exchange_rate": "0.0410"},
+        //   {"id": "19", "coin_nomenclature": "USD", "exchange_rate": "0.0810"}
+        // ];
         for (var currencyInfo in response.data["data"]) {
           log(currencyInfo.toString());
           currencys.add(SiteCurrency.fromJson(currencyInfo));
@@ -115,7 +117,6 @@ class ShopCartRepository {
       log(sessionTOken);
       log("Se enviará: \n ${body.toMap()}");
       var response = await api.post(CREATE_BUY_ORDER, body.toMap());
-
 
       if (response.statusCode == 200) {
         log("agghh");
