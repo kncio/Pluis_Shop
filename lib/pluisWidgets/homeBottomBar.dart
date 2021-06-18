@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pluis_hv_app/commons/values.dart';
+import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
+import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 
 class BottomBar extends StatelessWidget {
   final Function onPressMenu;
@@ -9,7 +11,9 @@ class BottomBar extends StatelessWidget {
   final Function onPressShopBag;
   final Function onPressAccount;
 
-  const BottomBar({
+  ShoppingCart _shoppingCartReference = injectorContainer.sl<ShoppingCart>();
+
+  BottomBar({
     Key key,
     this.onPressMenu,
     this.onPressSearch,
@@ -45,7 +49,7 @@ class BottomBar extends StatelessWidget {
             ),
             SizedBox(
                 // width: 160,
-                width: MediaQuery.of(context).size.width/4,
+                width: MediaQuery.of(context).size.width / 4,
                 child: TextButton(
                   onPressed: this.onPressMenu,
                   child: Text(
@@ -65,10 +69,19 @@ class BottomBar extends StatelessWidget {
             Expanded(
               child: Container(
                 padding: EdgeInsets.all(DEFAULT_PADDING),
-                child: IconButton(
-                    onPressed: this.onPressShopBag,
-                    color: Colors.black,
-                    icon: Icon(Icons.shopping_bag_outlined)),
+                child: Stack(children: [
+                  IconButton(
+                      onPressed: this.onPressShopBag,
+                      color: Colors.black,
+                      icon: Icon(Icons.shopping_bag_outlined)),
+                  // Padding(
+                  //   padding: EdgeInsets.fromLTRB(6, 4, 0, 0),
+                  //   child: Text(
+                  //     '${this._shoppingCartReference.shoppingList.length.toString()}',
+                  //     style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  //   ),
+                  // )
+                ]),
               ),
             )
           ],

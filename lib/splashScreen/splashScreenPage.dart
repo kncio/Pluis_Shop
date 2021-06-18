@@ -162,7 +162,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   Future<void> initializeApp() async {
     Future.delayed(Duration(seconds: 2)).then(
       (value) => requestPermissions().then(
-        (value2) => context.bloc<SplashScreenCubit>().start(),
+        (value2) => context.read<SplashScreenCubit>().start(),
       ),
     );
   }

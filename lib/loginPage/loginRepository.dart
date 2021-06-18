@@ -199,6 +199,44 @@ class LoginRepository {
     }
   }
 
+  Future<Either<Failure, List<BillData>>> getBills(
+      String userId) async {
+    List<BillData> bills = [];
+    try {
+      var response = await api.get(GET_BILLS, {'id': userId});
+
+      if (response.statusCode == 200) {
+        for (var billInfo in response.data["data"]) {
+          bills.add(BillData.fromJson(billInfo));
+        }
+        return Right(bills);
+      } else {
+        log("Error");
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, bool>> downloadBill(String storePath,
+      String url, Function (int,int) progressCallback) async {
+
+    try {
+      var response = await api.downloadFile(url, storePath, progressCallback);
+      log("entro a descargar lo guardara en: ${storePath}");
+      if (response.statusCode == 200) {
+
+        return Right(true);
+      } else {
+        log("Error");
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
   Future<Either<Failure, bool>> postCancelOrder(String orderNumber) async {
     try {
       var sessionTOken = await Settings.storedToken;

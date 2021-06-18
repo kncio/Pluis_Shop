@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pluis_hv_app/commons/keyStorage.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:pluis_hv_app/settings/settings.dart';
 
 class ApiClient {
   final String serviceUri;
@@ -49,7 +51,9 @@ class ApiClient {
 
       return response;
     } on DioError catch (error) {
-      log("ONError  get token" + error.message.toString() + error.type.toString());
+      log("ONError  get token" +
+          error.message.toString() +
+          error.type.toString());
       throw Exception(error.message);
     }
   }
@@ -99,6 +103,17 @@ class ApiClient {
     } catch (error) {
       log("ONError " + error.toString());
       //TODO: Parse DIO.Error
+    }
+  }
+
+  Future<Response> downloadFile(String pdfUrl, String storePath,
+      Function(int, int) onReceiveProgress) async {
+    try {
+      var response = await client.download(pdfUrl, storePath,
+          onReceiveProgress: onReceiveProgress);
+      return response;
+    } on DioError catch (error) {
+      throw Exception(error.message);
     }
   }
 

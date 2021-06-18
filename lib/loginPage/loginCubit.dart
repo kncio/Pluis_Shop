@@ -22,32 +22,35 @@ class LoginCubit extends Cubit<LoginState> {
 
     //TODO: Improve UX, Failure system
     eitherValue.fold(
-        (failure) => failure.properties.isEmpty
+            (failure) =>
+        failure.properties.isEmpty
             ? emit(LoginErrorState("Server unreachable"))
             : emit(LoginErrorState(failure.properties.first)),
-        (logged) => logged
+            (logged) =>
+        logged
             ? emit(LoginSuccessfulState())
             : emit(LoginErrorState("Credenciales inválidas")));
   }
 
   Future<void> isLogged() async {
     emit(LoginInitialState());
-    if(Settings.isLoggedIn){
+    if (Settings.isLoggedIn) {
       var userId = await Settings.userId;
       emit(LoginIsLoggedState(userId));
     }
   }
 
   Future<List<Cupon>> getCupons(String productRowId) async {
-
     var returnList = <Cupon>[];
     var eitherValue = await repository.getCuponsByUser(productRowId);
 
     eitherValue.fold(
-            (errorFailure) => errorFailure.properties.isEmpty
+            (errorFailure) =>
+        errorFailure.properties.isEmpty
             ? emit(LoginErrorState("Server unreachable"))
             : emit(LoginErrorState(errorFailure.properties.first)),
-            (cupons) => cupons.length >= 0
+            (cupons) =>
+        cupons.length >= 0
             ? returnList = cupons
             : emit(LoginErrorState("No hay cupones disponibles")));
 
@@ -61,10 +64,12 @@ class LoginCubit extends Cubit<LoginState> {
     var eitherValue = await repository.getUserPendingOrders(userId);
 
     eitherValue.fold(
-            (errorFailure) => errorFailure.properties.isEmpty
+            (errorFailure) =>
+        errorFailure.properties.isEmpty
             ? emit(LoginErrorState("Server unreachable"))
             : emit(LoginErrorState(errorFailure.properties.first)),
-            (ordersPending) => ordersPending.length >= 0
+            (ordersPending) =>
+        ordersPending.length >= 0
             ? returnList = ordersPending
             : emit(LoginErrorState("No hay cupones disponibles")));
 
@@ -78,10 +83,12 @@ class LoginCubit extends Cubit<LoginState> {
     var eitherValue = await repository.postCancelOrder(orderNumber);
 
     eitherValue.fold(
-            (errorFailure) => errorFailure.properties.isEmpty
+            (errorFailure) =>
+        errorFailure.properties.isEmpty
             ? emit(LoginErrorState("Server unreachable"))
             : emit(LoginErrorState(errorFailure.properties.first)),
-            (success) => success
+            (success) =>
+        success
             ? value = success
             : emit(LoginErrorState("No hay cupones disponibles")));
 
@@ -89,21 +96,56 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<List<PendingOrder>> getFinishedOrders(String userId) async {
-
     var returnList = <PendingOrder>[];
     var eitherValue = await repository.getUserCompleteOrders(userId);
 
     eitherValue.fold(
-            (errorFailure) => errorFailure.properties.isEmpty
+            (errorFailure) =>
+        errorFailure.properties.isEmpty
             ? emit(LoginErrorState("Server unreachable"))
             : emit(LoginErrorState(errorFailure.properties.first)),
-            (ordersPending) => ordersPending.length >= 0
+            (ordersPending) =>
+        ordersPending.length >= 0
             ? returnList = ordersPending
             : emit(LoginErrorState("No hay cupones disponibles")));
 
 
     return returnList;
   }
+
+  Future<List<BillData>> getUserBills(String userId) async {
+    var returnList = <BillData>[];
+    var eitherValue = await repository.getBills(userId);
+
+    eitherValue.fold(
+            (errorFailure) =>
+        errorFailure.properties.isEmpty
+            ? emit(LoginErrorState("Server unreachable"))
+            : emit(LoginErrorState(errorFailure.properties.first)),
+            (bills) =>
+        bills.length >= 0
+            ? returnList = bills
+            : emit(LoginErrorState("No hay cupones disponibles")));
+
+
+    return returnList;
+  }
+
+  Future<bool> downloadBill(String url, String path, Function (int,int) callback) async {
+    var start = false;
+
+    var eitherValue = await repository.downloadBill(
+        path, url, callback);
+
+    eitherValue.fold((errorFailure) =>
+    errorFailure.properties.isEmpty
+        ? emit(LoginErrorState("Server unreachable"))
+        : emit(LoginErrorState(errorFailure.properties.first)), (r) =>
+    r ? start = r : LoginErrorState("No se pudo descargar la factura"));
+
+    return start;
+  }
+
   Future<bool> postSubmissions(String userId) async {
     var value = true;
 

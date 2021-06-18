@@ -1,11 +1,13 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pluis_hv_app/commons/apiClient.dart';
-import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/loginPage/loginCubit.dart';
@@ -17,6 +19,7 @@ import 'package:pluis_hv_app/observables/buysObservable.dart';
 import 'package:pluis_hv_app/observables/pendingOrdersObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
+import 'package:pluis_hv_app/pluisWidgets/pluisPdfViewer.dart';
 import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
@@ -80,6 +83,10 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   bool sms = false;
   bool email = false;
 
+  //downloading
+  bool downloading = false;
+  bool finishDownload = false;
+
   @override
   void initState() {
     _billsBloc = BillsBloc(bills: []);
@@ -103,7 +110,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         listener: (context, state) async {
       if (state is LoginErrorState) {
         //ShowSnackbar
-        log("error");
+        log(state.message);
         if (state.message.contains("Connection timed out")) {
           await showSnackbar(context,
               text: "El servidor está tardando en responder. Intente denuevo",
@@ -135,6 +142,10 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
             .read<LoginCubit>()
             .getFinishedOrders(state.message)
             .then((list) => this._buysBloc.updateOrders(list));
+        context
+            .read<LoginCubit>()
+            .getUserBills(state.message)
+            .then((list) => this._billsBloc.updateBills(list));
       }
     }, builder: (context, state) {
       switch (state.runtimeType) {
@@ -366,6 +377,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   Column buildBills() {
     return Column(
       children: [
+        this.downloading ? LinearProgressIndicator() : SizedBox.shrink(),
         Expanded(
           child: Padding(
             padding: EdgeInsets.fromLTRB(0, 32, 0, 0),
@@ -387,21 +399,57 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                                   "NÚMERO DE PEDIDO: ",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                                Text('${snapshot.data[index].link}')
+                                Text('${snapshot.data[index].invoice_number}')
                               ],
                             ),
                           ),
                           Padding(
                               padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
                               child: Wrap(children: [
-                                Text("ESTADO DE PEDIDO: ",
+                                Text("LINK DE FACTURA: ",
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
-                                Text(statusToString(snapshot.data[index].info)),
+                                SelectableText((snapshot.data[index].pdf)),
                               ])),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: DarkButton(
+                                        text: "Descargar",
+                                        action: () {
+                                          var filename = snapshot
+                                              .data[index].pdf
+                                              .split('/');
+                                          download(snapshot.data[index].pdf,
+                                              filename[filename.length - 1]);
+                                        }),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: DarkButton(
+                                        text: "Visualizar",
+                                        action: () {
+                                          showModalBottomSheet(
+                                              context: context,
+                                              builder: (context) {
+                                                return SafeArea(
+                                                    top: false,
+                                                    child: PluisPdfViewer(
+                                                        url: snapshot
+                                                            .data[index].pdf));
+                                              });
+                                        }),
+                                  ),
+                                ),
+                              ]),
                           Padding(
                               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                              child: Divider())
+                              child: Divider()),
                         ],
                       );
                     });
@@ -411,6 +459,39 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         )
       ],
     );
+  }
+
+  Future<bool> download(String url, String filename) async {
+    requestPermissions().then((ready) => {
+          Settings.getAppExternalStorageBaseDirectory.then((directory) => {
+                log('${directory.path}'),
+                context
+                    .read<LoginCubit>()
+                    .downloadBill(
+                        url,
+                        directory.path + '/facturas' + '/' + filename,
+                        onProgressCallback)
+                    .then((value) => {
+                          this.downloading = false,
+                          if (value)
+                            {showSnackbar(context, text: "Descarga Finalizada")}
+                        })
+              })
+        });
+  }
+
+  Future<Map<Permission, PermissionStatus>> requestPermissions() async {
+    Map<Permission, PermissionStatus> status = await Settings.requestPermission(
+        permissionsToRequest: [Permission.storage]);
+    if (status.entries.any((element) => element.value.isDenied))
+      return await requestPermissions();
+    return status;
+  }
+
+  void onProgressCallback(int prog, int total) {
+    setState(() {
+      this.downloading = true;
+    });
   }
 
   Column buildBuys() {

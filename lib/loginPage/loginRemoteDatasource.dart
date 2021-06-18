@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:pluis_hv_app/commons/values.dart';
+
 class LoginResponse {
   final String user_id;
   final String name;
@@ -63,19 +67,35 @@ class PendingOrder {
 }
 
 class BillData {
-  final String link;
-  final String info;
+  final String id;
+  final String invoice_number;
+  final String user_id;
+  final String date;
+  final String pdf;
 
-  BillData({this.link, this.info});
-  //TODO: fill with correct information
+  BillData({
+    this.id,
+    this.invoice_number,
+    this.user_id,
+    this.date,
+    this.pdf,
+  });
+
+  factory BillData.fromJson(Map<String, dynamic> jsonObject) => BillData(
+      id: jsonObject["id"],
+      invoice_number: jsonObject["invoice_number"],
+      user_id: jsonObject["user_id"],
+      date: jsonObject["date"],
+      pdf: WEB_PDF_BILLS + jsonObject["pdf"]);
 }
 
-class UpdatePasswordDataForm{
+class UpdatePasswordDataForm {
   String currentPassword;
   String newPassword;
   String reNewPassword;
 }
-class UpdateEmailDataForm{
+
+class UpdateEmailDataForm {
   String currentPassword;
   String newEmail;
   String reNewEmail;
