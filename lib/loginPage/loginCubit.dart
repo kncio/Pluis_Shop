@@ -146,19 +146,34 @@ class LoginCubit extends Cubit<LoginState> {
     return start;
   }
 
-  Future<bool> postSubmissions(String userId) async {
-    var value = true;
+  Future<bool> postSubmissions(SubscriptionsData subscriptionsData) async {
+    var value = false;
 
-    // var eitherValue = await repository.postCancelOrder(orderNumber);
-    //
-    // eitherValue.fold(
-    //         (errorFailure) => errorFailure.properties.isEmpty
-    //         ? emit(LoginErrorState("Server unreachable"))
-    //         : emit(LoginErrorState(errorFailure.properties.first)),
-    //         (success) => success
-    //         ? value = success
-    //         : emit(LoginErrorState("No hay cupones disponibles")));
+    var eitherValue = await repository.postUpdateSubscriptionData(subscriptionsData);
+
+    eitherValue.fold(
+            (errorFailure) => errorFailure.properties.isEmpty
+            ? emit(LoginErrorState("Server unreachable"))
+            : emit(LoginErrorState(errorFailure.properties.first)),
+            (success) => success
+            ? value = success
+            : emit(LoginErrorState("No hay cupones disponibles")));
 
     return value;
+  }
+  Future<SubscriptionsData> getSubscriptionData(String userId) async {
+    SubscriptionsData returnData = null;
+
+    var eitherValue = await repository.getSumbissionData(userId);
+
+    eitherValue.fold(
+            (errorFailure) => errorFailure.properties.isEmpty
+            ? emit(LoginErrorState("Server unreachable"))
+            : emit(LoginErrorState(errorFailure.properties.first)),
+            (data) => data != null
+            ? returnData = data
+            : emit(LoginErrorState("No hay cupones disponibles")));
+
+    return returnData;
   }
 }

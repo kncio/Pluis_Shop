@@ -19,3 +19,7 @@ const String GET_PENDING_ORDERS = '/get_orders_pending';
 const String GET_COMPLETE_ORDERS = '/get_orders';
 const String POST_CANCEL_ORDER = '/cancel_order';
 const String GET_BILLS = '/get_InvoiceByUser';
+const String GET_SUBSCRIPTION_DATA= '/get_newsletter';
+const String POST_SUBSCRIPTION_DATA = '/updateNewsletter';
+const String GET_PRICES_VARIATIONS= '/get_otherPrice';
+const String GET_MUNICIPE_DETAILS = '/get_city_by_id';

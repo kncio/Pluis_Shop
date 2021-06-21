@@ -146,6 +146,10 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
             .read<LoginCubit>()
             .getUserBills(state.message)
             .then((list) => this._billsBloc.updateBills(list));
+        context
+            .read<LoginCubit>()
+            .getSubscriptionData(state.message)
+            .then((data) => {updateSubscriptionUi(data)});
       }
     }, builder: (context, state) {
       switch (state.runtimeType) {
@@ -372,7 +376,6 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     );
   }
 
-  //TODO: repository, download pdf, pdfViewer.
   //Facturas
   Column buildBills() {
     return Column(
@@ -641,6 +644,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 onChanged: (bool value) {
                   setState(() {
                     this.sms = value;
+                    log(this.sms.toString());
                   });
                 },
                 title: Text("Sms"),
@@ -653,9 +657,10 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
             child: DarkButton(
               text: "ACEPTAR",
               action: () {
+
                 context
                     .read<LoginCubit>()
-                    .postSubmissions(userId)
+                    .postSubmissions(createSubscriptionDataFromCurrentState())
                     .then((value) => showModalBottomSheet(
                         context: context,
                         builder: (context) {
@@ -867,6 +872,65 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 ))
             : SizedBox.shrink(),
       );
+
+  void updateSubscriptionUi(SubscriptionsData data) {
+    if (data.is_email_recibed == "1") {
+      setState(() {
+        this.email = true;
+      });
+    }
+    if (data.is_sms_recibed == "1") {
+      setState(() {
+        this.sms = true;
+      });
+    }
+    var splittedString = data.preference.split(',');
+    splittedString.forEach((element) {
+      if (element == "5") {
+        setState(() {
+          this.man = true;
+        });
+      } else if (element == "6") {
+        setState(() {
+          this.woman = true;
+        });
+      } else if (element == "7") {
+        setState(() {
+          this.boy = true;
+        });
+      } else if (element == "8") {
+        setState(() {
+          this.girl = true;
+        });
+      }
+    });
+  }
+
+  SubscriptionsData createSubscriptionDataFromCurrentState(){
+    var preferenceString= "";
+
+    if(this.boy){
+      preferenceString += "7,";
+    }
+    if(this.man){
+      preferenceString += "5,";
+    }
+    if(this.woman){
+      preferenceString += "6,";
+    }
+    if(this.girl){
+      preferenceString += "8,";
+    }
+    var correctFormat = preferenceString.substring(0,preferenceString.length-1);
+
+    return SubscriptionsData(
+      user_id: this.userId,
+      preference: correctFormat,
+      email: "",
+      is_email_recibed: this.email ? "1" : "0",
+      is_sms_recibed: this.sms ? "1" :"0"
+    );
+  }
 
   Future<void> doLogin() async {
     _formKey.currentState.save();

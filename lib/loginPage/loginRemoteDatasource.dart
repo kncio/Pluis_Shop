@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:pluis_hv_app/commons/values.dart';
@@ -99,4 +101,52 @@ class UpdateEmailDataForm {
   String currentPassword;
   String newEmail;
   String reNewEmail;
+}
+
+class SubscriptionsData {
+  final String id;
+  final String email;
+  final String user_id;
+
+  //String comma separated gender_id
+  final String preference;
+  final String is_sms_recibed;
+  final String is_email_recibed;
+
+  SubscriptionsData(
+      {this.id,
+      this.email,
+      this.user_id,
+      this.preference,
+      this.is_sms_recibed,
+      this.is_email_recibed});
+
+  factory SubscriptionsData.fromJson(Map<String, dynamic> jsonData) =>
+      SubscriptionsData(
+          id: jsonData["id"],
+          email: jsonData["email"],
+          user_id: jsonData["user_id"],
+          preference: jsonData["preference"],
+          is_sms_recibed: jsonData["is_sms_recibed"],
+          is_email_recibed: jsonData["is_email_recibed"]);
+
+  Map<String, dynamic> getMapToPostMethod(String token_Csrf) {
+    Map<String, dynamic> map = {
+      "sms_recibed": this.is_sms_recibed,
+      "email_recibed": this.is_email_recibed,
+      "token_csrf": token_Csrf,
+    };
+
+    Map<String, dynamic> genders = {};
+    var index = 0;
+    var splitted = this.preference.split(',');
+    splitted.forEach((gender_id) {
+      genders[index.toString()] = {"id": gender_id};
+      index++;
+    });
+    var item = jsonEncode(genders);
+    map["gender"] = item;
+    log(map.toString());
+    return map;
+  }
 }

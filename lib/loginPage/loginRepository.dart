@@ -1,14 +1,8 @@
-import 'dart:convert';
 import 'dart:developer';
-
-import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 
-// import 'package:http/http.dart' as http;
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
@@ -118,8 +112,6 @@ class LoginRepository {
       var userData = finalData.toMap();
       var result = await api.login(userData);
       if (result.statusCode == 200) {
-        //TODO: STORE THE INFO ON SHAREDPREFERENCES
-        // log("Login sussces + ${result.data.toString()}");
         if (result.data['status']) {
           var loginResponse = LoginResponse.fromMap(result.data['data']);
           await Settings.setCredentials(
@@ -199,8 +191,7 @@ class LoginRepository {
     }
   }
 
-  Future<Either<Failure, List<BillData>>> getBills(
-      String userId) async {
+  Future<Either<Failure, List<BillData>>> getBills(String userId) async {
     List<BillData> bills = [];
     try {
       var response = await api.get(GET_BILLS, {'id': userId});
@@ -219,14 +210,12 @@ class LoginRepository {
     }
   }
 
-  Future<Either<Failure, bool>> downloadBill(String storePath,
-      String url, Function (int,int) progressCallback) async {
-
+  Future<Either<Failure, bool>> downloadBill(
+      String storePath, String url, Function(int, int) progressCallback) async {
     try {
       var response = await api.downloadFile(url, storePath, progressCallback);
       log("entro a descargar lo guardara en: ${storePath}");
       if (response.statusCode == 200) {
-
         return Right(true);
       } else {
         log("Error");
@@ -251,6 +240,50 @@ class LoginRepository {
 
       if (response.statusCode == 200) {
         log("CANCEL ORDER");
+        return Right(true);
+      } else {
+        log(response.data);
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, SubscriptionsData>> getSumbissionData(
+      String userId) async {
+    try {
+      var response = await api.get(GET_SUBSCRIPTION_DATA, {'id': userId});
+
+      if (response.statusCode == 200) {
+        var subData = SubscriptionsData.fromJson(response.data["data"]);
+        log("Status of subs" + response.data["data"].toString());
+        return Right(subData);
+      } else {
+        log("Error");
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, bool>> postUpdateSubscriptionData(
+      SubscriptionsData data) async {
+    try {
+      var sessionTOken = await Settings.storedToken;
+      api.client.options.headers = {
+        '$API_KEY_NAME': '$API_KEY',
+        'Authorization': sessionTOken
+      };
+
+      var tokenCsrf = await Settings.storedApiToken;
+      var params = data.getMapToPostMethod(tokenCsrf);
+
+      var response = await api.post(POST_SUBSCRIPTION_DATA, params);
+
+      if (response.statusCode == 200) {
+        log("post update subs" + response.data);
         return Right(true);
       } else {
         log(response.data);
