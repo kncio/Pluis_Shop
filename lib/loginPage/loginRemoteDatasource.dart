@@ -92,15 +92,35 @@ class BillData {
 }
 
 class UpdatePasswordDataForm {
+  String token_csrf;
   String currentPassword;
   String newPassword;
   String reNewPassword;
+
+  UpdatePasswordDataForm(this.reNewPassword, this.newPassword, this.currentPassword);
+
+  Map<String, dynamic> toMap() => {
+    "token_csrf": this.token_csrf,
+    "old_password": this.currentPassword,
+    "new_password": this.newPassword,
+    "new_passwordConfirm": this.reNewPassword,
+  };
 }
 
 class UpdateEmailDataForm {
+  String token_csrf;
   String currentPassword;
   String newEmail;
   String reNewEmail;
+
+  UpdateEmailDataForm(this.currentPassword,this.newEmail, this.reNewEmail);
+
+  Map<String, dynamic> toMap() => {
+        "token_csrf": this.token_csrf,
+        "password": this.currentPassword,
+        "email": this.newEmail,
+        "new_passwordConfirm": this.reNewEmail,
+      };
 }
 
 class SubscriptionsData {

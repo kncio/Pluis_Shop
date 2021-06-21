@@ -293,4 +293,63 @@ class LoginRepository {
       return Left(Failure([error.toString()]));
     }
   }
+
+  Future<Either<Failure, bool>> postUpdateEmail(
+      UpdateEmailDataForm data) async {
+    try {
+      var sessionTOken = await Settings.storedToken;
+      api.client.options.headers = {
+        '$API_KEY_NAME': '$API_KEY',
+        'Authorization': sessionTOken
+      };
+
+      var tokenCsrf = await Settings.storedApiToken;
+      data.token_csrf = tokenCsrf;
+      var params = data.toMap();
+
+      var response = await api.post(POST_CHANGE_EMAIL, params);
+
+      if (response.statusCode == 200) {
+        if (response.data.toString().contains("field_errors")) {
+          return Right(false);
+        }
+        return Right(true);
+      } else {
+        log(response.data);
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, bool>> postUpdatePassword(
+      UpdatePasswordDataForm data) async {
+    try {
+      var sessionTOken = await Settings.storedToken;
+      api.client.options.headers = {
+        '$API_KEY_NAME': '$API_KEY',
+        'Authorization': sessionTOken
+      };
+
+      var tokenCsrf = await Settings.storedApiToken;
+      data.token_csrf = tokenCsrf;
+      var params = data.toMap();
+      log("rr : " + params.toString());
+      var response = await api.post(POST_CHANGE_PASSWORD, params);
+
+      if (response.statusCode == 200) {
+        log("post update subs" + response.data);
+        if (response.data.toString().contains("field_errors")) {
+          return Right(false);
+        }
+        return Right(true);
+      } else {
+        log(response.data);
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
 }

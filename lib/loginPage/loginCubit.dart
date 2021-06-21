@@ -161,6 +161,7 @@ class LoginCubit extends Cubit<LoginState> {
 
     return value;
   }
+
   Future<SubscriptionsData> getSubscriptionData(String userId) async {
     SubscriptionsData returnData = null;
 
@@ -176,4 +177,38 @@ class LoginCubit extends Cubit<LoginState> {
 
     return returnData;
   }
+
+  //region CHANGE ACCESS DATA POSTS
+  Future<bool> postEmailChange(UpdateEmailDataForm data) async {
+    var value = false;
+
+    var eitherValue = await repository.postUpdateEmail(data);
+
+    eitherValue.fold(
+            (errorFailure) => errorFailure.properties.isEmpty
+            ? emit(LoginErrorState("Server unreachable"))
+            : emit(LoginErrorState(errorFailure.properties.first)),
+            (success) => success
+            ? value = success
+            : value = success);
+
+    return value;
+  }
+
+  Future<bool> postPassswordChange(UpdatePasswordDataForm data) async {
+    var value = false;
+
+    var eitherValue = await repository.postUpdatePassword(data);
+
+    eitherValue.fold(
+            (errorFailure) => errorFailure.properties.isEmpty
+            ? emit(LoginErrorState("Server unreachable"))
+            : emit(LoginErrorState(errorFailure.properties.first)),
+            (success) => success
+            ? value = success
+            : value= success);
+
+    return value;
+  }
+  //endregion
 }

@@ -69,11 +69,12 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   //Update pasword form key
   final GlobalKey<FormState> _formEditPassKey = GlobalKey<FormState>();
-  UpdatePasswordDataForm _updatePassFormData = UpdatePasswordDataForm();
+  UpdatePasswordDataForm _updatePassFormData =
+      UpdatePasswordDataForm("", "", "");
 
   //Update email key
   final GlobalKey<FormState> _formEditEmailKey = GlobalKey<FormState>();
-  UpdateEmailDataForm _updateEmailDataForm = UpdateEmailDataForm();
+  UpdateEmailDataForm _updateEmailDataForm = UpdateEmailDataForm("", "", "");
 
   //Subscription checkboxs
   bool man = false;
@@ -288,6 +289,9 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
+                    onSaved: (email) {
+                      this._updateEmailDataForm.newEmail = email;
+                    },
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     decoration: PluisAppTheme.textFormFieldDecoration(
@@ -298,6 +302,9 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
+                    onSaved: (email) {
+                      this._updateEmailDataForm.reNewEmail = email;
+                    },
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.done,
                     decoration: PluisAppTheme.textFormFieldDecoration(
@@ -310,7 +317,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                   child: DarkButton(
                     text: "ACTUALIZAR EMAIL",
                     action: () {
-                      //TODO: call  the cubit for post the infotrmation
+                      changeEmail();
                     },
                   ),
                 )
@@ -332,18 +339,39 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
+                    validator: (value){
+                      if (value == null || value.isEmpty) {
+                        return 'Campo requerido';
+                      }
+                      return null;
+                    },
                     onSaved: (newValue) =>
-                        {this._updateEmailDataForm.currentPassword = newValue},
+                        {this._updatePassFormData.currentPassword = newValue},
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.next,
                     decoration: PluisAppTheme.textFormFieldDecoration(
-                        labelText: "Contraseña Actual",
-                        hintText: "Contraseña Actual"),
+                        labelText: "Contraseña Antigua",
+                        hintText: "Contraseña Antigua"),
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
+                    validator: (value){
+                      if (value == null || value.isEmpty) {
+                        return 'Campo requerido';
+                      }
+                      if(this._updatePassFormData.reNewPassword != value){
+                        return 'Las contraseñas deben coincidir';
+                      }
+                      return null;
+                    },
+                    onChanged: (value){
+                      this._updatePassFormData.newPassword = value;
+                    },
+                    onSaved: (newValue) {
+                      this._updatePassFormData.newPassword = newValue;
+                    },
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     decoration: PluisAppTheme.textFormFieldDecoration(
@@ -354,6 +382,21 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Campo requerido';
+                      }
+                      if(this._updatePassFormData.newPassword != value){
+                        return 'Las contraseñas deben coincidir';
+                      }
+                      return null;
+                    },
+                    onChanged: (value){
+                      this._updatePassFormData.reNewPassword = value;
+                    },
+                    onSaved: (newValue) {
+                      this._updatePassFormData.reNewPassword = newValue;
+                    },
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.done,
                     decoration: PluisAppTheme.textFormFieldDecoration(
@@ -366,7 +409,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                   child: DarkButton(
                     text: "ACTUALIZAR CONTRASEÑA",
                     action: () {
-                      //TODO: call  the cubit for post the infotrmation
+                      changePassword();
                     },
                   ),
                 )
@@ -374,6 +417,61 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
             )),
       ],
     );
+  }
+
+  void changePassword() {
+    if (this._formEditPassKey.currentState.validate()) {
+      this._formEditPassKey.currentState.save();
+      context
+          .read<LoginCubit>()
+          .postPassswordChange(this._updatePassFormData)
+          .then((value) => showModalBtnSheet(
+              value,
+              "Contraseña cambiada con éxito",
+              "Ha ocurrido un error, verifique los campos"));
+    }
+  }
+
+  void changeEmail() {
+    this._formEditEmailKey.currentState.save();
+    context.read<LoginCubit>().postEmailChange(this._updateEmailDataForm).then(
+        (value) => showModalBtnSheet(value, "Correo actualizado con éxito",
+            "Ha ocurrido un error verifique los campos"));
+  }
+
+  Future showModalBtnSheet(bool value, String trueString, String falseString) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: 200,
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(
+                    child: Text(
+                      (value) ? trueString : falseString,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.black),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: DarkButton(
+                    text: "CANCELAR",
+                    action: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                )
+              ],
+            ),
+          );
+        });
   }
 
   //Facturas
@@ -657,7 +755,6 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
             child: DarkButton(
               text: "ACEPTAR",
               action: () {
-
                 context
                     .read<LoginCubit>()
                     .postSubmissions(createSubscriptionDataFromCurrentState())
@@ -906,30 +1003,30 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     });
   }
 
-  SubscriptionsData createSubscriptionDataFromCurrentState(){
-    var preferenceString= "";
+  SubscriptionsData createSubscriptionDataFromCurrentState() {
+    var preferenceString = "";
 
-    if(this.boy){
+    if (this.boy) {
       preferenceString += "7,";
     }
-    if(this.man){
+    if (this.man) {
       preferenceString += "5,";
     }
-    if(this.woman){
+    if (this.woman) {
       preferenceString += "6,";
     }
-    if(this.girl){
+    if (this.girl) {
       preferenceString += "8,";
     }
-    var correctFormat = preferenceString.substring(0,preferenceString.length-1);
+    var correctFormat =
+        preferenceString.substring(0, preferenceString.length - 1);
 
     return SubscriptionsData(
-      user_id: this.userId,
-      preference: correctFormat,
-      email: "",
-      is_email_recibed: this.email ? "1" : "0",
-      is_sms_recibed: this.sms ? "1" :"0"
-    );
+        user_id: this.userId,
+        preference: correctFormat,
+        email: "",
+        is_email_recibed: this.email ? "1" : "0",
+        is_sms_recibed: this.sms ? "1" : "0");
   }
 
   Future<void> doLogin() async {

@@ -23,3 +23,5 @@ const String GET_SUBSCRIPTION_DATA= '/get_newsletter';
 const String POST_SUBSCRIPTION_DATA = '/updateNewsletter';
 const String GET_PRICES_VARIATIONS= '/get_otherPrice';
 const String GET_MUNICIPE_DETAILS = '/get_city_by_id';
+const String POST_CHANGE_PASSWORD = '/change_password';
+const String POST_CHANGE_EMAIL = '/change_email';
