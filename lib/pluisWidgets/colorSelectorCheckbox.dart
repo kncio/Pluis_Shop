@@ -60,27 +60,36 @@ class _ColorCheckBox extends State<ColorCheckBoxList> {
           setState(() {
             this.selectedColor = index;
             //Set the color id of the selected color
-            onIndexChange.call(currentColorInfo.color_id,this.colorInfoList[index].color_code);
+            onIndexChange.call(currentColorInfo.color_id,
+                this.colorInfoList[index].color_code);
           });
         },
         child: Wrap(children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                        width: 3,
-                        color: (this.selectedColor == index)
-                            ? Colors.black
-                            : Colors.transparent),
-                    shape: BoxShape.circle,
-                    color: Color(hexColor(currentColorInfo.color_code))),
-                child: SizedBox(
-                  width: 50,
-                  height: 50,
+              Stack(alignment: AlignmentDirectional.center,children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 4,color: (this.selectedColor == index)?Colors.black:Colors.transparent),
+                    shape: BoxShape.circle
+                  ),
+                  child: SizedBox(
+                    width: 50,
+                    height: 50,
+                  ),
                 ),
-              ),
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 2, color: Colors.white),
+                      shape: BoxShape.circle,
+                      color: Color(hexColor(currentColorInfo.color_code))),
+                  child: SizedBox(
+                    width: 50,
+                    height: 50,
+                  ),
+                ),
+              ]),
               Text(currentColorInfo.color_name.toUpperCase(),
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

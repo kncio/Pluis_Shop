@@ -124,7 +124,9 @@ class _GalleryPage extends State<GalleryPage> {
           child: Text(
               this.categoryInfo != null ? this.categoryInfo.name : "TODOS",
               style: TextStyle(color: Colors.black))),
-      actions: <Widget>[],
+      actions: <Widget>[
+
+      ],
     );
   }
 }
