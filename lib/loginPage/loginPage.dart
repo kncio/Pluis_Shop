@@ -60,6 +60,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   //Pending Orders
   List<PendingOrder> pendingOrders;
   PendingOrdersBloc _pendingOrdersBloc;
+  bool cancelingOrder = false;
 
   //Buys
   BuysBloc _buysBloc;
@@ -130,6 +131,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         setState(() {
           this.isLogged = true;
           this.userId = (state as LoginIsLoggedState).message;
+          this.cancelingOrder = false;
         });
         context
             .read<LoginCubit>()
@@ -247,6 +249,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     });
   }
 
+  //region AccessData
   ListView buildAccessData() {
     return ListView(
       children: [
@@ -339,7 +342,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
-                    validator: (value){
+                    validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Campo requerido';
                       }
@@ -357,16 +360,16 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: TextFormField(
-                    validator: (value){
+                    validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Campo requerido';
                       }
-                      if(this._updatePassFormData.reNewPassword != value){
+                      if (this._updatePassFormData.reNewPassword != value) {
                         return 'Las contraseñas deben coincidir';
                       }
                       return null;
                     },
-                    onChanged: (value){
+                    onChanged: (value) {
                       this._updatePassFormData.newPassword = value;
                     },
                     onSaved: (newValue) {
@@ -386,12 +389,12 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                       if (value == null || value.isEmpty) {
                         return 'Campo requerido';
                       }
-                      if(this._updatePassFormData.newPassword != value){
+                      if (this._updatePassFormData.newPassword != value) {
                         return 'Las contraseñas deben coincidir';
                       }
                       return null;
                     },
-                    onChanged: (value){
+                    onChanged: (value) {
                       this._updatePassFormData.reNewPassword = value;
                     },
                     onSaved: (newValue) {
@@ -474,7 +477,9 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         });
   }
 
-  //Facturas
+  //endregion
+
+  //region Facturas
   Column buildBills() {
     return Column(
       children: [
@@ -595,6 +600,9 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     });
   }
 
+  //endregion
+
+  //region Compras
   Column buildBuys() {
     return Column(
       children: [
@@ -647,6 +655,9 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     );
   }
 
+  //endregion
+
+  //region Subscriptions
   ListView buildSubs() {
     return ListView(
       children: [
@@ -798,9 +809,20 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     );
   }
 
+  //endregion
+
+  //region Pedidos
   Widget buildPendingOrdersListView() {
     return Column(
       children: [
+        (this.cancelingOrder)
+            ? Padding(
+          padding: EdgeInsets.fromLTRB(2, 8, 2, 8),
+              child: LinearProgressIndicator(
+                  minHeight: 3,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+            )
+            : SizedBox.shrink(),
         Expanded(
           child: StreamBuilder(
             stream: this._pendingOrdersBloc.counterObservable,
@@ -856,6 +878,9 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     if (order.status == "0" || order.status == "3") {
       return PLuisButton(
         press: () {
+          setState(() {
+            this.cancelingOrder = true;
+          });
           context
               .read<LoginCubit>()
               .postCancelOrder(order.order_number)
@@ -867,7 +892,9 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
       return SizedBox.shrink();
     }
   }
+  //endregion
 
+  //region FormularioLogin
   Widget buildDarkButton() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -951,6 +978,8 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           ],
         ));
   }
+
+  //endregion
 
   AppBar buildAppBar() => AppBar(
         leading: IconButton(
