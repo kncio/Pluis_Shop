@@ -99,8 +99,7 @@ class _GalleryPage extends State<GalleryPage> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                  child: buildGridView(context, state))
+              Expanded(child: Container(child: buildGridView(context, state)))
             ],
           );
         });
