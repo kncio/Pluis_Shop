@@ -14,6 +14,7 @@ import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
+import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 
 
 class GalleryRepository {
@@ -28,13 +29,13 @@ class GalleryRepository {
       var response = await api.get("getAllProduct", {});
 
       if (response.statusCode == 200) {
-        log("GetAll Products called" + response.data["data"][0].toString());
+
 
         for (var product in response.data["data"]) {
-          log(product.toString());
+
           allProducts.add(Product.fromMap(product));
         }
-        log("list lenght" + allProducts.length.toString());
+
         return Right(allProducts);
       } else {
         log(response.statusCode.toString());
@@ -54,12 +55,36 @@ class GalleryRepository {
 
       if (response.statusCode == 200) {
         for (var product in response.data["data"]) {
-          log(product.toString());
+
           allProducts.add(Product.fromMap(product));
         }
         return Right(allProducts);
       } else {
         log(response.statusCode.toString());
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, List<SiteCurrency>>> getCurrencys() async {
+    List<SiteCurrency> currencys = [];
+
+    try {
+      var response = await api.get(GET_CURRENCY, {});
+
+      if (response.statusCode == 200) {
+        log(response.data.toString());
+
+        for (var currencyInfo in response.data["data"]) {
+          log(currencyInfo.toString());
+          currencys.add(SiteCurrency.fromJson(currencyInfo));
+        }
+
+        return Right(currencys);
+      } else {
+        log("Error");
         return Left(Failure([response.statusMessage]));
       }
     } catch (error) {

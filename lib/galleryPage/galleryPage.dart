@@ -10,8 +10,11 @@ import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPage.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/galleryPage/galleryPageCubit.dart';
+import 'package:pluis_hv_app/observables/aviablepPricesObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisProductCard.dart';
+import 'package:pluis_hv_app/pluisWidgets/pluisProductCardCubit.dart';
+import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 
 import '../injectorContainer.dart' as injectionContainer;
 import 'galleryPageState.dart';
@@ -30,17 +33,33 @@ class GalleryPage extends StatefulWidget {
 class _GalleryPage extends State<GalleryPage> {
   final GalleryArgs categoryInfo;
 
+  //currencys
+  List<SiteCurrency> currencys = [];
+  int selectedCurrency = 0;
+  SelectedCurrencyBloc _selectedCurrencyBloc =
+      SelectedCurrencyBloc(currency: "");
+
   _GalleryPage({this.categoryInfo});
 
   @override
   void initState() {
-    if (this.categoryInfo != null) {
-      context
-          .read<GalleryPageCubit>()
-          .getProductsByCategory(this.categoryInfo.categoryId);
-    } else {
-      context.read<GalleryPageCubit>().getAllProducts();
-    }
+    context.read<GalleryPageCubit>().getSiteCurrencys().then((value) => {
+          if (this.categoryInfo != null)
+            {
+              this.currencys = value,
+              if (this.currencys.length > 0)
+                {
+                  this._selectedCurrencyBloc.updateVariations(
+                      this.currencys[this.selectedCurrency].coin_nomenclature),
+                },
+              context
+                  .read<GalleryPageCubit>()
+                  .getProductsByCategory(this.categoryInfo.categoryId)
+            }
+          else
+            {context.read<GalleryPageCubit>().getAllProducts()}
+        });
+
     super.initState();
   }
 
@@ -50,8 +69,10 @@ class _GalleryPage extends State<GalleryPage> {
       appBar: appBar(),
       body: buildBody(),
       bottomNavigationBar: BottomBar(
-        onPressBookmark: () => Navigator.of(context).pushNamed(ADDRESS_BOOK_ROUTE),
-        onPressSearch: ()=> Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE),
+        onPressBookmark: () =>
+            Navigator.of(context).pushNamed(ADDRESS_BOOK_ROUTE),
+        onPressSearch: () =>
+            Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE),
         onPressShopBag: () => Navigator.of(context).pushNamed(SHOP_CART),
         onPressAccount: () => Navigator.of(context).pushNamed(LOGIN_PAGE_ROUTE),
         onPressMenu: () => Navigator.of(context).pushNamed(MENU_PAGE),
@@ -63,6 +84,9 @@ class _GalleryPage extends State<GalleryPage> {
     return BlocConsumer<GalleryPageCubit, GalleryPageState>(
         listener: (context, state) async {
           if (state is GalleryPageSuccessState) {
+            setState(() {
+              this.currencys;
+            });
             log(state.products.toString());
           } else if (state is GalleryPageErrorState) {
             log("Errror: => " + state.message);
@@ -76,10 +100,7 @@ class _GalleryPage extends State<GalleryPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: buildGridView(context, state),
-              ))
+                  child: buildGridView(context, state))
             ],
           );
         });
@@ -94,17 +115,22 @@ class _GalleryPage extends State<GalleryPage> {
           mainAxisSpacing: 5,
           childAspectRatio: 0.60,
         ),
-        itemBuilder: (context, index) => ProductCard(
-          product: state.products[index],
-          press: () => Navigator.push(
-              context,
-              PLuisPageRoute(
-                  builder: (_) => BlocProvider<DetailsCubit>(
-                        create: (_) => injectionContainer.sl<DetailsCubit>(),
-                        child: DetailsPage(
-                          product: state.products[index],
-                        ),
-                      ))),
+        itemBuilder: (context, index) => BlocProvider<ProductCardCubit>(
+          create: (_) => new ProductCardCubit(
+              repository: injectionContainer.sl<ProductCardRepository>()),
+          child: ProductCard(
+            currencyBloc: this._selectedCurrencyBloc,
+            product: state.products[index],
+            press: () => Navigator.push(
+                context,
+                PLuisPageRoute(
+                    builder: (_) => BlocProvider<DetailsCubit>(
+                          create: (_) => injectionContainer.sl<DetailsCubit>(),
+                          child: DetailsPage(
+                            product: state.products[index],
+                          ),
+                        ))),
+          ),
         ),
       );
     }
@@ -125,7 +151,36 @@ class _GalleryPage extends State<GalleryPage> {
               this.categoryInfo != null ? this.categoryInfo.name : "TODOS",
               style: TextStyle(color: Colors.black))),
       actions: <Widget>[
-
+        (this.currencys.length > 0)
+            ? Padding(
+                padding: EdgeInsets.fromLTRB(32, 8, 32, 0),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        this.selectedCurrency =
+                            (this.selectedCurrency + 1) % this.currencys.length;
+                        _selectedCurrencyBloc.updateVariations(this
+                            .currencys[this.selectedCurrency]
+                            .coin_nomenclature);
+                      });
+                    },
+                    child: Container(
+                      child: Text(
+                        this
+                            .currencys[this.selectedCurrency]
+                            .coin_nomenclature
+                            .toUpperCase(),
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : SizedBox.shrink()
       ],
     );
   }
