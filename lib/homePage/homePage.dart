@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:http/http.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/homePage/homeDataModel.dart';
+import 'package:pluis_hv_app/observables/colorStringObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
@@ -28,6 +29,9 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   List<Tab> tabs = [];
   List<GenresInfo> genres;
   List<List<SlidesInfo>> slidersInfoByGender;
+
+  //colorObservable
+  ColorBloc textColorObservable = injectionContainer.sl<ColorBloc>();
 
   @override
   void initState() {
@@ -51,19 +55,27 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
     return AppBar(
       backgroundColor: Colors.transparent,
       title: Center(
-        child: TabBar(
-            controller: _tabController,
-            indicatorSize: TabBarIndicatorSize.label,
-            indicatorColor: Colors.black,
-            isScrollable: true,
-            tabs: this.tabs),
+        child: StreamBuilder(
+          stream: this.textColorObservable.colorObservable,
+          builder: (_, snapshot) {
+            return TabBar(
+                controller: _tabController,
+                indicatorSize: TabBarIndicatorSize.label,
+                indicatorColor: (snapshot.data != null)
+                    ? Color(snapshot.data)
+                    : Colors.black,
+                isScrollable: true,
+                tabs: this.tabs);
+          },
+        ),
       ),
     );
   }
 
   BottomBar buildBottomNavigationBar() {
     return BottomBar(
-      onPressBookmark: () => Navigator.of(context).pushNamed(ADDRESS_BOOK_ROUTE),
+      onPressBookmark: () =>
+          Navigator.of(context).pushNamed(ADDRESS_BOOK_ROUTE),
       onPressShopBag: () => Navigator.of(context).pushNamed(SHOP_CART),
       onPressAccount: () => Navigator.of(context).pushNamed(LOGIN_PAGE_ROUTE),
       onPressMenu: () => Navigator.of(context).pushNamed(MENU_PAGE),
@@ -74,20 +86,26 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
     return BlocConsumer<HomePageCubit, HomePageState>(
       listener: (context, state) async {
         if (state is HomePageGenresLoaded) {
-          log("!!!Genres Loaded");
           this.genres = state.genresInfo;
           _tabController = TabController(length: genres.length, vsync: this);
 
           tabs = List<Tab>.from(genres.map((genre) => Tab(
-                child: Text(
-                  genre.title,
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
+                child: StreamBuilder(
+                    stream: this.textColorObservable.colorObservable,
+                    builder: (_, snapshot) {
+                      return Text(
+                        genre.title,
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: (snapshot.data != null)
+                                ? Color(snapshot.data)
+                                : Colors.black),
+                      );
+                    }),
               )));
 
           _tabController.addListener(() {
             this.selectedGenre = genres[_tabController.index].gender_id;
-            log("Tab index change" + this.selectedGenre);
           });
           await this.context.read<HomePageCubit>().setSuccess();
         }

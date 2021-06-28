@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +9,9 @@ import 'package:pluis_hv_app/homePage/homeDataModel.dart';
 import 'package:pluis_hv_app/homePage/homePageCubit.dart';
 import 'package:pluis_hv_app/homePage/homePageRepository.dart';
 import 'package:pluis_hv_app/homePage/homePageStates.dart';
+import 'package:pluis_hv_app/observables/colorStringObservable.dart';
 import 'package:transparent_image/transparent_image.dart';
-
+import '../injectorContainer.dart' as injectionContainer;
 
 import 'homeAppBar.dart';
 
@@ -24,11 +27,10 @@ class HomePageCarousel extends StatefulWidget {
 }
 
 class _HomePageCarousel extends State<HomePageCarousel> {
-  final CarouselOptions defaultOptions = CarouselOptions(
-    viewportFraction: 1.0,
-    enlargeCenterPage: false,
-    scrollDirection: Axis.vertical,
-  );
+  //colorObservable
+  ColorBloc textColorObservable = injectionContainer.sl<ColorBloc>();
+
+  CarouselOptions defaultOptions = CarouselOptions();
 
   List<SlidesInfo> imagesUrls;
 
@@ -42,14 +44,26 @@ class _HomePageCarousel extends State<HomePageCarousel> {
     this
         .context
         .read<HomePageCarouselCubit>()
-        .loadSlideInfoFromGenderId(this.genre);
+        .loadSlideInfoFromGenderId(this.genre).whenComplete(() => {
+
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomePageCarouselCubit, HomePageState>(
       listener: (context, state) async {
-
+        if(state is HomePageCarouselSuccess){
+          textColorObservable.updateColor((state as HomePageCarouselSuccess).imagesUrls[0].text_color);
+          this.defaultOptions = CarouselOptions(
+            onPageChanged: (index, _) {
+              textColorObservable.updateColor((state as HomePageCarouselSuccess).imagesUrls[index].text_color);
+            },
+            viewportFraction: 1.0,
+            enlargeCenterPage: false,
+            scrollDirection: Axis.vertical,
+          );
+        }
       },
       builder: (context, state) {
         switch (state.runtimeType) {

@@ -20,14 +20,11 @@ class HomePageRepository {
       var response = await api.get(GET_SLIDES_IMAGES, {"id": genreId});
 
       if (response.statusCode == 200) {
-        log("GET SLIDES called" + response.data.toString());
-
         var slidesImageList = List<SlidesInfo>.from(
             response.data['data'].map((x) => SlidesInfo.fromJson(x)));
 
         return Right(slidesImageList);
       } else {
-        log(response.statusCode.toString());
         return Left(Failure([response.data.toString()]));
       }
     } catch (error) {
@@ -44,14 +41,14 @@ class HomePageRepository {
       var response = await api.get(ALL_GENDER, {});
 
       if (response.statusCode == 200) {
-        log("GET Genres called" + response.data.toString());
+       
 
         var slidesImageList = List<GenresInfo>.from(
             response.data['data'].map((x) => GenresInfo.fromJson(x)));
 
         return Right(slidesImageList);
       } else {
-        log(response.statusCode.toString());
+
         return Left(Failure([response.data.toString()]));
       }
     } catch (error) {

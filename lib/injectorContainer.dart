@@ -16,6 +16,7 @@ import 'package:pluis_hv_app/loginPage/loginRepository.dart';
 import 'package:pluis_hv_app/menuPage/MenuRepository.dart';
 import 'package:pluis_hv_app/menuPage/categoryExpandable.dart';
 import 'package:pluis_hv_app/menuPage/menuCubit.dart';
+import 'package:pluis_hv_app/observables/colorStringObservable.dart';
 import 'package:pluis_hv_app/observables/totalBloc.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisProductCard.dart';
@@ -123,4 +124,6 @@ Future<void> init() async {
   sl.registerLazySingleton<ShoppingCart>(() => ShoppingCart(shoppingList: []));
 
   sl.registerLazySingleton<TotalBloc>(() => TotalBloc(sum: 0,shoppingCartReference: sl()));
+
+  sl.registerLazySingleton<ColorBloc>(() => ColorBloc(colorsString: "#000000"));
 }
