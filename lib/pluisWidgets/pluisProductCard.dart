@@ -89,8 +89,7 @@ class _ProductCard extends State<ProductCard> {
                       stream: this.currencyBloc.currencyObservable,
                       builder: (context, AsyncSnapshot<String> snapshot) {
                         if (snapshot.data != null) {
-                          return Text(
-                              "${(this.pricesVariations.length > 0) ? this.pricesVariations[this.selectedPriceVariation].price : this.product.price} ${snapshot.data}");
+                          return buildPriceContainer(snapshot);
                         }
                         return SizedBox.shrink();
                       }),
@@ -99,5 +98,28 @@ class _ProductCard extends State<ProductCard> {
             ),
           );
         });
+  }
+
+  Widget buildPriceContainer(AsyncSnapshot<String> snapshot) {
+    var normalPrice =
+        "${(this.pricesVariations.length > 0) ? this.pricesVariations[this.selectedPriceVariation].price : this.product.price} ${snapshot.data}";
+
+    var discountPercent = (this.product.is_discount == "1")
+        ? "  -${this.product.discount_percentaje}%"
+        : "";
+
+    return RichText(
+        text: TextSpan(style: TextStyle(color: Colors.black),children: <TextSpan>[
+      TextSpan(
+          text: normalPrice,
+          style: TextStyle(
+              color: Colors.black,
+              decorationThickness: 2.85,
+              decorationColor: Colors.red,
+              decoration: (this.product.is_discount == "1")
+                  ? TextDecoration.lineThrough
+                  : TextDecoration.none)),
+          TextSpan(text: discountPercent)
+    ]));
   }
 }

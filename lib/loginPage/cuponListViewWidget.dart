@@ -53,6 +53,6 @@ class CuponsListView extends StatelessWidget {
   String discountTipe(Cupon cupon) {
     return (cupon.type_discount == "1")
         ? "porciento."
-        : "unidades de la moneda seleccionada";
+        : "cantidad fija";
   }
 }

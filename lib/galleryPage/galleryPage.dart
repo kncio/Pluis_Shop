@@ -44,7 +44,7 @@ class _GalleryPage extends State<GalleryPage> {
   @override
   void initState() {
     context.read<GalleryPageCubit>().getSiteCurrencys().then((value) => {
-          if (this.categoryInfo != null)
+          if (this.categoryInfo.categoryId != null)
             {
               this.currencys = value,
               if (this.currencys.length > 0)
@@ -52,12 +52,15 @@ class _GalleryPage extends State<GalleryPage> {
                   this._selectedCurrencyBloc.updateVariations(
                       this.currencys[this.selectedCurrency].coin_nomenclature),
                 },
-              context
-                  .read<GalleryPageCubit>()
-                  .getProductsByCategory(this.categoryInfo.categoryId)
+              context.read<GalleryPageCubit>().getProductsByCategory(
+                  this.categoryInfo.categoryId, this.categoryInfo.discountOnly)
             }
           else
-            {context.read<GalleryPageCubit>().getAllProducts()}
+            {
+              log("crazy"),
+              context.read<GalleryPageCubit>().getAllProducts(
+                  this.categoryInfo.discountOnly, this.categoryInfo.genderId)
+            }
         });
 
     super.initState();
@@ -71,8 +74,8 @@ class _GalleryPage extends State<GalleryPage> {
       bottomNavigationBar: BottomBar(
         onPressBookmark: () =>
             Navigator.of(context).pushNamed(ADDRESS_BOOK_ROUTE),
-        onPressSearch: () =>
-            Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE),
+        onPressSearch: () => Navigator.of(context)
+            .pushNamedAndRemoveUntil(HOME_PAGE_ROUTE, ModalRoute.withName('/')),
         onPressShopBag: () => Navigator.of(context).pushNamed(SHOP_CART),
         onPressAccount: () => Navigator.of(context).pushNamed(LOGIN_PAGE_ROUTE),
         onPressMenu: () => Navigator.of(context).pushNamed(MENU_PAGE),

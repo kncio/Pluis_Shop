@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pluis_hv_app/commons/argsClasses.dart';
+import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/pluisWidgets/expandableRow.dart';
 
 import 'MenuDataModel.dart';
@@ -47,7 +49,14 @@ class _MenuCategoriesExpandable extends State<MenuCategoriesExpandable> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
-                        onTap: () => {},
+                        onTap: () => {
+                          Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE,
+                              arguments: GalleryArgs(
+                                  categoryId: null,
+                                  name: "REBAJAS",
+                                  discountOnly: true,
+                                  genderId: this.genreId))
+                        },
                         child: Container(
                           padding: EdgeInsets.fromLTRB(10, 30, 0, 30),
                           child: Row(

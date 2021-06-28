@@ -8,6 +8,7 @@ import 'package:dartz/dartz_unsafe.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
 // import 'package:http/http.dart' as http;
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
@@ -16,23 +17,19 @@ import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 
-
 class GalleryRepository {
   final ApiClient api;
 
   GalleryRepository({this.api});
 
-  Future<Either<Failure, List<Product>>> getAllProducts() async {
+  Future<Either<Failure, List<Product>>> getAllProducts(String genreId) async {
     List<Product> allProducts = [];
-
+    log("agghhh");
     try {
-      var response = await api.get("getAllProduct", {});
+      var response = await api.get(GET_ALL_DISCOUNT_PRODUCTS_By_GENDER, {"id": 5});
 
       if (response.statusCode == 200) {
-
-
         for (var product in response.data["data"]) {
-
           allProducts.add(Product.fromMap(product));
         }
 
@@ -45,7 +42,6 @@ class GalleryRepository {
     }
   }
 
-
   Future<Either<Failure, List<Product>>> getAllProductByCategory(
       String categoryId) async {
     List<Product> allProducts = [];
@@ -55,7 +51,6 @@ class GalleryRepository {
 
       if (response.statusCode == 200) {
         for (var product in response.data["data"]) {
-
           allProducts.add(Product.fromMap(product));
         }
         return Right(allProducts);

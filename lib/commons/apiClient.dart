@@ -81,7 +81,7 @@ class ApiClient {
   Future<Response> get(String method, Map<String, dynamic> params) async {
     try {
       var url = this.serviceUri + method;
-      log(params.toString());
+      log(params.toString() + "caca" +url);
       var response = await client.get(url, queryParameters: params);
 
       return response;
