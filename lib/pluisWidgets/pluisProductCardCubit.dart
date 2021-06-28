@@ -1,7 +1,8 @@
-
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz_unsafe.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
@@ -19,10 +20,10 @@ class ProductCardCubit extends Cubit<ProductCardState> {
     var eitherValue = await repository.getPriceVariation(price);
 
     eitherValue.fold(
-            (failure) => failure.properties.isEmpty
+        (failure) => failure.properties.isEmpty
             ? emit(ProductCardErrorState())
             : emit(ProductCardErrorState()),
-            (list) => list.length >= 0
+        (list) => list.length >= 0
             ? emit(ProductCardSuccessState(variations: list))
             : emit(ProductCardErrorState()));
   }
@@ -56,11 +57,9 @@ class ProductCardRepository {
       var response = await api.get(GET_PRICES_VARIATIONS, {"price": price});
 
       if (response.statusCode == 200) {
-        log(response.toString());
-        for (var price in response.data["data"]) {
-          variations.add(PriceVariation.fromMap(price));
-        }
-        log("list lenght" + variations.length.toString());
+        log(response.data["data"].toString());
+        variations = unpack(response.data["data"]);
+        log("list lenght");
         return Right(variations);
       } else {
         log(response.statusCode.toString());
@@ -68,6 +67,17 @@ class ProductCardRepository {
     } catch (error) {
       return Left(Failure([error.toString()]));
     }
+  }
+
+  List<PriceVariation> unpack(dynamic data) {
+    var value = <PriceVariation>[];
+
+    var parsedData = (data as Map<String, dynamic>);
+    for (var key in parsedData.keys) {
+      value.add(PriceVariation.fromMap(parsedData[key]));
+    }
+
+    return value;
   }
 }
 
@@ -77,6 +87,6 @@ class PriceVariation {
 
   PriceVariation({this.price, this.coin});
 
-  factory PriceVariation.fromMap(Map<String, dynamic> json) =>
-      PriceVariation(price: json["price"], coin: json["coin"]);
+  factory PriceVariation.fromMap(Map<String, dynamic> json) => PriceVariation(
+      price: json["price"].toString(), coin: json["coin"].toString());
 }

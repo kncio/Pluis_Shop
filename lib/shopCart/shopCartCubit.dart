@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
@@ -48,7 +50,7 @@ class ShopCartCubit extends Cubit<ShopCartState> {
         (price) => price != null
             ? priceValue = double.parse(price.data)
             : emit(ShopCartErrorState("No hay precios disponibles")));
-
+    log("${priceValue}" + "State " + stateId);
     return priceValue;
   }
 

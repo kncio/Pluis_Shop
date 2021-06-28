@@ -100,8 +100,8 @@ class _ShopCartPage extends State<ShopCartPage> {
               return null;
             case ShopCartCurrencyLoadedState:
               setState(() {
-                this.selectedCurrency = (state as ShopCartCurrencyLoadedState)
-                    .currencys[0];
+                this.selectedCurrency =
+                    (state as ShopCartCurrencyLoadedState).currencys[0];
               });
               return this.currencys =
                   (state as ShopCartCurrencyLoadedState).currencys;
@@ -198,6 +198,7 @@ class _ShopCartPage extends State<ShopCartPage> {
         return Text(
           'TOTAL  ' +
               '${applyDiscountAndDelivery(snapshot.data)}' +
+              ' + ${this.shipmentPrice} Envío' +
               ((this.selectedCurrency != null)
                   ? "  " + this.selectedCurrency.coin_nomenclature
                   : ""),
@@ -208,12 +209,13 @@ class _ShopCartPage extends State<ShopCartPage> {
   }
 
   String applyDiscountAndDelivery(double subTotal) {
-    if(subTotal != null){
+    if (subTotal != null) {
       double sicount = 0;
       if (this.selectedCupon != null) {
         if (this.selectedCupon.type_discount == "1") {
           sicount =
-              (subTotal * double.parse(this.selectedCupon.value_discount)) / 100;
+              (subTotal * double.parse(this.selectedCupon.value_discount)) /
+                  100;
         } else if (this.selectedCupon.type_discount == "2") {
           sicount = double.parse(this.selectedCupon.value_discount);
         }
@@ -319,8 +321,10 @@ class _ShopCartPage extends State<ShopCartPage> {
                       });
                       context
                           .read<ShopCartCubit>()
-                          .getDeliveryPrice(address.state_id)
-                          .then((value) => this.shipmentPrice = value);
+                          .getDeliveryPrice(address.city_id)
+                          .then((value) => this.setState(() {
+                                this.shipmentPrice = value;
+                              }));
                     },
                     items: this
                         .userAddress
