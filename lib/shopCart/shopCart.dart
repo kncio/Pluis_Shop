@@ -458,6 +458,9 @@ class _ShopCartPage extends State<ShopCartPage> {
                         .shoppingCartReference
                         .shoppingList[index]
                         .productData,
+                    coinNomenclature: ((this.selectedCurrency != null)
+                        ? "  " + this.selectedCurrency.coin_nomenclature
+                        : ""),
                   )
                 ]);
               })

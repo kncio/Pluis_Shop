@@ -109,17 +109,19 @@ class _ProductCard extends State<ProductCard> {
         : "";
 
     return RichText(
-        text: TextSpan(style: TextStyle(color: Colors.black),children: <TextSpan>[
-      TextSpan(
-          text: normalPrice,
-          style: TextStyle(
-              color: Colors.black,
-              decorationThickness: 2.85,
-              decorationColor: Colors.red,
-              decoration: (this.product.is_discount == "1")
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none)),
+        text: TextSpan(
+            style: TextStyle(color: Colors.black),
+            children: <TextSpan>[
+          TextSpan(
+              text: normalPrice,
+              style: TextStyle(
+                  color: Colors.black,
+                  decorationThickness: 2.85,
+                  decorationColor: Colors.red,
+                  decoration: (this.product.is_discount == "1")
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none)),
           TextSpan(text: discountPercent)
-    ]));
+        ]));
   }
 }

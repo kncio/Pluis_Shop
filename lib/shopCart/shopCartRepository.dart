@@ -6,6 +6,7 @@ import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
 import 'package:pluis_hv_app/commons/buyOrderModel.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
 import 'package:pluis_hv_app/commons/keyStorage.dart';
+import 'package:pluis_hv_app/pluisWidgets/pluisProductCardCubit.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 
@@ -119,7 +120,6 @@ class ShopCartRepository {
       var response = await api.post(CREATE_BUY_ORDER, body.toMap());
 
       if (response.statusCode == 200) {
-        log("agghh");
         return Right(true);
       } else {
         log(response.data);
@@ -129,6 +129,8 @@ class ShopCartRepository {
       return Left(Failure([error.toString()]));
     }
   }
+
+
 
 
 }

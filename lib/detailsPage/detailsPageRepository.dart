@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
+import 'package:pluis_hv_app/pluisWidgets/pluisProductCardCubit.dart';
 
 import 'detailsPageRemoteDataSource.dart';
 
@@ -11,6 +12,37 @@ class DetailsRepository {
   final ApiClient api;
 
   DetailsRepository({this.api});
+
+  Future<Either<Failure, List<PriceVariation>>> getPriceVariation(
+      String price) async {
+    List<PriceVariation> variations = [];
+
+    try {
+      var response = await api.get(GET_PRICES_VARIATIONS, {"price": price});
+
+      if (response.statusCode == 200) {
+        log(response.data["data"].toString());
+        variations = unpack(response.data["data"]);
+        log("list lenght");
+        return Right(variations);
+      } else {
+        log(response.statusCode.toString());
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  List<PriceVariation> unpack(dynamic data) {
+    var value = <PriceVariation>[];
+
+    var parsedData = (data as Map<String, dynamic>);
+    for (var key in parsedData.keys) {
+      value.add(PriceVariation.fromMap(parsedData[key]));
+    }
+
+    return value;
+  }
 
   Future<Either<Failure, List<ColorByProductsDataModel>>> getColorsByProduct(
       String productRowId) async {
@@ -37,10 +69,11 @@ class DetailsRepository {
     }
   }
 
-  Future<Either<Failure, List<SizeVariationByColor>>> getColorsVariation(String colorRowId) async {
+  Future<Either<Failure, List<SizeVariationByColor>>> getColorsVariation(
+      String colorRowId) async {
     List<SizeVariationByColor> sizeList = [];
 
-    try{
+    try {
       var response = await api.get(GET_COLORS_VARIATION, {'id': colorRowId});
 
       if (response.statusCode == 200) {
@@ -56,8 +89,7 @@ class DetailsRepository {
         log("Error");
         return Left(Failure([response.statusMessage]));
       }
-    }
-    catch(error){
+    } catch (error) {
       return Left(Failure([error.toString()]));
     }
   }
@@ -68,11 +100,10 @@ class DetailsRepository {
     try {
       var response = await api.get(GET_PRODUCT_IMAGES, {"id": productRowId});
 
-
       if (response.statusCode == 200) {
-
         imagesList = List.from(response.data["data"])
-            .map((jsonData) => ProductDetailsImages.fromJson(jsonData)).toList();
+            .map((jsonData) => ProductDetailsImages.fromJson(jsonData))
+            .toList();
 
         return Right(imagesList);
       } else {

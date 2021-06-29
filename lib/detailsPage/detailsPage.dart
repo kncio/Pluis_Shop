@@ -25,17 +25,21 @@ import 'detailsPageRemoteDataSource.dart';
 
 class DetailsPage extends StatefulWidget {
   final Product product;
+  final String selectedCurrencyNomenclature;
 
-  const DetailsPage({@required this.product});
+  const DetailsPage(
+      {@required this.product, @required this.selectedCurrencyNomenclature});
 
   @override
   _DetailsPage createState() {
-    return _DetailsPage(product: this.product);
+    return _DetailsPage(
+        product: this.product,
+        selectedCurrencyNomenclature: this.selectedCurrencyNomenclature);
   }
 }
 
-//TODO: FAlta maquetar el carousel para mostrar las diferentes fotos,
 class _DetailsPage extends State<DetailsPage> {
+  final String selectedCurrencyNomenclature;
   final Product product;
   List<ProductDetailsImages> imagesList = [];
   bool addTapped = false;
@@ -58,17 +62,53 @@ class _DetailsPage extends State<DetailsPage> {
     scrollDirection: Axis.horizontal,
   );
 
-  _DetailsPage({Key key, this.product});
+  //normal Price Variation(for current currency)
+  String normalPrice = "";
+
+  //discount Price Variation(for current currency)
+  String discountPrice = "";
+
+  _DetailsPage({Key key, this.product, this.selectedCurrencyNomenclature});
 
   @override
   void initState() {
     super.initState();
+    normalPrice = this.product.price;
+    discountPrice = this.product.discount_price;
+
     this._aviableSizesByColorBloc = AviableSizesBloc(aviableSizes: []);
     context.read<DetailsCubit>().getColorsBy(this.product.row_id);
     _panelController = PanelController();
     this.imagesList.add(ProductDetailsImages(product.image));
     context.read<DetailsCubit>().getDetailsImages(this.product.row_id);
-    log("caca " + product.row_id);
+
+    context
+        .read<DetailsCubit>()
+        .getPriceVariations(this.product.price)
+        .then((value) =>
+    {
+      this.setState(() {
+        this.normalPrice = value
+            .where((element) =>
+        element.coin == this.selectedCurrencyNomenclature)
+            .first
+            .price;
+      })
+    });
+    context
+        .read<DetailsCubit>()
+        .getPriceVariations(this.product.discount_price)
+        .then((value) =>
+    {
+      this.setState(() {
+        this.discountPrice = value
+            .where((element) =>
+        element.coin == this.selectedCurrencyNomenclature)
+            .first
+            .price;
+      })
+    });
+
   }
 
   @override
@@ -81,41 +121,48 @@ class _DetailsPage extends State<DetailsPage> {
     );
   }
 
-  SlidingUpPanel buildColumn() => SlidingUpPanel(
-      minHeight: (MediaQuery.of(context).size.height / 10),
-      maxHeight: (MediaQuery.of(context).size.height / 3),
-      controller: _panelController,
-      panelSnapping: true,
-      parallaxEnabled: true,
-      parallaxOffset: 0.4,
-      panel: buildPanel(),
-      body: buildDetailsBody(),
-      header: buildHeader());
+  SlidingUpPanel buildColumn() =>
+      SlidingUpPanel(
+          minHeight: (MediaQuery
+              .of(context)
+              .size
+              .height / 10),
+          maxHeight: (MediaQuery
+              .of(context)
+              .size
+              .height / 3),
+          controller: _panelController,
+          panelSnapping: true,
+          parallaxEnabled: true,
+          parallaxOffset: 0.4,
+          panel: buildPanel(),
+          body: buildDetailsBody(),
+          header: buildHeader());
 
   Widget buildPanel() {
     return BlocConsumer<DetailsCubit, DetailsPageState>(
         builder: (context, state) {
-      switch (state.runtimeType) {
-        case DetailsPageSuccessColor:
-          return buildPanelProductInfo(this.selectedColorIndex);
-        case DetailsImagesLoaded:
-          return buildPanelProductInfo(this.selectedColorIndex);
-        case DetailsError:
-          return Center(
-            child: Text((state as DetailsError).message,
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold)),
-          );
-        default:
-          return Center(
-            child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
-          );
-      }
-    }, listener: (context, state) async {
+          switch (state.runtimeType) {
+            case DetailsPageSuccessColor:
+              return buildPanelProductInfo(this.selectedColorIndex);
+            case DetailsImagesLoaded:
+              return buildPanelProductInfo(this.selectedColorIndex);
+            case DetailsError:
+              return Center(
+                child: Text((state as DetailsError).message,
+                    overflow: TextOverflow.clip,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold)),
+              );
+            default:
+              return Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+              );
+          }
+        }, listener: (context, state) async {
       if (state is DetailsError) {
         log(state.message);
       }
@@ -156,7 +203,8 @@ class _DetailsPage extends State<DetailsPage> {
             context
                 .read<DetailsCubit>()
                 .getSizeByColor(this.selectedColorId)
-                .then((list) => this._aviableSizesByColorBloc.updateBills(list));
+                .then(
+                    (list) => this._aviableSizesByColorBloc.updateBills(list));
             //For Debug Only
             log(this.selectedColorId);
           },
@@ -164,7 +212,7 @@ class _DetailsPage extends State<DetailsPage> {
         ),
       ),
       Padding(
-          padding: EdgeInsets.fromLTRB(30, 32, 0, 16),
+          padding: EdgeInsets.fromLTRB(30, 16, 0, 16),
           child: Text(
             "Tallas:",
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -174,7 +222,6 @@ class _DetailsPage extends State<DetailsPage> {
           child: SizeSelectorList(
             onSelecedSizeChange: (String tall) {
               this.selectedTall = tall;
-              log(this.selectedTall);
             },
             aviableSizesByColorBloc: this._aviableSizesByColorBloc,
           ),
@@ -204,7 +251,10 @@ class _DetailsPage extends State<DetailsPage> {
   Container buildHeader() {
     return Container(
       height: 40,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
       child: SizedBox(
         height: 50,
@@ -213,9 +263,10 @@ class _DetailsPage extends State<DetailsPage> {
             this.product.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(this.product.price + "  USD"),
+          subtitle: buildPriceInfoContainer(),
           trailing: IconButton(
-            onPressed: () => {
+            onPressed: () =>
+            {
               if (this._panelController.isPanelOpen)
                 {this._panelController.close()}
               else
@@ -228,7 +279,27 @@ class _DetailsPage extends State<DetailsPage> {
     );
   }
 
-  SizedBox buildBottomNavigationBar() => SizedBox(
+  RichText buildPriceInfoContainer() {
+
+    return RichText(
+        text: TextSpan(style: TextStyle(color: Colors.grey), children: [
+          TextSpan(
+              text: this.normalPrice,
+              style: TextStyle(
+                  decorationColor: Colors.red,
+                  decorationThickness: 2.85,
+                  decoration: (this.product.is_discount == "1")
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none)),
+          (this.product.is_discount == "1")
+              ? TextSpan(text: "  ${this.discountPrice}")
+              : TextSpan(text: ""),
+          TextSpan(text: "  ${this.selectedCurrencyNomenclature}")
+        ]));
+  }
+
+  SizedBox buildBottomNavigationBar() =>
+      SizedBox(
         height: 75,
         child: Row(children: [
           PLuisButton(
@@ -236,14 +307,18 @@ class _DetailsPage extends State<DetailsPage> {
             label: 'AÑADIR',
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width / 5,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width / 5,
           ),
           Expanded(
             child: Container(
                 padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
                 child: IconButton(
                   icon: Icon(Icons.ios_share),
-                  onPressed: () => {
+                  onPressed: () =>
+                  {
                     //TODO: DeepLinks
                   },
                   color: Colors.black,
@@ -264,7 +339,8 @@ class _DetailsPage extends State<DetailsPage> {
         ]),
       );
 
-  AppBar buildAppBar() => AppBar(
+  AppBar buildAppBar() =>
+      AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -298,7 +374,7 @@ class _DetailsPage extends State<DetailsPage> {
     return Hero(
       tag: url,
       child:
-          FadeInImage.memoryNetwork(image: url, placeholder: kTransparentImage),
+      FadeInImage.memoryNetwork(image: url, placeholder: kTransparentImage),
     );
   }
 }

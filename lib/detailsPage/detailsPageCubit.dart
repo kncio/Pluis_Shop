@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageRemoteDataSource.dart';
+import 'package:pluis_hv_app/pluisWidgets/pluisProductCardCubit.dart';
 
 import 'detailsPageRepository.dart';
 import 'detailsPageState.dart';
@@ -41,6 +42,7 @@ class DetailsCubit extends Cubit<DetailsPageState> {
             : emit(DetailsError(
                 "Actualmente no existen ejemplares de este producto")));
   }
+  
   Future<void> getDetailsImages(String productRowId) async {
     emit(DetailsLoading());
 
@@ -57,5 +59,20 @@ class DetailsCubit extends Cubit<DetailsPageState> {
   }
   Future<void> setSuccess() async {
     emit(DetailsPageSuccess());
+  }
+
+  Future<List<PriceVariation>> getPriceVariations(String price) async {
+    var priceVariation = <PriceVariation>[];
+    var eitherValue = await repository.getPriceVariation(price);
+
+    eitherValue.fold(
+            (failure) => failure.properties.isEmpty
+            ? emit(DetailsError("Server unreachable"))
+            : emit(DetailsError(failure.properties.first)),
+            (list) => list.length >= 0
+            ? priceVariation = list
+            : emit(DetailsError("Error")));
+
+    return priceVariation;
   }
 }

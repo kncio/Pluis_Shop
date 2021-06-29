@@ -42,7 +42,7 @@ class _ColorCheckBox extends State<ColorCheckBoxList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 70,
+        height: 80,
         child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: this.colorInfoList.length,
