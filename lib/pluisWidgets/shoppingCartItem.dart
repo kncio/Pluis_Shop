@@ -125,7 +125,7 @@ class _ShopCartItem extends State<ShopCartItem> {
                                 .shoppingCartReference
                                 .substractProductQty(index);
                           });
-                          this._totalBloc.updateTotal();
+                          this._totalBloc.updateTotal(this.coinNomenclature.trim());
                         }
                       }),
                   Text(this
@@ -143,7 +143,7 @@ class _ShopCartItem extends State<ShopCartItem> {
                         setState(() {
                           this.shoppingCartReference.addProductQty(index);
                         });
-                        this._totalBloc.updateTotal();
+                        this._totalBloc.updateTotal(this.coinNomenclature.trim());
                       }),
                   Text("Unidades")
                 ],

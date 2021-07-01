@@ -8,6 +8,7 @@ import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/observables/totalBloc.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
+import 'package:pluis_hv_app/pluisWidgets/pluisProductCardCubit.dart';
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartItem.dart';
@@ -66,7 +67,7 @@ class _ShopCartPage extends State<ShopCartPage> {
   @override
   void initState() {
     shoppingCartReference = injectorContainer.sl<ShoppingCart>();
-    _totalBloc.updateTotal();
+
     this.editing = false;
     super.initState();
     context.read<ShopCartCubit>().getCurrency();
@@ -102,6 +103,7 @@ class _ShopCartPage extends State<ShopCartPage> {
               setState(() {
                 this.selectedCurrency =
                     (state as ShopCartCurrencyLoadedState).currencys[0];
+                _totalBloc.updateTotal(this.selectedCurrency.coin_nomenclature.trim());
               });
               return this.currencys =
                   (state as ShopCartCurrencyLoadedState).currencys;
@@ -225,6 +227,8 @@ class _ShopCartPage extends State<ShopCartPage> {
     }
     return "0.00";
   }
+
+
 
   Widget buildDetailsSelector(BuildContext context) {
     return ListView(
