@@ -28,7 +28,6 @@ class _MenuCategoriesExpandable extends State<MenuCategoriesExpandable> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context
         .read<MenuCategoriesExpandableCubit>()
