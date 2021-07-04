@@ -130,8 +130,9 @@ class _GalleryPage extends State<GalleryPage> {
                           create: (_) => injectionContainer.sl<DetailsCubit>(),
                           child: DetailsPage(
                             product: state.products[index],
-                            selectedCurrencyNomenclature:
-                                this.currencys[this.selectedCurrency].coin_nomenclature,
+                            selectedCurrencyNomenclature: this
+                                .currencys[this.selectedCurrency]
+                                .coin_nomenclature,
                           ),
                         ))),
           ),

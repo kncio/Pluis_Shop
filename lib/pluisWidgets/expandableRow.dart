@@ -15,13 +15,17 @@ class ExpandableRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    buildItem(String label, String id) {
+    buildItem(String label, String id, bool discountOnly) {
       return Padding(
         padding: const EdgeInsets.all(10.0),
         child: TextButton(
           onPressed: () => {
-            Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE,
-                arguments: GalleryArgs(categoryId: id, name: label))
+            (discountOnly)
+                ? Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE,
+                    arguments: GalleryArgs(
+                        categoryId: id, name: "REBAJAS", discountOnly: true))
+                : Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE,
+                    arguments: GalleryArgs(categoryId: id, name: label,discountOnly: false))
           },
           child: Text(label),
         ),
@@ -33,7 +37,7 @@ class ExpandableRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           for (var i in this.itemsNames)
-            buildItem("${i['categoryName']}", i["id"]),
+            buildItem("${i['categoryName']}", i["id"], i["discountOnly"]),
         ],
       );
     }

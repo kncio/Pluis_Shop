@@ -44,11 +44,6 @@ class MenuPageRepository {
             response.data['data'].map((categoryData) =>
                 CategoryOnDiscountData.fromJson(categoryData)));
 
-        categoryByGenderList.add(CategoryOnDiscountData(
-            gender_name: "DePrueba",
-            category_name: "DePrueba",
-            category_id: "6088745e0b6ea"));
-        
         return Right(categoryByGenderList);
       } else {
         log(response.statusCode.toString());

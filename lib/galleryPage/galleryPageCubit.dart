@@ -30,7 +30,9 @@ class GalleryPageCubit extends Cubit<GalleryPageState> {
       String categoryId, bool onlyDiscount) async {
     emit(GalleryPageLoadingState());
 
-    var eitherValue = await repository.getAllProductByCategory(categoryId);
+    var eitherValue = (onlyDiscount)
+        ? await repository.getProductOnDiscountByCategoryId(categoryId)
+        : await repository.getAllProductByCategory(categoryId);
 
     eitherValue.fold(
         (failure) => failure.properties.isEmpty

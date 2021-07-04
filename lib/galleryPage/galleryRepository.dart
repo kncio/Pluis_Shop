@@ -22,11 +22,34 @@ class GalleryRepository {
 
   GalleryRepository({this.api});
 
-  Future<Either<Failure, List<Product>>> getAllProducts(String categoryId) async {
+  Future<Either<Failure, List<Product>>> getAllProducts(
+      String categoryId) async {
+    List<Product> allProducts = [];
+    try {
+      var response = await api
+          .get(ON_DISCOUNT_PRODUCTS_BY_CATEGORY_ROW_ID, {"id": categoryId});
+
+      if (response.statusCode == 200) {
+        for (var product in response.data["data"]) {
+          allProducts.add(Product.fromMap(product));
+        }
+
+        return Right(allProducts);
+      } else {
+        log(response.statusCode.toString());
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, List<Product>>> getProductOnDiscountByCategoryId(
+      String categoryId) async {
     List<Product> allProducts = [];
     log("agghhh");
     try {
-      var response = await api.get(ON_DISCOUNT_PRODUCTS_BY_CATEGORY_ROW_ID, {"id": categoryId});
+      var response = await api
+          .get(ON_DISCOUNT_PRODUCTS_BY_CATEGORY_ROW_ID, {"id": categoryId});
 
       if (response.statusCode == 200) {
         for (var product in response.data["data"]) {
@@ -70,10 +93,7 @@ class GalleryRepository {
       var response = await api.get(GET_CURRENCY, {});
 
       if (response.statusCode == 200) {
-        log(response.data.toString());
-
         for (var currencyInfo in response.data["data"]) {
-          log(currencyInfo.toString());
           currencys.add(SiteCurrency.fromJson(currencyInfo));
         }
 

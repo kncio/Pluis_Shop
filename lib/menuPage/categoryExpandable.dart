@@ -56,30 +56,23 @@ class _MenuCategoriesExpandable extends State<MenuCategoriesExpandable> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () => {
-                          Navigator.pushNamed(context, GALERY_SCREEN_PAGE_ROUTE,
-                              arguments: GalleryArgs(
-                                  categoryId: null,
-                                  name: "REBAJAS",
-                                  discountOnly: true,
-                                  genderId: this.genreId))
-                        },
-                        child: Container(
-                          padding: EdgeInsets.fromLTRB(10, 30, 0, 30),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "REBAJAS",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 24),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 30, 0, 30),
+                        child: StreamBuilder(
+                            stream: this
+                                ._categoriesOnDiscountBloc
+                                .categoriesObservable,
+                            builder: (context,
+                                AsyncSnapshot<List<CategoryOnDiscountData>>
+                                    snapshot) {
+                              return ExpandableRow(
+                                headerName: "REBAJAS",
+                                itemsNames: (snapshot.data != null)
+                                    ? List<Map<String, dynamic>>.from(
+                                        snapshot.data.map((e) => e.toMap()))
+                                    : [],
+                              );
+                            }),
                       ),
                       ExpandableRow(
                         headerName: "COLECCIONES",
