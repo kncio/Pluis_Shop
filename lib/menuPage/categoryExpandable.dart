@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pluis_hv_app/commons/argsClasses.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
+import 'package:pluis_hv_app/observables/CategoryOnDiscountObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/expandableRow.dart';
 
 import 'MenuDataModel.dart';
@@ -26,12 +27,20 @@ class _MenuCategoriesExpandable extends State<MenuCategoriesExpandable> {
 
   _MenuCategoriesExpandable({this.genreId});
 
+  CategoryOnDiscountBloc _categoriesOnDiscountBloc =
+      CategoryOnDiscountBloc(categoryOndiscount: <CategoryOnDiscountData>[]);
+
   @override
   void initState() {
     super.initState();
     context
         .read<MenuCategoriesExpandableCubit>()
         .getCategoryByGender(this.genreId);
+    context
+        .read<MenuCategoriesExpandableCubit>()
+        .getCategoryOnDiscountByGender(this.genreId)
+        .then((categoryList) =>
+            {this._categoriesOnDiscountBloc.updateCategories(categoryList)});
   }
 
   @override
@@ -111,6 +120,22 @@ class MenuCategoriesExpandableCubit
         (categories) => categories != null
             ? emit(MenuCategoriesExpandableSuccess(categories: categories))
             : emit(MenuCategoriesExpandableError("Error desconocido")));
+  }
+
+  Future<List<CategoryOnDiscountData>> getCategoryOnDiscountByGender(
+      String genderId) async {
+    var returnList = <CategoryOnDiscountData>[];
+
+    var eitherValue = await repository.getCategoryOnDiscountByGender(genderId);
+    eitherValue.fold(
+        (failure) => failure.properties.isEmpty
+            ? emit(MenuCategoriesExpandableError("Server Unreachable"))
+            : emit(MenuCategoriesExpandableError(failure.properties.first)),
+        (categoriesOnDiscount) => categoriesOnDiscount != null
+            ? returnList = categoriesOnDiscount
+            : emit(MenuCategoriesExpandableError("Error desconocido")));
+
+    return returnList;
   }
 }
 

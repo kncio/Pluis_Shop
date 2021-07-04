@@ -33,9 +33,34 @@ class MenuPageRepository {
     }
   }
 
+  Future<Either<Failure, List<CategoryOnDiscountData>>>
+      getCategoryOnDiscountByGender(String genreId) async {
+    try {
+      var response =
+          await api.get(GET_ALL_DISCOUNT_CATEGORY_By_GENDER, {"id": genreId});
+
+      if (response.statusCode == 200) {
+        var categoryByGenderList = List<CategoryOnDiscountData>.from(
+            response.data['data'].map((categoryData) =>
+                CategoryOnDiscountData.fromJson(categoryData)));
+
+        categoryByGenderList.add(CategoryOnDiscountData(
+            gender_name: "DePrueba",
+            category_name: "DePrueba",
+            category_id: "6088745e0b6ea"));
+        
+        return Right(categoryByGenderList);
+      } else {
+        log(response.statusCode.toString());
+        return Left(Failure([response.data.toString()]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
   Future<Either<Failure, List<GenresInfo>>> loadGenres() async {
     try {
-
       var response = await api.get(ALL_GENDER, {});
 
       if (response.statusCode == 200) {

@@ -29,3 +29,18 @@ class CategoryData {
     return {"categoryName": this.title, "id": this.cat_row};
   }
 }
+
+class CategoryOnDiscountData{
+  final String category_name;
+  final String gender_name;
+  final String category_id;
+
+  CategoryOnDiscountData({this.category_name, this.gender_name, this.category_id});
+
+  factory CategoryOnDiscountData.fromJson(Map<String, dynamic> json) => CategoryOnDiscountData(
+    category_id: json["category_id"],
+    category_name: json["category_name"],
+    gender_name: json["gender_name"]
+  );
+
+}

@@ -22,11 +22,11 @@ class GalleryRepository {
 
   GalleryRepository({this.api});
 
-  Future<Either<Failure, List<Product>>> getAllProducts(String genreId) async {
+  Future<Either<Failure, List<Product>>> getAllProducts(String categoryId) async {
     List<Product> allProducts = [];
     log("agghhh");
     try {
-      var response = await api.get(GET_ALL_DISCOUNT_PRODUCTS_By_GENDER, {"id": 5});
+      var response = await api.get(ON_DISCOUNT_PRODUCTS_BY_CATEGORY_ROW_ID, {"id": categoryId});
 
       if (response.statusCode == 200) {
         for (var product in response.data["data"]) {

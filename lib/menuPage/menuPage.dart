@@ -26,7 +26,6 @@ class _MenuPage extends State<MenuPage> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<MenuCubit>().loadGenres();
   }
