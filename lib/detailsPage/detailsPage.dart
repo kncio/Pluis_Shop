@@ -80,35 +80,37 @@ class _DetailsPage extends State<DetailsPage> {
     context.read<DetailsCubit>().getColorsBy(this.product.row_id);
     _panelController = PanelController();
     this.imagesList.add(ProductDetailsImages(product.image));
-    context.read<DetailsCubit>().getDetailsImages(this.product.row_id);
+    context
+        .read<DetailsCubit>()
+        .getDetailsImages(this.product.row_id)
+        .then((list) => this.setState(() {
+              this.imagesList.addAll(list);
+            }));
 
     context
         .read<DetailsCubit>()
         .getPriceVariations(this.product.price)
-        .then((value) =>
-    {
-      this.setState(() {
-        this.normalPrice = value
-            .where((element) =>
-        element.coin == this.selectedCurrencyNomenclature)
-            .first
-            .price;
-      })
-    });
+        .then((value) => {
+              this.setState(() {
+                this.normalPrice = value
+                    .where((element) =>
+                        element.coin == this.selectedCurrencyNomenclature)
+                    .first
+                    .price;
+              })
+            });
     context
         .read<DetailsCubit>()
         .getPriceVariations(this.product.discount_price)
-        .then((value) =>
-    {
-      this.setState(() {
-        this.discountPrice = value
-            .where((element) =>
-        element.coin == this.selectedCurrencyNomenclature)
-            .first
-            .price;
-      })
-    });
-
+        .then((value) => {
+              this.setState(() {
+                this.discountPrice = value
+                    .where((element) =>
+                        element.coin == this.selectedCurrencyNomenclature)
+                    .first
+                    .price;
+              })
+            });
   }
 
   @override
@@ -121,55 +123,41 @@ class _DetailsPage extends State<DetailsPage> {
     );
   }
 
-  SlidingUpPanel buildColumn() =>
-      SlidingUpPanel(
-          minHeight: (MediaQuery
-              .of(context)
-              .size
-              .height / 10),
-          maxHeight: (MediaQuery
-              .of(context)
-              .size
-              .height / 3),
-          controller: _panelController,
-          panelSnapping: true,
-          parallaxEnabled: true,
-          parallaxOffset: 0.4,
-          panel: buildPanel(),
-          body: buildDetailsBody(),
-          header: buildHeader());
+  SlidingUpPanel buildColumn() => SlidingUpPanel(
+      minHeight: (MediaQuery.of(context).size.height / 10),
+      maxHeight: (MediaQuery.of(context).size.height / 3),
+      controller: _panelController,
+      panelSnapping: true,
+      parallaxEnabled: true,
+      parallaxOffset: 0.4,
+      panel: buildPanel(),
+      body: buildDetailsBody(),
+      header: buildHeader());
 
   Widget buildPanel() {
     return BlocConsumer<DetailsCubit, DetailsPageState>(
         builder: (context, state) {
-          switch (state.runtimeType) {
-            case DetailsPageSuccessColor:
-              return buildPanelProductInfo(this.selectedColorIndex);
-            case DetailsImagesLoaded:
-              return buildPanelProductInfo(this.selectedColorIndex);
-            case DetailsError:
-              return Center(
-                child: Text((state as DetailsError).message,
-                    overflow: TextOverflow.clip,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold)),
-              );
-            default:
-              return Center(
-                child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
-              );
-          }
-        }, listener: (context, state) async {
+      switch (state.runtimeType) {
+        case DetailsPageSuccessColor:
+          return buildPanelProductInfo(this.selectedColorIndex);
+        case DetailsError:
+          return Center(
+            child: Text((state as DetailsError).message,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold)),
+          );
+        default:
+          return Center(
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+          );
+      }
+    }, listener: (context, state) async {
       if (state is DetailsError) {
         log(state.message);
-      }
-      if (state is DetailsImagesLoaded) {
-        setState(() {
-          this.imagesList.addAll(state.imagesList);
-        });
       }
       if (state is DetailsPageSuccessColor) {
         log("Called");
@@ -181,11 +169,6 @@ class _DetailsPage extends State<DetailsPage> {
 
         // context.read<DetailsCubit>().setSuccess();
       }
-      // if (state is DetailsSizesLoaded) {
-      //   setState(() {
-      //     this.sizesByColor = (state as DetailsSizesLoaded).sizeList;
-      //   });
-      // }
     });
   }
 
@@ -251,10 +234,7 @@ class _DetailsPage extends State<DetailsPage> {
   Container buildHeader() {
     return Container(
       height: 40,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.fromLTRB(5, 0, 0, 5),
       child: SizedBox(
         height: 50,
@@ -265,8 +245,7 @@ class _DetailsPage extends State<DetailsPage> {
           ),
           subtitle: buildPriceInfoContainer(),
           trailing: IconButton(
-            onPressed: () =>
-            {
+            onPressed: () => {
               if (this._panelController.isPanelOpen)
                 {this._panelController.close()}
               else
@@ -280,26 +259,24 @@ class _DetailsPage extends State<DetailsPage> {
   }
 
   RichText buildPriceInfoContainer() {
-
     return RichText(
         text: TextSpan(style: TextStyle(color: Colors.grey), children: [
-          TextSpan(
-              text: this.normalPrice,
-              style: TextStyle(
-                  decorationColor: Colors.red,
-                  decorationThickness: 2.85,
-                  decoration: (this.product.is_discount == "1")
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none)),
-          (this.product.is_discount == "1")
-              ? TextSpan(text: "  ${this.discountPrice}")
-              : TextSpan(text: ""),
-          TextSpan(text: "  ${this.selectedCurrencyNomenclature}")
-        ]));
+      TextSpan(
+          text: this.normalPrice,
+          style: TextStyle(
+              decorationColor: Colors.red,
+              decorationThickness: 2.85,
+              decoration: (this.product.is_discount == "1")
+                  ? TextDecoration.lineThrough
+                  : TextDecoration.none)),
+      (this.product.is_discount == "1")
+          ? TextSpan(text: "  ${this.discountPrice}")
+          : TextSpan(text: ""),
+      TextSpan(text: "  ${this.selectedCurrencyNomenclature}")
+    ]));
   }
 
-  SizedBox buildBottomNavigationBar() =>
-      SizedBox(
+  SizedBox buildBottomNavigationBar() => SizedBox(
         height: 75,
         child: Row(children: [
           PLuisButton(
@@ -307,18 +284,14 @@ class _DetailsPage extends State<DetailsPage> {
             label: 'AÑADIR',
           ),
           SizedBox(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width / 5,
+            width: MediaQuery.of(context).size.width / 5,
           ),
           Expanded(
             child: Container(
                 padding: EdgeInsets.fromLTRB(DEFAULT_PADDING, 0, 1, 0),
                 child: IconButton(
                   icon: Icon(Icons.ios_share),
-                  onPressed: () =>
-                  {
+                  onPressed: () => {
                     //TODO: DeepLinks
                   },
                   color: Colors.black,
@@ -339,8 +312,7 @@ class _DetailsPage extends State<DetailsPage> {
         ]),
       );
 
-  AppBar buildAppBar() =>
-      AppBar(
+  AppBar buildAppBar() => AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -374,7 +346,7 @@ class _DetailsPage extends State<DetailsPage> {
     return Hero(
       tag: url,
       child:
-      FadeInImage.memoryNetwork(image: url, placeholder: kTransparentImage),
+          FadeInImage.memoryNetwork(image: url, placeholder: kTransparentImage),
     );
   }
 }

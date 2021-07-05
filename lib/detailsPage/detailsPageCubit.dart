@@ -24,7 +24,7 @@ class DetailsCubit extends Cubit<DetailsPageState> {
             (sizes) => sizes.length >= 0
             ? returnvalue = sizes
             : emit(DetailsError(
-            "Actualmente no existen ejemplares de este producto")));
+            "Error durante la carga de tallas")));
 
     return  returnvalue;
   }
@@ -43,8 +43,8 @@ class DetailsCubit extends Cubit<DetailsPageState> {
                 "Actualmente no existen ejemplares de este producto")));
   }
   
-  Future<void> getDetailsImages(String productRowId) async {
-    emit(DetailsLoading());
+  Future<List<ProductDetailsImages>> getDetailsImages(String productRowId) async {
+    var resultList = <ProductDetailsImages>[];
 
     var eitherValue = await repository.getDetailsImages(productRowId);
 
@@ -53,9 +53,10 @@ class DetailsCubit extends Cubit<DetailsPageState> {
             ? emit(DetailsError("Server unreachable"))
             : emit(DetailsError(errorFailure.properties.first)),
             (imagesList) => imagesList.length >= 0
-            ? emit(DetailsImagesLoaded( imagesList))
+            ? resultList = imagesList
             : emit(DetailsError(
-            "Actualmente no existen ejemplares de este producto")));
+            "Error Cargando las Imagenes")));
+    return resultList;
   }
   Future<void> setSuccess() async {
     emit(DetailsPageSuccess());

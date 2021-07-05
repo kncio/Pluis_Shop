@@ -292,6 +292,7 @@ class _ShopCartPage extends State<ShopCartPage> {
 
                             this.onSore = !this.onDefaultAddress;
                             this.onCustomAddress = !this.onDefaultAddress;
+                            this.shipmentPrice = 0;
                           }
                         });
                       }),
