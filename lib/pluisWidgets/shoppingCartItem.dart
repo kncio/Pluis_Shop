@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pluis_hv_app/commons/productsModel.dart';
@@ -125,7 +126,9 @@ class _ShopCartItem extends State<ShopCartItem> {
                                 .shoppingCartReference
                                 .substractProductQty(index);
                           });
-                          this._totalBloc.updateTotal(this.coinNomenclature.trim());
+                          this
+                              ._totalBloc
+                              .updateTotal(this.coinNomenclature.trim());
                         }
                       }),
                   Text(this
@@ -143,14 +146,18 @@ class _ShopCartItem extends State<ShopCartItem> {
                         setState(() {
                           this.shoppingCartReference.addProductQty(index);
                         });
-                        this._totalBloc.updateTotal(this.coinNomenclature.trim());
+                        this
+                            ._totalBloc
+                            .updateTotal(this.coinNomenclature.trim());
                       }),
                   Text("Unidades")
                 ],
               ),
-              Padding(
-                  padding: EdgeInsets.fromLTRB(0, 16, 0, 8),
-                  child: buildPriceStreamBuilder()),
+              Expanded(
+                child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    child: buildPriceStreamBuilder()),
+              ),
             ],
           ))
         ],
@@ -158,15 +165,40 @@ class _ShopCartItem extends State<ShopCartItem> {
     );
   }
 
-  StreamBuilder buildPriceStreamBuilder() {
-    return StreamBuilder(
-      stream: currentPriceVariation(this.product.price, this.coinNomenclature)
-          .asStream(),
-      builder: (_, snapshot) {
-        return Text(
-          (snapshot.data != null) ? snapshot.data : "",
-        );
-      },
+  Widget buildPriceStreamBuilder() {
+    return ListTile(
+      title: StreamBuilder(
+        stream: currentPriceVariation(
+                (this.product.is_discount == "1")
+                    ? this.product.discount_price
+                    : this.product.price,
+                this.coinNomenclature)
+            .asStream(),
+        builder: (_, snapshot) {
+          return Text(
+            (snapshot.data != null)
+                ? snapshot.data + "  ${this.coinNomenclature}"
+                : "",
+          );
+        },
+      ),
+      subtitle: (this.product.is_discount == "1")
+          ? StreamBuilder(
+              stream: currentPriceVariation(
+                      this.product.price, this.coinNomenclature)
+                  .asStream(),
+              builder: (_, snapshot) {
+                return Text(
+                  (snapshot.data != null)
+                      ? snapshot.data + "  ${this.coinNomenclature}"
+                      : "",
+                  style: TextStyle(
+                      decorationColor: Colors.red,
+                      decoration: TextDecoration.lineThrough),
+                );
+              },
+            )
+          : SizedBox.shrink(),
     );
   }
 

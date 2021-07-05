@@ -46,7 +46,6 @@ class GalleryRepository {
   Future<Either<Failure, List<Product>>> getProductOnDiscountByCategoryId(
       String categoryId) async {
     List<Product> allProducts = [];
-    log("agghhh");
     try {
       var response = await api
           .get(ON_DISCOUNT_PRODUCTS_BY_CATEGORY_ROW_ID, {"id": categoryId});

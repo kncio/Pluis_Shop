@@ -26,7 +26,9 @@ class TotalBloc {
   void updateTotal(String coinNomenclature) {
     sum = 0;
     this.shoppingCartReference.shoppingList.forEach((product) {
-      sum += double.tryParse(product.productData.price) * product.qty;
+      (product.productData.is_discount == "1")
+          ? sum += double.tryParse(product.productData.discount_price) * product.qty
+          : sum += double.tryParse(product.productData.price) * product.qty;
     });
 
     currentPriceVariation(sum.toString(), coinNomenclature)
