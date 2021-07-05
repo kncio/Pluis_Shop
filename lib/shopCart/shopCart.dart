@@ -62,6 +62,9 @@ class _ShopCartPage extends State<ShopCartPage> {
   //TOTal bloc observable
   TotalBloc _totalBloc = injectorContainer.sl<TotalBloc>();
 
+  ProductCardRepository _repository =
+      injectorContainer.sl<ProductCardRepository>();
+
   _ShopCartPage();
 
   @override
@@ -103,7 +106,8 @@ class _ShopCartPage extends State<ShopCartPage> {
               setState(() {
                 this.selectedCurrency =
                     (state as ShopCartCurrencyLoadedState).currencys[0];
-                _totalBloc.updateTotal(this.selectedCurrency.coin_nomenclature.trim());
+                _totalBloc.updateTotal(
+                    this.selectedCurrency.coin_nomenclature.trim());
               });
               return this.currencys =
                   (state as ShopCartCurrencyLoadedState).currencys;
@@ -166,10 +170,8 @@ class _ShopCartPage extends State<ShopCartPage> {
           child: Column(
             children: [
               Container(
-                  padding: EdgeInsets.all(5), child: buildTotalFormatText()),
-              SizedBox(
-                height: 25,
-              ),
+                  padding: EdgeInsets.fromLTRB(5, 5, 5, 16),
+                  child: buildTotalFormatText()),
               DarkButton(
                 text: (this.details) ? "DATOS DE COMPRA" : "VER LISTADO",
                 action: () {
@@ -194,19 +196,35 @@ class _ShopCartPage extends State<ShopCartPage> {
   }
 
   Widget buildTotalFormatText() {
-    return new StreamBuilder(
-      stream: _totalBloc.counterObservable,
-      builder: (context, AsyncSnapshot<double> snapshot) {
-        return Text(
-          'TOTAL  ' +
-              '${applyDiscountAndDelivery(snapshot.data)}' +
-              ' + ${this.shipmentPrice} Envío' +
-              ((this.selectedCurrency != null)
-                  ? "  " + this.selectedCurrency.coin_nomenclature
-                  : ""),
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-        );
-      },
+    return Wrap(
+      direction: Axis.vertical,
+      children: [
+        StreamBuilder(
+          stream: _totalBloc.counterObservable,
+          builder: (context, AsyncSnapshot<double> snapshot) {
+            return Text(
+              'SUBTOTAL:  ' +
+                  '${applyDiscountAndDelivery(snapshot.data)}' +
+                  ((this.selectedCurrency != null)
+                      ? "  " + this.selectedCurrency.coin_nomenclature
+                      : ""),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+            );
+          },
+        ),
+        StreamBuilder(
+            stream: this
+                .getPriceVariation(this.shipmentPrice.toString(),
+                    this.selectedCurrency.coin_nomenclature)
+                .asStream(),
+            builder: (_, AsyncSnapshot<String> snapshot) {
+              return Text(
+                  "+ DOMICILIO: " +
+                      snapshot.data +
+                      " ${this.selectedCurrency.coin_nomenclature}",
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16));
+            })
+      ],
     );
   }
 
@@ -227,8 +245,6 @@ class _ShopCartPage extends State<ShopCartPage> {
     }
     return "0.00";
   }
-
-
 
   Widget buildDetailsSelector(BuildContext context) {
     return ListView(
@@ -519,6 +535,29 @@ class _ShopCartPage extends State<ShopCartPage> {
           ),
         ),
       );
+
+  Future<String> getPriceVariation(
+      String Price, String selectedCoinNomencalture) async {
+    var currentPrice = "";
+
+    var priceVariations = <PriceVariation>[];
+    var eitherValue = await this._repository.getPriceVariation(Price);
+
+    eitherValue.fold(
+        (failure) => failure.properties.isEmpty
+            ? log("Failure")
+            : log(failure.properties.first),
+        (priceVariation) => priceVariation.length >= 0
+            ? priceVariations = priceVariation
+            : log("agg error"));
+
+    currentPrice = priceVariations
+        .where((variation) => variation.coin == selectedCoinNomencalture.trim())
+        .first
+        .price;
+
+    return currentPrice;
+  }
 
   Future<void> postBuyOrder() async {
     if (this.shoppingCartReference.shoppingList.length > 0) {
