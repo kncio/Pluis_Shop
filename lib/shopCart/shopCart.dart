@@ -169,9 +169,11 @@ class _ShopCartPage extends State<ShopCartPage> {
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
-              Container(
-                  padding: EdgeInsets.fromLTRB(5, 5, 5, 16),
-                  child: buildTotalFormatText()),
+              Flexible(
+                child: Container(
+                    padding: EdgeInsets.fromLTRB(5, 5, 5, 16),
+                    child: buildTotalFormatText()),
+              ),
               DarkButton(
                 text: (this.details) ? "DATOS DE COMPRA" : "VER LISTADO",
                 action: () {
@@ -212,18 +214,22 @@ class _ShopCartPage extends State<ShopCartPage> {
             );
           },
         ),
-        StreamBuilder(
-            stream: this
-                .getPriceVariation(this.shipmentPrice.toString(),
-                    this.selectedCurrency.coin_nomenclature)
-                .asStream(),
-            builder: (_, AsyncSnapshot<String> snapshot) {
-              return Text(
-                  "+ DOMICILIO: " +
-                      snapshot.data +
-                      " ${this.selectedCurrency.coin_nomenclature}",
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16));
-            })
+        (this.selectedCurrency != null)
+            ? StreamBuilder(
+                stream: this
+                    .getPriceVariation(this.shipmentPrice.toString(),
+                        this.selectedCurrency.coin_nomenclature)
+                    .asStream(),
+                builder: (_, AsyncSnapshot<String> snapshot) {
+                  return (snapshot.data != null)
+                      ? Text(
+                          "+ DOMICILIO: ${snapshot.data}" +
+                              " ${((this.selectedCurrency != null) ? "  " + this.selectedCurrency.coin_nomenclature : "")}",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w900, fontSize: 16))
+                      : SizedBox.shrink();
+                })
+            : SizedBox.shrink()
       ],
     );
   }
@@ -274,6 +280,7 @@ class _ShopCartPage extends State<ShopCartPage> {
 
                             this.onCustomAddress = !this.onSore;
                             this.onDefaultAddress = !this.onSore;
+                            this.shipmentPrice = 0;
                           }
                         });
                       }),
@@ -311,6 +318,15 @@ class _ShopCartPage extends State<ShopCartPage> {
 
                             this.onDefaultAddress = !this.onCustomAddress;
                             this.onSore = !this.onCustomAddress;
+                            if (this.selectedAddress != null) {
+                              context
+                                  .read<ShopCartCubit>()
+                                  .getDeliveryPrice(
+                                      this.selectedAddress.city_id)
+                                  .then((value) => this.setState(() {
+                                        this.shipmentPrice = value;
+                                      }));
+                            }
                           }
                         });
                       }),
