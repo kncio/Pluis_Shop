@@ -12,6 +12,12 @@ class SplashScreenInitialState extends SplashScreenState{
   
 }
 
+class SplashScreenAnimationStartState extends SplashScreenState{
+  final String Message;
+
+  SplashScreenAnimationStartState(this.Message);
+}
+
 class SplashScreenAppInitializedSuccess extends SplashScreenState{
 
 }

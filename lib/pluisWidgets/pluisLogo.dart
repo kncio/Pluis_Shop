@@ -10,7 +10,7 @@ class LogoImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Container(
-        width: MediaQuery.of(context).size.width/2,
+        width: MediaQuery.of(context).size.width/4,
         height: MediaQuery.of(context).size.height * 3 / 13,
         // height: MediaQuery.of(context).size.height * 2 / 13,
         child: Image.asset(

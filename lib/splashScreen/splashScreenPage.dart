@@ -19,7 +19,7 @@ class SplashScreenPage extends StatefulWidget {
 }
 
 class _SplashScreenPageState extends State<SplashScreenPage> {
-
+  double logoWidth = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +32,18 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     return BlocConsumer<SplashScreenCubit, SplashScreenState>(
         listener: (context, state) async {
       if (state is SplashScreenAppInitializedSuccess) {
-        Future.delayed(Duration(seconds: 1)).whenComplete(
+        Future.delayed(Duration(seconds: 3, milliseconds: 500)).whenComplete(
           () {
             Settings.invalidateCredentials();
             Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE);
           },
         );
-      } else if (state is SplashScreenError) {}
+      } else if (state is SplashScreenError) {
+      } else if (state is SplashScreenAnimationStartState) {
+        setState(() {
+          this.logoWidth = MediaQuery.of(context).size.width * 3 / 4;
+        });
+      }
     }, builder: (context, state) {
       switch (state.runtimeType) {
         case SplashScreenError:
@@ -99,30 +104,23 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
           );
         default:
           return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                height: (MediaQuery.of(context).size.height) * 4 / 5,
-                width: (MediaQuery.of(context).size.width),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Spacer(
-                      flex: 5,
-                    ),
-                    LogoImage(),
-                    Spacer(
-                      flex: 3,
-                    )
-                  ],
+              Spacer(
+                flex: 2,
+              ),
+              Center(
+                child: AnimatedContainer(
+                  width: this.logoWidth,
+                  curve: Curves.fastLinearToSlowEaseIn,
+                  duration: Duration(seconds: 3),
+                  child: LogoImage(),
                 ),
               ),
               Spacer(
-                flex: 1,
+                flex: 2,
               ),
               Padding(
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.fromLTRB(32, 0, 32, 32),
                 child: RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
@@ -154,16 +152,12 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   @override
   void initState() {
     super.initState();
-
     initializeApp();
-
   }
 
   Future<void> initializeApp() async {
-    Future.delayed(Duration(seconds: 2)).then(
-      (value) => requestPermissions().then(
-        (value2) => context.read<SplashScreenCubit>().start(),
-      ),
+    requestPermissions().then(
+      (value2) => context.read<SplashScreenCubit>().start(),
     );
   }
 

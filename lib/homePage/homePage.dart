@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pluis_hv_app/commons/appTheme.dart';
 
 // import 'package:http/http.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
@@ -10,6 +11,7 @@ import 'package:pluis_hv_app/homePage/homeDataModel.dart';
 import 'package:pluis_hv_app/observables/colorStringObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
+import 'package:pluis_hv_app/pluisWidgets/pluisLogo.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 import '../injectorContainer.dart' as injectionContainer;
 
@@ -46,29 +48,54 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
 
   Scaffold buildScaffold(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: buildAppBar(),
       body: buildBody(context),
       bottomNavigationBar: buildBottomNavigationBar(),
     );
   }
 
   AppBar buildAppBar() {
+    // return AppBar(
+    //   backgroundColor: Colors.transparent,
+    //   title: Center(
+    //     child: StreamBuilder(
+    //       stream: this.textColorObservable.colorObservable,
+    //       builder: (_, snapshot) {
+    //         return TabBar(
+    //             controller: _tabController,
+    //             indicatorSize: TabBarIndicatorSize.label,
+    //             indicatorColor: (snapshot.data != null)
+    //                 ? Color(snapshot.data)
+    //                 : Colors.black,
+    //             isScrollable: true,
+    //             tabs: this.tabs);
+    //       },
+    //     ),
+    //   ),
+    // );
     return AppBar(
       backgroundColor: Colors.transparent,
-      title: Center(
-        child: StreamBuilder(
-          stream: this.textColorObservable.colorObservable,
-          builder: (_, snapshot) {
-            return TabBar(
-                controller: _tabController,
-                indicatorSize: TabBarIndicatorSize.label,
-                indicatorColor: (snapshot.data != null)
-                    ? Color(snapshot.data)
-                    : Colors.black,
-                isScrollable: true,
-                tabs: this.tabs);
-          },
-        ),
-      ),
+      title: Row(children: [
+        SizedBox(
+            height: MediaQuery.of(context).size.height / 10,
+            width: MediaQuery.of(context).size.width / 4,
+            child: LogoImage()),
+        StreamBuilder(
+            stream: this.textColorObservable.colorObservable,
+            builder: (_, snapshot) {
+              return Padding(
+                  padding: EdgeInsets.fromLTRB(32, 0, 0, 0),
+                  child: Text(
+                    "Calzado Pluis",
+                    style: TextStyle(color: (snapshot.data != null)
+                          ? Color(snapshot.data)
+                          : Colors.red,
+                    ),
+                  ));
+            })
+      ]),
+      // title: Text("Nombre",style: TextStyle(color: Colors.black),),
     );
   }
 
@@ -83,57 +110,60 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   }
 
   Widget buildBody(BuildContext context) {
-    return BlocConsumer<HomePageCubit, HomePageState>(
-      listener: (context, state) async {
-        if (state is HomePageGenresLoaded) {
-          this.genres = state.genresInfo;
-          _tabController = TabController(length: genres.length, vsync: this);
-
-          tabs = List<Tab>.from(genres.map((genre) => Tab(
-                child: StreamBuilder(
-                    stream: this.textColorObservable.colorObservable,
-                    builder: (_, snapshot) {
-                      return Text(
-                        genre.title,
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: (snapshot.data != null)
-                                ? Color(snapshot.data)
-                                : Colors.black),
-                      );
-                    }),
-              )));
-
-          _tabController.addListener(() {
-            this.selectedGenre = genres[_tabController.index].gender_id;
-          });
-          await this.context.read<HomePageCubit>().setSuccess();
-        }
-      },
-      builder: (context, state) {
-        switch (state.runtimeType) {
-          case HomePageLoading:
-            return Center(
-              child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
-            );
-          case HomePageSuccessState:
-            return Scaffold(
-              extendBodyBehindAppBar: true,
-              appBar: buildAppBar(),
-              body: Container(
-                child: TabBarView(
-                    controller: this._tabController,
-                    children: createCarouselFromGenres()),
-              ),
-            );
-          default:
-            return Center(
-              child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
-            );
-        }
-      },
+    // return BlocConsumer<HomePageCubit, HomePageState>(
+    //   listener: (context, state) async {
+    //     if (state is HomePageGenresLoaded) {
+    //       this.genres = state.genresInfo;
+    //       _tabController = TabController(length: genres.length, vsync: this);
+    //
+    //       tabs = List<Tab>.from(genres.map((genre) => Tab(
+    //             child: StreamBuilder(
+    //                 stream: this.textColorObservable.colorObservable,
+    //                 builder: (_, snapshot) {
+    //                   return Text(
+    //                     genre.title,
+    //                     style: TextStyle(
+    //                         fontSize: 18,
+    //                         color: (snapshot.data != null)
+    //                             ? Color(snapshot.data)
+    //                             : Colors.black),
+    //                   );
+    //                 }),
+    //           )));
+    //
+    //       _tabController.addListener(() {
+    //         this.selectedGenre = genres[_tabController.index].gender_id;
+    //       });
+    //       await this.context.read<HomePageCubit>().setSuccess();
+    //     }
+    //   },
+    //   builder: (context, state) {
+    //     switch (state.runtimeType) {
+    //       case HomePageLoading:
+    //         return Center(
+    //           child: CircularProgressIndicator(
+    //               valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+    //         );
+    //       case HomePageSuccessState:
+    //         return Scaffold(
+    //           extendBodyBehindAppBar: true,
+    //           appBar: buildAppBar(),
+    //           body: Container(
+    //             child: TabBarView(
+    //                 controller: this._tabController,
+    //                 children: createCarouselFromGenres()),
+    //           ),
+    //         );
+    //       default:
+    //         return Center(
+    //           child: CircularProgressIndicator(
+    //               valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+    //         );
+    //     }
+    //   },
+    // );
+    return Column(
+      children: [],
     );
   }
 

@@ -9,6 +9,7 @@ class SplashScreenCubit extends Cubit<SplashScreenState> {
   SplashScreenCubit({this.initializeApp}) : super(SplashScreenInitialState());
 
   Future<void> start() async {
+    emit(SplashScreenAnimationStartState("Iniciando Animación"));
     var eitherValue = await initializeApp.initializeApp();
 
     eitherValue.fold(
@@ -17,6 +18,10 @@ class SplashScreenCubit extends Cubit<SplashScreenState> {
         emit(SplashScreenAppInitializedSuccess());
       },
     );
+  }
+
+  Future<void> startAnimation()async {
+    emit(SplashScreenAnimationStartState("Iniciando Animación"));
   }
 
 
