@@ -65,13 +65,17 @@ class _MenuCategoriesExpandable extends State<MenuCategoriesExpandable> {
                             builder: (context,
                                 AsyncSnapshot<List<CategoryOnDiscountData>>
                                     snapshot) {
-                              return ExpandableRow(
-                                headerName: "REBAJAS",
-                                itemsNames: (snapshot.data != null)
-                                    ? List<Map<String, dynamic>>.from(
-                                        snapshot.data.map((e) => e.toMap()))
-                                    : [],
-                              );
+                              return (snapshot.data != null &&
+                                      snapshot.data.length > 0)
+                                  ? ExpandableRow(
+                                      headerName: "REBAJAS",
+                                      itemsNames: (snapshot.data != null)
+                                          ? List<Map<String, dynamic>>.from(
+                                              snapshot.data
+                                                  .map((e) => e.toMap()))
+                                          : [],
+                                    )
+                                  : SizedBox.shrink();
                             }),
                       ),
                       ExpandableRow(

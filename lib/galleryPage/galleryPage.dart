@@ -102,7 +102,7 @@ class _GalleryPage extends State<GalleryPage> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Container(child: buildGridView(context, state)))
+              Expanded(child: Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 0),child: Container(child: buildGridView(context, state))))
             ],
           );
         });
@@ -150,11 +150,13 @@ class _GalleryPage extends State<GalleryPage> {
         color: Colors.black,
         onPressed: () => {Navigator.pop(context)},
       ),
-      title: Padding(
-          padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
-          child: Text(
-              this.categoryInfo != null ? this.categoryInfo.name : "TODOS",
-              style: TextStyle(color: Colors.black))),
+      title: Center(
+        child: Padding(
+            padding: const EdgeInsets.fromLTRB(32, 0, 0, 0),
+            child: Text(
+                this.categoryInfo != null ? this.categoryInfo.name : "TODOS",
+                style: TextStyle(color: Colors.black))),
+      ),
       actions: <Widget>[
         (this.currencys.length > 0)
             ? Padding(

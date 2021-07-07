@@ -59,42 +59,45 @@ class _ProductCard extends State<ProductCard> {
         },
         buildWhen: (previous, current) => current is ProductCardSuccessState,
         builder: (context, state) {
-          return GestureDetector(
-            onTap: press,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    child: Hero(
-                        tag: '${this.product.name}',
-                        child: FadeInImage.memoryNetwork(
-                            imageScale: 0.5,
-                            image: this.product.image,
-                            placeholder: kTransparentImage)),
+          return Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 6),
+            child: GestureDetector(
+              onTap: press,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: Hero(
+                          tag: '${this.product.name}',
+                          child: FadeInImage.memoryNetwork(
+                              imageScale: 0.5,
+                              image: this.product.image,
+                              placeholder: kTransparentImage)),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(30.0, 10.0, 0.0, 2.0),
-                  child: Text(product.name,
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(30.0, 2.0, 0.0, 0.0),
-                  child: StreamBuilder(
-                      stream: this.currencyBloc.currencyObservable,
-                      builder: (context, AsyncSnapshot<String> snapshot) {
-                        if (snapshot.data != null) {
-                          return buildPriceContainer(snapshot);
-                        }
-                        return SizedBox.shrink();
-                      }),
-                ), //TO
-              ],
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(30.0, 10.0, 0.0, 2.0),
+                    child: Text(product.name,
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(30.0, 2.0, 0.0, 0.0),
+                    child: StreamBuilder(
+                        stream: this.currencyBloc.currencyObservable,
+                        builder: (context, AsyncSnapshot<String> snapshot) {
+                          if (snapshot.data != null) {
+                            return buildPriceContainer(snapshot);
+                          }
+                          return SizedBox.shrink();
+                        }),
+                  ), //TO
+                ],
+              ),
             ),
           );
         });
