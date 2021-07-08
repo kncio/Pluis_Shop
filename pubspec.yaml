@@ -23,12 +23,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  url_launcher: ^6.0.9
+  font_awesome_flutter: ^9.1.0
   path_provider: '>=2.0.1'
   advance_pdf_viewer: '>=2.0.0'
   transparent_image: '>=2.0.0'
   #backdrop: ^0.4.3
   provider: '>=4.3.2'
-#  hydrated_bloc: ^6.0.1
+  #  hydrated_bloc: ^6.0.1
   equatable: '>=1.2.5'
   dartz: '>=0.9.1'
   flutter_secure_storage: ^3.3.3
@@ -39,7 +41,7 @@ dependencies:
   flutter_bloc: ^6.0.5
   uuid: ^3.0.0
   get_it: ^5.0.0
-  permission_handler: ^5.0.1+1
+  permission_handler: ^8.1.2
   carousel_slider: ^2.3.1
   expandable: ^4.1.4
   sliding_up_panel: ^2.0.0+1

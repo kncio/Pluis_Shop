@@ -165,7 +165,7 @@ class PluisAppTheme {
         bodyText2: const TextStyle(fontSize: 14),
         button: const TextStyle(fontSize: 14),
         caption: const TextStyle(fontSize: 12),
-        headline1: const TextStyle(fontSize: 24),
+        headline1: const TextStyle(fontSize: 18),
         subtitle1: const TextStyle(
           fontSize: 14,
           // fontFamily: 'Consola',

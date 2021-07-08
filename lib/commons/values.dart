@@ -27,3 +27,9 @@ const String ApplicationVersion = "0.0.1";
 const String storePickUp = '0|null';
 const String userDefaultAddress = '|0';
 //endregion
+
+//socialNetworksUrl
+const String facebookUrl = "https://www.facebook.com/calzadopluis/";
+const String instagramUrl = "https://www.instagram.com/calzadopluis/";
+const String phone = "+5359624232";
+const String whatsappUrl = "whatsapp://send?phone=$phone";

@@ -2,17 +2,24 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pluis_hv_app/PluisApp.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
 
 // import 'package:http/http.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
+import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/homePage/homeDataModel.dart';
 import 'package:pluis_hv_app/observables/colorStringObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisLogo.dart';
+import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../injectorContainer.dart' as injectionContainer;
 
 import 'homePageCubit.dart';
@@ -34,6 +41,9 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
 
   //colorObservable
   ColorBloc textColorObservable = injectionContainer.sl<ColorBloc>();
+
+  //paeVie Controller
+  PageController _pageController = PageController(initialPage: 0);
 
   @override
   void initState() {
@@ -88,7 +98,8 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
                   padding: EdgeInsets.fromLTRB(32, 0, 0, 0),
                   child: Text(
                     "Calzado Pluis",
-                    style: TextStyle(color: (snapshot.data != null)
+                    style: TextStyle(
+                      color: (snapshot.data != null)
                           ? Color(snapshot.data)
                           : Colors.red,
                     ),
@@ -110,60 +121,298 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   }
 
   Widget buildBody(BuildContext context) {
-    // return BlocConsumer<HomePageCubit, HomePageState>(
-    //   listener: (context, state) async {
-    //     if (state is HomePageGenresLoaded) {
-    //       this.genres = state.genresInfo;
-    //       _tabController = TabController(length: genres.length, vsync: this);
-    //
-    //       tabs = List<Tab>.from(genres.map((genre) => Tab(
-    //             child: StreamBuilder(
-    //                 stream: this.textColorObservable.colorObservable,
-    //                 builder: (_, snapshot) {
-    //                   return Text(
-    //                     genre.title,
-    //                     style: TextStyle(
-    //                         fontSize: 18,
-    //                         color: (snapshot.data != null)
-    //                             ? Color(snapshot.data)
-    //                             : Colors.black),
-    //                   );
-    //                 }),
-    //           )));
-    //
-    //       _tabController.addListener(() {
-    //         this.selectedGenre = genres[_tabController.index].gender_id;
-    //       });
-    //       await this.context.read<HomePageCubit>().setSuccess();
-    //     }
-    //   },
-    //   builder: (context, state) {
-    //     switch (state.runtimeType) {
-    //       case HomePageLoading:
-    //         return Center(
-    //           child: CircularProgressIndicator(
-    //               valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
-    //         );
-    //       case HomePageSuccessState:
-    //         return Scaffold(
-    //           extendBodyBehindAppBar: true,
-    //           appBar: buildAppBar(),
-    //           body: Container(
-    //             child: TabBarView(
-    //                 controller: this._tabController,
-    //                 children: createCarouselFromGenres()),
-    //           ),
-    //         );
-    //       default:
-    //         return Center(
-    //           child: CircularProgressIndicator(
-    //               valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
-    //         );
-    //     }
-    //   },
-    // );
-    return Column(
-      children: [],
+    return BlocConsumer<HomePageCubit, HomePageState>(
+        listener: (context, state) async {
+      if (state is HomePageGenresLoaded) {
+        setState(() {
+          this.genres = state.genresInfo;
+        });
+        await this.context.read<HomePageCubit>().setSuccess();
+      }
+    }, builder: (context, state) {
+      switch (state.runtimeType) {
+        case HomePageSuccessState:
+          return buildPgeView();
+        default:
+          return Center(
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+          );
+      }
+    });
+  }
+
+  Widget buildPgeView() {
+    return PageView(
+      controller: this._pageController,
+      scrollDirection: Axis.vertical,
+      children: [
+        createCarouselProvider(this.genres[0].gender_id),
+        buildPanelInfo()
+      ],
+    );
+  }
+
+  Container buildPanelInfo() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Spacer(flex: 3),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(64, 0, 0, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
+                      child: Text("SÍGUENOS",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
+                        child: GestureDetector(
+                          onTap: () async {
+                            await canLaunch(instagramUrl)
+                                ? launch(instagramUrl)
+                                : showSnackbar(context,
+                                    text:
+                                        "La aplicación INSTAGRAM no está instalada en el sistema");
+                          },
+                          child: Wrap(
+                            spacing: 4.0,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              FaIcon(
+                                FontAwesomeIcons.instagram,
+                                color: Colors.black,
+                                size: 16,
+                              ),
+                              Text("INSTAGRAM",
+                                  style: TextStyle(color: Colors.black))
+                            ],
+                          ),
+                        )),
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
+                        child: GestureDetector(
+                          onTap: () async {
+                            await canLaunch(facebookUrl)
+                                ? launch(facebookUrl)
+                                : showSnackbar(context,
+                                    text:
+                                        "La aplicación FACEBOOK no está instalada en el sistema");
+                          },
+                          child: Wrap(
+                              spacing: 4.0,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                FaIcon(
+                                  FontAwesomeIcons.facebook,
+                                  color: Colors.black,
+                                  size: 16,
+                                ),
+                                Text("FACEBOOK",
+                                    style: TextStyle(color: Colors.black)),
+                              ]),
+                        )),
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
+                        child: GestureDetector(
+                          onTap: () async {
+                            await canLaunch(whatsappUrl)
+                                ? launch(whatsappUrl)
+                                : showSnackbar(context,
+                                    text:
+                                        "La aplicación WHATSAPP no está instalada en el sistema");
+                          },
+                          child: Wrap(
+                              spacing: 4.0,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                FaIcon(
+                                  FontAwesomeIcons.whatsapp,
+                                  color: Colors.black,
+                                  size: 16,
+                                ),
+                                Text("WHATSAPP",
+                                    style: TextStyle(color: Colors.black)),
+                              ]),
+                        ))
+                  ],
+                ),
+              ),
+              Spacer(),
+              Padding(
+                padding: EdgeInsets.fromLTRB(64, 0, 64, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
+                      child: Text("EMPRESA",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return buildModalSHeetCOntactInfo();
+                            });
+                      },
+                      child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
+                          child: Wrap(
+                              spacing: 4.0,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                FaIcon(
+                                  FontAwesomeIcons.globe,
+                                  color: Colors.black,
+                                  size: 16,
+                                ),
+                                Text("CONTACTO",
+                                    style: TextStyle(color: Colors.black)),
+                              ])),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(64, 32, 0, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
+                  child: Text("POLÍTICAS",
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold)),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
+                  child: Text("POLÍTICA DE PRIVACIDAD",
+                      style: TextStyle(color: Colors.black)),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
+                  child: Text("TÉRMINOS Y CONDICIONES DE USO",
+                      style: TextStyle(color: Colors.black)),
+                )
+              ],
+            ),
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(64, 32, 64, 0),
+              child: Divider(
+                thickness: 1.5,
+              )),
+          Padding(
+            padding: EdgeInsets.fromLTRB(128, 32, 64, 0),
+            child: Text("© All rights reserved",
+                style: TextStyle(color: Colors.black)),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(128, 32, 64, 0),
+            child:
+                Text("CUBA / LA HABANA", style: TextStyle(color: Colors.black)),
+          ),
+          Spacer()
+        ],
+      ),
+    );
+  }
+
+  Container buildModalSHeetCOntactInfo() {
+    return Container(
+      height: 350,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(32, 16, 0, 4),
+            child: Text("Siéntete libre de contactarnos".toUpperCase(),
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold)),
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(32, 16, 0, 4),
+              child: Wrap(
+                  spacing: 4.0,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    FaIcon(
+                      FontAwesomeIcons.globe,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    Text("TELÉFONO",
+                        style: TextStyle(fontSize: 16, color: Colors.black)),
+                  ])),
+          Padding(
+            padding: EdgeInsets.fromLTRB(32, 16, 0, 4),
+            child: SelectableText("+5359624232",
+                style: TextStyle(color: Colors.grey)),
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(32, 16, 0, 4),
+              child: Wrap(
+                  spacing: 4.0,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    FaIcon(
+                      FontAwesomeIcons.mailBulk,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    Text("CORREO",
+                        style: TextStyle(fontSize: 16, color: Colors.black)),
+                  ])),
+          Padding(
+            padding: EdgeInsets.fromLTRB(32, 16, 0, 4),
+            child: SelectableText("ventas@calzadopluis.com",
+                style: TextStyle(color: Colors.grey)),
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(32, 16, 0, 4),
+              child: Wrap(
+                  spacing: 4.0,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    FaIcon(
+                      FontAwesomeIcons.mapPin,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    Text("DIRECCIÓN",
+                        style: TextStyle(fontSize: 16, color: Colors.black)),
+                  ])),
+          Padding(
+            padding: EdgeInsets.fromLTRB(32, 16, 0, 4),
+            child: SelectableText(
+                "Calle H #403 apto 103/17 y 19 Vedado La Habana",
+                style: TextStyle(color: Colors.grey)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -175,7 +424,8 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   BlocProvider createCarouselProvider(String genreId) {
     return BlocProvider<HomePageCarouselCubit>(
       create: (_) => injectionContainer.sl<HomePageCarouselCubit>(),
-      child: HomePageCarousel(genreId: genreId),
+      child: HomePageCarousel(
+          genreIds: this.genres.map((e) => e.gender_id).toList()),
     );
   }
 }
