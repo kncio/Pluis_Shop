@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pluis_hv_app/PluisApp.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
 
@@ -45,6 +46,8 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   //paeVie Controller
   PageController _pageController = PageController(initialPage: 0);
 
+  bool _downloading = false;
+
   @override
   void initState() {
     super.initState();
@@ -66,24 +69,6 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   }
 
   AppBar buildAppBar() {
-    // return AppBar(
-    //   backgroundColor: Colors.transparent,
-    //   title: Center(
-    //     child: StreamBuilder(
-    //       stream: this.textColorObservable.colorObservable,
-    //       builder: (_, snapshot) {
-    //         return TabBar(
-    //             controller: _tabController,
-    //             indicatorSize: TabBarIndicatorSize.label,
-    //             indicatorColor: (snapshot.data != null)
-    //                 ? Color(snapshot.data)
-    //                 : Colors.black,
-    //             isScrollable: true,
-    //             tabs: this.tabs);
-    //       },
-    //     ),
-    //   ),
-    // );
     return AppBar(
       backgroundColor: Colors.transparent,
       title: Row(children: [
@@ -106,7 +91,6 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
                   ));
             })
       ]),
-      // title: Text("Nombre",style: TextStyle(color: Colors.black),),
     );
   }
 
@@ -307,13 +291,25 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
-                  child: Text("POLÍTICA DE PRIVACIDAD",
-                      style: TextStyle(color: Colors.black)),
+                  child: GestureDetector(
+                    onTap: () {
+                      var filename = privacidadUrl.split('/');
+                      download(privacidadUrl, filename[filename.length - 1]);
+                    },
+                    child: Text("POLÍTICA DE PRIVACIDAD",
+                        style: TextStyle(color: Colors.black)),
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 16, 0, 4),
-                  child: Text("TÉRMINOS Y CONDICIONES DE USO",
-                      style: TextStyle(color: Colors.black)),
+                  child: GestureDetector(
+                    onTap: () {
+                      var filename = terminosUrl.split('/');
+                      download(privacidadUrl, filename[filename.length - 1]);
+                    },
+                    child: Text("TÉRMINOS Y CONDICIONES DE USO",
+                        style: TextStyle(color: Colors.black)),
+                  ),
                 )
               ],
             ),
@@ -414,6 +410,47 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
         ],
       ),
     );
+  }
+
+  Future<bool> download(String url, String filename) async {
+    requestPermissions().then((ready) => {
+          Settings.getAppExternalStorageBaseDirectory.then((directory) => {
+                log('${directory.path}'),
+                context
+                    .read<HomePageCubit>()
+                    .downloadFile(
+                        url,
+                        directory.path.replaceAll(
+                                "Android/data/com.dcm.highvista.calzado_pluis/files",
+                                "CalzadoPluis") +
+                            '/privacidad' +
+                            '/' +
+                            filename,
+                        onProgressCallback)
+                    .then((value) => {
+                          this._downloading = false,
+                          if (value)
+                            {
+                              showSnackbar(context,
+                                  text: "Descarga Finalizada.", timeLimit: 3)
+                            }
+                        })
+              })
+        });
+  }
+
+  Future<Map<Permission, PermissionStatus>> requestPermissions() async {
+    Map<Permission, PermissionStatus> status = await Settings.requestPermission(
+        permissionsToRequest: [Permission.storage]);
+    if (status.entries.any((element) => element.value.isDenied))
+      return await requestPermissions();
+    return status;
+  }
+
+  void onProgressCallback(int prog, int total) {
+    setState(() {
+      this._downloading = true;
+    });
   }
 
   List<BlocProvider<HomePageCarouselCubit>> createCarouselFromGenres() {

@@ -33,3 +33,8 @@ const String facebookUrl = "https://www.facebook.com/calzadopluis/";
 const String instagramUrl = "https://www.instagram.com/calzadopluis/";
 const String phone = "+5359624232";
 const String whatsappUrl = "whatsapp://send?phone=$phone";
+//privacidad
+const String privacidadUrl =
+    "https://www.calzadopluis.com/writable/uploads/privacy/Política de privacidad PLuis.docx";
+const String terminosUrl =
+    "https://www.calzadopluis.com/writable/uploads/privacy/Términos y Condiciones de uso PLuis.docx";

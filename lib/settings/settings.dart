@@ -202,6 +202,11 @@ class Settings {
     String appDirectory = '${baseDir.path}';
     return Directory(appDirectory);
   }
+  // static Future<Directory> get getDownloadFilesPath async {
+  //   Directory baseDir = await getEx();
+  //   String downloadDirectory = '${baseDir.path}';
+  //   return Directory(downloadDirectory);
+  // }
 
   static Future<Map<Permission, PermissionStatus>> requestPermission(
       {Permission permission, List<Permission> permissionsToRequest}) async {

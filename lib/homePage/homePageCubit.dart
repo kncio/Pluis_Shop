@@ -25,6 +25,20 @@ class HomePageCubit extends Cubit<HomePageState> {
   //               HomePageErrorState(message: "No hay provincias disponibles")));
   // }
 
+  Future<bool> downloadFile(String url, String path, Function (int,int) callback) async {
+    var start = false;
+
+    var eitherValue = await repository.download(
+        path, url, callback);
+
+    eitherValue.fold((errorFailure) =>
+    errorFailure.properties.isEmpty
+        ? emit(HomePageErrorState(message:"Server unreachable"))
+        : emit(HomePageErrorState(message:errorFailure.properties.first)), (r) =>
+    r ? start = r : HomePageErrorState(message:"No se pudo descargar la factura"));
+
+    return start;
+  }
 
   Future<void> setSuccess()async {
     emit(HomePageSuccessState());
