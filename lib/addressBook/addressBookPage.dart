@@ -50,13 +50,23 @@ class _AddressBookPage extends State<AddressBookPage> {
             ),
           ]);
         case AddressBookSuccessState:
-          return ListView(
-              children:((state as AddressBookSuccessState).address.length > 0)? List<Widget>.from(
-            (state as AddressBookSuccessState).address.map((address) => Padding(
-                  padding: EdgeInsets.all(20),
-                  child: buildListTileWidget(address),
-                )),
-          ):Center(child: Text("Usted solo contiene la dirección de registro..."),));
+          return ((state as AddressBookSuccessState).address.length > 0)
+              ? ListView(
+                  children: List<Widget>.from(
+                  (state as AddressBookSuccessState)
+                      .address
+                      .map((address) => Padding(
+                            padding: EdgeInsets.all(20),
+                            child: buildListTileWidget(address),
+                          )),
+                ))
+              : Center(
+                  child: Text("Usted solo contiene la dirección de registro...",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
+                );
         default:
           return Center(
             child: CircularProgressIndicator(
@@ -87,7 +97,9 @@ class _AddressBookPage extends State<AddressBookPage> {
         Text('TELÉFONO:   '),
         Text('${e.phone_number}'),
       ]),
-      Divider(color: Colors.black26,)
+      Divider(
+        color: Colors.black26,
+      )
     ]);
   }
 
@@ -107,7 +119,8 @@ class _AddressBookPage extends State<AddressBookPage> {
 
   BottomBar buildBottomNavigationBar() {
     return BottomBar(
-      onPressSearch: () => Navigator.of(context).pushNamedAndRemoveUntil(HOME_PAGE_ROUTE,ModalRoute.withName('/')),
+      onPressSearch: () => Navigator.of(context)
+          .pushNamedAndRemoveUntil(HOME_PAGE_ROUTE, ModalRoute.withName('/')),
       onPressShopBag: () => Navigator.of(context).pushNamed(SHOP_CART),
       onPressAccount: () => Navigator.of(context).pushNamed(LOGIN_PAGE_ROUTE),
       onPressMenu: () => Navigator.of(context).pushNamed(MENU_PAGE),

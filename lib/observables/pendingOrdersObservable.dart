@@ -16,6 +16,10 @@ class PendingOrdersBloc {
   void updateOrders(List<PendingOrder> ordersP) {
     _subjectCounter.sink.add(ordersP);
   }
+  void reloadOrders(List<PendingOrder> ordersP) {
+    _subjectCounter.value.clear();
+    _subjectCounter.sink.add(ordersP);
+  }
 
   void dispose() {
     _subjectCounter.close();

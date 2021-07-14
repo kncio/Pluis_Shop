@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -6,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
@@ -88,6 +90,12 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   //downloading
   bool downloading = false;
   bool finishDownload = false;
+
+  //
+  Timer updateList;
+  Timer updateListIcon;
+  bool reloading = false;
+  int overScrollCounter = 0;
 
   @override
   void initState() {
@@ -637,6 +645,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                                 Text("ESTADO DE PEDIDO: ",
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
+                                properIcon(snapshot, index),
                                 Text(statusToString(
                                     snapshot.data[index].status)),
                                 showCancelButton(snapshot.data[index])
@@ -817,61 +826,114 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
       children: [
         (this.cancelingOrder)
             ? Padding(
-          padding: EdgeInsets.fromLTRB(2, 8, 2, 8),
-              child: LinearProgressIndicator(
-                  minHeight: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
-            )
+                padding: EdgeInsets.fromLTRB(2, 8, 2, 8),
+                child: LinearProgressIndicator(
+                    minHeight: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+              )
             : SizedBox.shrink(),
         Expanded(
-          child: StreamBuilder(
-            stream: this._pendingOrdersBloc.counterObservable,
-            builder: (context, AsyncSnapshot<List<PendingOrder>> snapshot) {
-              return ListView.builder(
-                  itemCount: (snapshot.data != null) ? snapshot.data.length : 0,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
-                          child: Wrap(
-                            children: [
-                              Text(
-                                "NÚMERO DE PEDIDO: ",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text('${snapshot.data[index].order_number}')
-                            ],
-                          ),
-                        ),
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                            child: Wrap(children: [
-                              Text("ESTADO DE PEDIDO: ",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              (snapshot.data[index].status == '5')
-                                  ? Icon(
-                                      Icons.cancel_outlined,
-                                      color: Colors.red,
-                                      size: 14,
-                                    )
-                                  : SizedBox.shrink(),
-                              Text(statusToString(snapshot.data[index].status)),
-                              showCancelButton(snapshot.data[index])
-                            ])),
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                            child: Divider())
-                      ],
-                    );
-                  });
-            },
+          child: RefreshIndicator(
+            displacement: 70.0,
+            onRefresh: _reloadPendingOrders,
+            child: (!this.reloading)
+                ? StreamBuilder(
+                    stream: this._pendingOrdersBloc.counterObservable,
+                    builder:
+                        (context, AsyncSnapshot<List<PendingOrder>> snapshot) {
+                      return ListView.builder(
+                          itemCount: (snapshot.data != null)
+                              ? snapshot.data.length
+                              : 0,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                  child: Wrap(
+                                    children: [
+                                      Text(
+                                        "NÚMERO DE PEDIDO: ",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                          '${snapshot.data[index].order_number}')
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                    padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                    child: Wrap(children: [
+                                      Text("ESTADO DE PEDIDO: ",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      properIcon(snapshot, index),
+                                      Text(statusToString(
+                                          snapshot.data[index].status)),
+                                      showCancelButton(snapshot.data[index])
+                                    ])),
+                                Padding(
+                                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                    child: Divider())
+                              ],
+                            );
+                          });
+                    },
+                  )
+                : Center(child: CircularProgressIndicator()),
           ),
         )
       ],
     );
+  }
+
+  Future<void> _reloadPendingOrders() async {
+    setState(() {
+      this.reloading = true;
+    });
+    context.read<LoginCubit>().getPendingOrders(this.userId).then((list) => {
+          this._pendingOrdersBloc.reloadOrders(list),
+          this.setState(() {
+            this.reloading = false;
+          })
+        });
+  }
+
+  Widget properIcon(AsyncSnapshot<List<PendingOrder>> snapshot, int index) {
+    switch (snapshot.data[index].status) {
+      case '5':
+        return Icon(
+          Icons.cancel_outlined,
+          color: Colors.red,
+          size: 14,
+        );
+      case '4':
+        return FaIcon(
+          FontAwesomeIcons.truckMoving,
+          color: Colors.green,
+          size: 14,
+        );
+      case '2':
+        return FaIcon(
+          FontAwesomeIcons.userMinus,
+          color: Colors.red,
+          size: 14,
+        );
+      case '3':
+        return Icon(
+          Icons.update_rounded,
+          color: Colors.lightGreen,
+          size: 14,
+        );
+      default:
+        return Icon(
+          Icons.check_circle_outline,
+          color: Colors.green,
+          size: 14,
+        );
+    }
   }
 
   Widget showCancelButton(PendingOrder order) {
@@ -892,6 +954,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
       return SizedBox.shrink();
     }
   }
+
   //endregion
 
   //region FormularioLogin
