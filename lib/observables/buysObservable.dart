@@ -15,6 +15,10 @@ class BuysBloc {
   void updateOrders(List<PendingOrder> ordersP) {
     _subjectBuys.sink.add(ordersP);
   }
+  void reloadOrders(List<PendingOrder> ordersP) {
+    _subjectBuys.value.clear();
+    _subjectBuys.sink.add(ordersP);
+  }
 
   void dispose() {
     _subjectBuys.close();

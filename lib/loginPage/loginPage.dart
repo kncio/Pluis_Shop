@@ -617,52 +617,78 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         Expanded(
           child: Padding(
             padding: EdgeInsets.fromLTRB(0, 32, 0, 0),
-            child: StreamBuilder(
-              stream: this._buysBloc.bysObservable,
-              builder: (context, AsyncSnapshot<List<PendingOrder>> snapshot) {
-                return ListView.builder(
-                    itemCount:
-                        (snapshot.data != null) ? snapshot.data.length : 0,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
-                            child: Wrap(
-                              children: [
-                                Text(
-                                  "NÚMERO DE PEDIDO: ",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text('${snapshot.data[index].order_number}')
-                              ],
-                            ),
-                          ),
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                              child: Wrap(children: [
-                                Text("ESTADO DE PEDIDO: ",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                properIcon(snapshot, index),
-                                Text(statusToString(
-                                    snapshot.data[index].status)),
-                                showCancelButton(snapshot.data[index])
-                              ])),
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                              child: Divider())
-                        ],
-                      );
-                    });
-              },
+            child: RefreshIndicator(
+              onRefresh: _refreshBuys,
+              child: (!this.reloading)
+                  ? StreamBuilder(
+                      stream: this._buysBloc.bysObservable,
+                      builder: (context,
+                          AsyncSnapshot<List<PendingOrder>> snapshot) {
+                        return ListView.builder(
+                            itemCount: (snapshot.data != null)
+                                ? snapshot.data.length
+                                : 0,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                    child: Wrap(
+                                      children: [
+                                        Text(
+                                          "NÚMERO DE PEDIDO: ",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                            '${snapshot.data[index].order_number}')
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                      child: Wrap(children: [
+                                        Text("ESTADO DE PEDIDO: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        properIcon(snapshot, index),
+                                        Text(statusToString(
+                                            snapshot.data[index].status)),
+                                        showCancelButton(snapshot.data[index])
+                                      ])),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                      child: Divider())
+                                ],
+                              );
+                            });
+                      },
+                    )
+                  : Center(child: CircularProgressIndicator()),
             ),
           ),
         )
       ],
     );
   }
+
+  Future<void> _refreshBuys() async {
+              setState(() {
+                this.reloading = true;
+              });
+              context
+                  .read<LoginCubit>()
+                  .getFinishedOrders(this.userId)
+                  .then((list) => {
+                        this._buysBloc.reloadOrders(list),
+                        this.setState(() {
+                          this.reloading = false;
+                        })
+                      });
+            }
 
   //endregion
 
