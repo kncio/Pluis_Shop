@@ -20,6 +20,7 @@ import 'package:pluis_hv_app/observables/billsObservable.dart';
 import 'package:pluis_hv_app/observables/buysObservable.dart';
 import 'package:pluis_hv_app/observables/pendingOrdersObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
+import 'package:pluis_hv_app/pluisWidgets/orderDetailsWidget.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisPdfViewer.dart';
 import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
@@ -676,19 +677,16 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
   }
 
   Future<void> _refreshBuys() async {
-              setState(() {
-                this.reloading = true;
-              });
-              context
-                  .read<LoginCubit>()
-                  .getFinishedOrders(this.userId)
-                  .then((list) => {
-                        this._buysBloc.reloadOrders(list),
-                        this.setState(() {
-                          this.reloading = false;
-                        })
-                      });
-            }
+    setState(() {
+      this.reloading = true;
+    });
+    context.read<LoginCubit>().getFinishedOrders(this.userId).then((list) => {
+          this._buysBloc.reloadOrders(list),
+          this.setState(() {
+            this.reloading = false;
+          })
+        });
+  }
 
   //endregion
 
@@ -872,38 +870,52 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                               ? snapshot.data.length
                               : 0,
                           itemBuilder: (context, index) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
-                                  child: Wrap(
-                                    children: [
-                                      Text(
-                                        "NÚMERO DE PEDIDO: ",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                          '${snapshot.data[index].order_number}')
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                    child: Wrap(children: [
-                                      Text("ESTADO DE PEDIDO: ",
+                            return GestureDetector(
+                              onTap: () async {
+                                showModalBottomSheet(
+                                    isScrollControlled: true,
+                                    context: context,
+                                    builder: (_) {
+                                      return OrderDetails(
+                                          orderNumber: snapshot
+                                              .data[index].order_number);
+                                    });
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                    child: Wrap(
+                                      children: [
+                                        Text(
+                                          "NÚMERO DE PEDIDO: ",
                                           style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                      properIcon(snapshot, index),
-                                      Text(statusToString(
-                                          snapshot.data[index].status)),
-                                      showCancelButton(snapshot.data[index])
-                                    ])),
-                                Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                    child: Divider())
-                              ],
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                            '${snapshot.data[index].order_number}')
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                      child: Wrap(children: [
+                                        Text("ESTADO DE PEDIDO: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        properIcon(snapshot, index),
+                                        Text(statusToString(
+                                            snapshot.data[index].status)),
+                                        showCancelButton(snapshot.data[index])
+                                      ])),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                      child: Divider())
+                                ],
+                              ),
                             );
                           });
                     },

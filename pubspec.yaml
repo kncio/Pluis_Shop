@@ -36,6 +36,7 @@ dependencies:
   flutter_secure_storage: ^3.3.3
   shared_preferences: '>=0.5.10'
   #dio: ^3.0.10
+  open_file: ^3.2.1
   dio: ^4.0.0
   bloc: ^6.0.3
   flutter_bloc: ^6.0.5

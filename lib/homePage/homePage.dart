@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pluis_hv_app/PluisApp.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
@@ -14,6 +15,7 @@ import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/homePage/homeDataModel.dart';
 import 'package:pluis_hv_app/observables/colorStringObservable.dart';
+import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisLogo.dart';
@@ -413,30 +415,87 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
   }
 
   Future<bool> download(String url, String filename) async {
+    String truePath = '';
     requestPermissions().then((ready) => {
           Settings.getAppExternalStorageBaseDirectory.then((directory) => {
                 log('${directory.path}'),
+                truePath = directory.path.replaceAll(
+                        "Android/data/com.dcm.highvista.calzado_pluis/files",
+                        "CalzadoPluis") +
+                    '/privacidad' +
+                    '/' +
+                    filename,
                 context
                     .read<HomePageCubit>()
-                    .downloadFile(
-                        url,
-                        directory.path.replaceAll(
-                                "Android/data/com.dcm.highvista.calzado_pluis/files",
-                                "CalzadoPluis") +
-                            '/privacidad' +
-                            '/' +
-                            filename,
-                        onProgressCallback)
+                    .downloadFile(url, truePath, onProgressCallback)
                     .then((value) => {
                           this._downloading = false,
-                          if (value)
-                            {
-                              showSnackbar(context,
-                                  text: "Descarga Finalizada.", timeLimit: 3)
-                            }
+                          if (value) {showModalForOpenFile(truePath)}
                         })
               })
         });
+  }
+
+  Future showModalForOpenFile(String truePath) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return Container(
+            height: 150,
+            child: Column(
+              children: [
+                Spacer(),
+                Center(
+                  child: Text(
+                    "La descarga ha finalizado con éxito.",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Spacer(),
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: DarkButton(
+                      text: "Abrir",
+                      action: () {
+                        final _result =
+                            OpenFile.open(truePath).then((value) => {
+                                  if (value.type == ResultType.noAppToOpen)
+                                    {_showMyDialog()}
+                                });
+                      }),
+                )
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Aplicación no encontrada'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('NO existe aplicación para abrir el documento.'),
+                Text('Verifique que contiene un lector de .docxs'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Entendido'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<Map<Permission, PermissionStatus>> requestPermissions() async {

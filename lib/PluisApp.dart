@@ -5,7 +5,9 @@ import 'package:pluis_hv_app/addressBook/addressBookCubit.dart';
 import 'package:pluis_hv_app/addressBook/addressBookPage.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
 import 'package:pluis_hv_app/commons/argsClasses.dart';
+import 'package:pluis_hv_app/commons/deepLinksBloc.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
+import 'package:pluis_hv_app/commons/pocWidget.dart';
 import 'package:pluis_hv_app/galleryPage/galleryPageCubit.dart';
 import 'package:pluis_hv_app/homePage/homePage.dart';
 import 'package:pluis_hv_app/homePage/homePageCubit.dart';
@@ -17,6 +19,7 @@ import 'package:pluis_hv_app/shopCart/shopCart.dart';
 import 'package:pluis_hv_app/shopCart/shopCartCubit.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenCubit.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenPage.dart';
+import 'package:provider/provider.dart';
 
 import 'commons/pagesRoutes.dart';
 import 'galleryPage/galleryPage.dart';
@@ -27,15 +30,21 @@ import 'menuPage/menuCubit.dart';
 class PluisApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    DeepLinkBloc _bloc = DeepLinkBloc();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Tienda Pluis',
       theme: PluisAppTheme.themeDataLight,
-      home: BlocProvider<SplashScreenCubit>(
-        create: (_) => injectionContainer.sl<SplashScreenCubit>(),
-        child: SplashScreenPage(),
-        //   home: ShopCartPage(),
-      ),
+      home: Provider(
+          dispose: (context, bloc) => bloc.dispose(),
+          create: (context) => _bloc,
+          child: PocWidget(
+            noDeepUsedApp: BlocProvider<SplashScreenCubit>(
+              create: (_) => injectionContainer.sl<SplashScreenCubit>(),
+              child: SplashScreenPage(),
+              //   home: ShopCartPage(),
+            ),
+          )),
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case GALERY_SCREEN_PAGE_ROUTE:
