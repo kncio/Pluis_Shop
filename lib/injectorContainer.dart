@@ -19,6 +19,7 @@ import 'package:pluis_hv_app/menuPage/menuCubit.dart';
 import 'package:pluis_hv_app/observables/colorStringObservable.dart';
 import 'package:pluis_hv_app/observables/totalBloc.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
+import 'package:pluis_hv_app/pluisWidgets/orderDetailsWidget.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisProductCard.dart';
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
@@ -109,6 +110,11 @@ Future<void> init() async {
   sl.registerFactory(() => ProductCardRepository(api: sl()));
   //endregion
 
+  //region OrderDetails
+  sl.registerFactory(() => OrderDetailsCubit(repo: sl()));
+  sl.registerFactory(() => OrderDetailsRepository(api: sl()));
+  //endregion
+
   //region Dio Client Instance
   sl.registerLazySingleton<ApiClient>(() => ApiClient(serviceUri: WEB_SERVICE));
   //endregion
@@ -123,7 +129,8 @@ Future<void> init() async {
 
   sl.registerLazySingleton<ShoppingCart>(() => ShoppingCart(shoppingList: []));
 
-  sl.registerLazySingleton<TotalBloc>(() => TotalBloc(sum: 0,shoppingCartReference: sl()));
+  sl.registerLazySingleton<TotalBloc>(
+      () => TotalBloc(sum: 0, shoppingCartReference: sl()));
 
   sl.registerLazySingleton<ColorBloc>(() => ColorBloc(colorsString: "#000000"));
 }

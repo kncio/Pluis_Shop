@@ -1,11 +1,8 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
-import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
-import 'package:pluis_hv_app/settings/settings.dart';
+
+import 'DarkButton.dart';
 
 class OrderDetails extends StatefulWidget {
   final String orderNumber;
@@ -129,66 +126,3 @@ Widget _buildListItem(String pName, String color, String tall, String und,
   );
 }
 
-class OrderDetailsCubit extends Cubit<OrderDetailState> {
-  OrderDetailsCubit() : super(OrderDetailStateInitial());
-}
-
-class OrderDetailState extends Equatable {
-  @override
-  List<Object> get props => [];
-}
-
-class OrderDetailStateInitial extends OrderDetailState {}
-
-class OrderDetailStateSuccess extends OrderDetailState {
-  final OrderDetailData data;
-
-  OrderDetailStateSuccess(this.data);
-}
-
-class OrderDetailData {
-  final String id;
-  final String order_number;
-  final String id_account;
-  final String price_subtotal;
-  final String address_send;
-  final String price_delivery;
-  final String shipping_method;
-  final String status;
-  final String updated_at;
-  final String created_at;
-  final String currency_shipping;
-  final String exchange_rate;
-  final String buff;
-
-  OrderDetailData(
-      {this.id,
-      this.order_number,
-      this.id_account,
-      this.price_subtotal,
-      this.address_send,
-      this.price_delivery,
-      this.shipping_method,
-      this.status,
-      this.updated_at,
-      this.created_at,
-      this.currency_shipping,
-      this.exchange_rate,
-      this.buff});
-
-  static fromJson(Map<String, dynamic> json) => OrderDetailData(
-        id: json['id'],
-        order_number: json['order_number'],
-        id_account: json['id_account'],
-        price_delivery: json['price_delivery'],
-        address_send: json['address_send'],
-        price_subtotal: json['price_subtotal'],
-        shipping_method: json['shipping_method'],
-        status: json['status'],
-        updated_at: json['updated_at'],
-        created_at: json['created_at'],
-        currency_shipping: json['currency_shipping'],
-        exchange_rate: json['exchange_rate'],
-        buff: json['buff'],
-      );
-}

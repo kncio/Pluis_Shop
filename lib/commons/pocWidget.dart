@@ -3,16 +3,17 @@ import 'package:provider/provider.dart';
 
 import 'deepLinksBloc.dart';
 
+import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
 
 class PocWidget extends StatelessWidget {
-
   final Widget noDeepUsedApp;
 
   const PocWidget({Key key, this.noDeepUsedApp}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    DeepLinkBloc _bloc = Provider.of<DeepLinkBloc>(context);
+    //DeepLinkBloc _bloc = Provider.of<DeepLinkBloc>(context);//
+    var _bloc = injectorContainer.sl<DeepLinkBloc>();
     return StreamBuilder<String>(
       stream: _bloc.state,
       builder: (context, snapshot) {
