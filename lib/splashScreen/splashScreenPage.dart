@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pluis_hv_app/commons/deepLinksBloc.dart';
+import 'package:pluis_hv_app/commons/pagesRoutes.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisLogo.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenCubit.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenStates.dart';
+import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
+import 'package:provider/provider.dart';
 
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key key}) : super(key: key);
@@ -35,7 +39,12 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
         Future.delayed(Duration(seconds: 3, milliseconds: 500)).whenComplete(
           () {
             Settings.invalidateCredentials();
-            Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE);
+            if (!Settings.deepLinkEntry) {
+              Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE);
+            }
+            else{
+             //pop the splash screen
+            }
           },
         );
       } else if (state is SplashScreenError) {

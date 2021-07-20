@@ -30,8 +30,12 @@ class Settings {
   }
 
   static String get webService => WEB_SERVICE;
+  static bool get deepLinkEntry => _deepLinkEntry;
+  static bool _deepLinkEntry = false;
 
-
+  static setEntryType(bool entryType){
+    _deepLinkEntry = entryType;
+  }
 
   /// in milliseconds
   static int get requestTimeLimit => REQUEST_TIME_LIMIT;

@@ -33,7 +33,7 @@ class DeepLinkBloc extends Bloc {
   _onRedirected(String uri) {
     // Here can be any uri analysis, checking tokens etc, if it’s necessary
     // Throw deep link URI into the BloC's stream
-    // log(uri);
+    log(uri);
     // if (_checkLink(uri)) {
     //   log("return true to link");
     //   injectorContainer

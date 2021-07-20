@@ -19,12 +19,14 @@ import 'package:pluis_hv_app/loginPage/loginPage.dart';
 import 'package:pluis_hv_app/menuPage/menuPage.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
 import 'package:pluis_hv_app/register/registerPage.dart';
+import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/shopCart/shopCart.dart';
 import 'package:pluis_hv_app/shopCart/shopCartCubit.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenCubit.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenPage.dart';
 import 'package:provider/provider.dart';
 
+import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
 import 'commons/pagesRoutes.dart';
 import 'galleryPage/galleryPage.dart';
 import 'injectorContainer.dart' as injectionContainer;
@@ -32,18 +34,6 @@ import 'loginPage/loginCubit.dart';
 import 'menuPage/menuCubit.dart';
 
 class PluisApp extends StatelessWidget {
-  DeepLinkBloc _bloc = injectionContainer.sl<DeepLinkBloc>();
-
-  Provider _pocWidget;
-
-  PluisApp() {
-    log("constructor called");
-    _pocWidget = Provider(
-        dispose: (context, bloc) => bloc.dispose(),
-        create: (context) => this._bloc,
-        child: PocWidget());
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -56,7 +46,10 @@ class PluisApp extends StatelessWidget {
       ),
       onGenerateRoute: (settings) {
         log(settings.name);
-        if(_deepLinkValidator(settings.name)){
+        if (_deepLinkValidator(settings.name)) {
+          //Notify entry for deeplink
+          Settings.setEntryType(true);
+
           // return PLuisPageRoute(
           //     builder: (_) => BlocProvider<DetailsCubit>(
           //       create: (_) => injectionContainer.sl<DetailsCubit>(),
@@ -65,16 +58,18 @@ class PluisApp extends StatelessWidget {
           //         selectedCurrencyNomenclature: 'USD'
           //       ),
           //     ));
-          return PLuisPageRoute(settings: RouteSettings(name: "/home/product"),
-                builder: (_) => Scaffold(
-                  body: Container(
-                      child: Center(
-                          child: Padding(
-                              padding: EdgeInsets.all(20.0),
-                              child: Text('POR LAS GENERATED RUTES SE METIO ${settings.name}',
-                                  style: Theme.of(context).textTheme.title)))),
-                ),
-              );
+          return PLuisPageRoute(
+            settings: RouteSettings(name: "/home/product"),
+            builder: (_) => Scaffold(
+              body: Container(
+                  child: Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text(
+                              'POR LAS GENERATED RUTES SE METIO ${settings.name}',
+                              style: Theme.of(context).textTheme.title)))),
+            ),
+          );
         }
         switch (settings.name) {
           case GALERY_SCREEN_PAGE_ROUTE:
@@ -135,12 +130,15 @@ class PluisApp extends StatelessWidget {
     );
   }
 
-  bool _deepLinkValidator(String route){
+  bool _deepLinkValidator(String route) {
     var routeName = route.split("?");
-    if(routeName[0] ==  "/product"){
+    if (routeName[0] == "/product") {
       var parsedUri = Uri.tryParse(route);
-      if(parsedUri != null){
+      if (parsedUri != null) {
         log(parsedUri.queryParameters.keys.toString());
+        return parsedUri.queryParameters.keys.length == 2 &&
+            parsedUri.queryParameters.keys.toList()[0] == 'id' &&
+            parsedUri.queryParameters.keys.toList()[1] == 'coin';
       }
     }
 
