@@ -295,7 +295,7 @@ class _DetailsPage extends State<DetailsPage> {
                   onPressed: () => {
                     //TODO: DeepLinks
                     Share.share(
-                        "https://www.calzadopluis.com/product?id=${this.product.id}&coin=${this.selectedCurrencyNomenclature}")
+                        "https://calzadopluis.com/product?id=${this.product.id}&coin=${this.selectedCurrencyNomenclature}")
                   },
                   color: Colors.black,
                 )),
