@@ -38,16 +38,10 @@ class ApiClient {
     try {
       var get_method = this.serviceUri + method;
 
-      log("METHOD: " + get_method);
-
-      log(client.options.headers.toString());
-
       var response = await client.get(get_method);
-      log("ON RESPONSE");
+
       //GEt the Cookies for later request
       var cookies = cookieJar.loadForRequest(Uri.parse(get_method));
-
-      log("Response " + cookies.toString());
 
       return response;
     } on DioError catch (error) {

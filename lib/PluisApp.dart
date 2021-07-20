@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +10,8 @@ import 'package:pluis_hv_app/commons/argsClasses.dart';
 import 'package:pluis_hv_app/commons/deepLinksBloc.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/commons/pocWidget.dart';
+import 'package:pluis_hv_app/detailsPage/detailsPage.dart';
+import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/galleryPage/galleryPageCubit.dart';
 import 'package:pluis_hv_app/homePage/homePage.dart';
 import 'package:pluis_hv_app/homePage/homePageCubit.dart';
@@ -28,24 +32,50 @@ import 'loginPage/loginCubit.dart';
 import 'menuPage/menuCubit.dart';
 
 class PluisApp extends StatelessWidget {
+  DeepLinkBloc _bloc = injectionContainer.sl<DeepLinkBloc>();
+
+  Provider _pocWidget;
+
+  PluisApp() {
+    log("constructor called");
+    _pocWidget = Provider(
+        dispose: (context, bloc) => bloc.dispose(),
+        create: (context) => this._bloc,
+        child: PocWidget());
+  }
+
   @override
   Widget build(BuildContext context) {
-    DeepLinkBloc _bloc = DeepLinkBloc();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Tienda Pluis',
       theme: PluisAppTheme.themeDataLight,
-      home: Provider(
-          dispose: (context, bloc) => bloc.dispose(),
-          create: (context) => _bloc,
-          child: PocWidget(
-            noDeepUsedApp: BlocProvider<SplashScreenCubit>(
-              create: (_) => injectionContainer.sl<SplashScreenCubit>(),
-              child: SplashScreenPage(),
-              //   home: ShopCartPage(),
-            ),
-          )),
+      home: BlocProvider<SplashScreenCubit>(
+        create: (_) => injectionContainer.sl<SplashScreenCubit>(),
+        child: SplashScreenPage(),
+      ),
       onGenerateRoute: (settings) {
+        log(settings.name);
+        if(_deepLinkValidator(settings.name)){
+          // return PLuisPageRoute(
+          //     builder: (_) => BlocProvider<DetailsCubit>(
+          //       create: (_) => injectionContainer.sl<DetailsCubit>(),
+          //       child: DetailsPage(
+          //         product: null,
+          //         selectedCurrencyNomenclature: 'USD'
+          //       ),
+          //     ));
+          return PLuisPageRoute(settings: RouteSettings(name: "/home/product"),
+                builder: (_) => Scaffold(
+                  body: Container(
+                      child: Center(
+                          child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Text('POR LAS GENERATED RUTES SE METIO ${settings.name}',
+                                  style: Theme.of(context).textTheme.title)))),
+                ),
+              );
+        }
         switch (settings.name) {
           case GALERY_SCREEN_PAGE_ROUTE:
             return PLuisPageRoute(
@@ -82,14 +112,38 @@ class PluisApp extends StatelessWidget {
                   create: (_) => injectionContainer.sl<MenuCubit>(),
                   child: MenuPage()),
             );
-          default:
+          case HOME_PAGE_ROUTE:
+            log("ENTRO POR LAS RUTAS ");
             return PLuisPageRoute(
                 builder: (_) => BlocProvider<HomePageCubit>(
                       create: (_) => injectionContainer.sl<HomePageCubit>(),
                       child: HomePage(),
                     ));
+          default:
+            return PLuisPageRoute(
+              builder: (_) => Scaffold(
+                body: Container(
+                    child: Center(
+                        child: Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Text('BAD LINK',
+                                style: Theme.of(context).textTheme.title)))),
+              ),
+            );
         }
       },
     );
+  }
+
+  bool _deepLinkValidator(String route){
+    var routeName = route.split("?");
+    if(routeName[0] ==  "/product"){
+      var parsedUri = Uri.tryParse(route);
+      if(parsedUri != null){
+        log(parsedUri.queryParameters.keys.toString());
+      }
+    }
+
+    return false;
   }
 }

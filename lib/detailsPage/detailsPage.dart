@@ -17,6 +17,7 @@ import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 import 'package:pluis_hv_app/pluisWidgets/sizeSelectorList.dart';
 import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
+import 'package:share/share.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
@@ -293,6 +294,8 @@ class _DetailsPage extends State<DetailsPage> {
                   icon: Icon(Icons.ios_share),
                   onPressed: () => {
                     //TODO: DeepLinks
+                    Share.share(
+                        "https://www.calzadopluis.com/product?id=${this.product.id}&coin=${this.selectedCurrencyNomenclature}")
                   },
                   color: Colors.black,
                 )),

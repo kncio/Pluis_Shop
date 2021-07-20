@@ -18,7 +18,6 @@ class SplashScreenRepository {
       Settings.setApiToken(apiToken: response.data["message"]["token_hash"]);
       var sToken = await Settings.storedApiToken;
 
-      log(sToken);
       return Right(true);
     }on Exception
     catch (error) {

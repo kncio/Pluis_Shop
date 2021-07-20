@@ -6,3 +6,4 @@ const String REGISTER_PAGE_ROUTE = '/register';
 const String SHOP_CART = '/shopCart';
 const String MENU_PAGE = '/menu';
 const String ADDRESS_BOOK_ROUTE = '/addressBook';
+const String DEEP_LINK_USED = '/product';

@@ -33,32 +33,14 @@ class DeepLinkBloc extends Bloc {
   _onRedirected(String uri) {
     // Here can be any uri analysis, checking tokens etc, if it’s necessary
     // Throw deep link URI into the BloC's stream
-    log(uri);
-    if (_checkLink(uri)) {
-      injectorContainer
-          .sl<SplashScreenRepository>()
-          .initializeApp()
-          .then((value) => stateSink.add(uri));
-    } else {
-      injectorContainer
-          .sl<SplashScreenRepository>()
-          .initializeApp()
-          .then((value) => stateSink.add("https://calzadopluis.com"));
-    }
-  }
-
-  bool _checkLink(String uri) {
-    var rawLink = uri.replaceAll("https://calzadopluis.com/", "");
-
-    if (rawLink.split("/")[0] != "product") {
-      return false;
-    }
-    try {
-      var pid = int.parse(rawLink.split("/")[1]);
-      return true;
-    } catch (error) {
-      return false;
-    }
+    // log(uri);
+    // if (_checkLink(uri)) {
+    //   log("return true to link");
+    //   injectorContainer
+    //       .sl<SplashScreenRepository>()
+    //       .initializeApp()
+    //       .then((value) => stateSink.add(uri));
+    // }
   }
 
   @override

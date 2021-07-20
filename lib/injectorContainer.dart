@@ -20,6 +20,7 @@ import 'package:pluis_hv_app/observables/colorStringObservable.dart';
 import 'package:pluis_hv_app/observables/totalBloc.dart';
 import 'package:pluis_hv_app/pluisWidgets/homePageCarousel.dart';
 import 'package:pluis_hv_app/pluisWidgets/orderDetailsWidget.dart';
+import 'package:pluis_hv_app/pluisWidgets/orderDetailsWidgetRemote.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisProductCard.dart';
 import 'package:pluis_hv_app/pluisWidgets/shoppingCartDataModel.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
@@ -30,6 +31,7 @@ import 'package:pluis_hv_app/splashScreen/SplashScreenRepository.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenCubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'commons/deepLinksBloc.dart';
 import 'commons/values.dart';
 import 'pluisWidgets/pluisProductCardCubit.dart';
 
@@ -113,6 +115,10 @@ Future<void> init() async {
   //region OrderDetails
   sl.registerFactory(() => OrderDetailsCubit(repo: sl()));
   sl.registerFactory(() => OrderDetailsRepository(api: sl()));
+  //endregion
+
+  //region DeepLinks
+  sl.registerFactory(() => DeepLinkBloc());
   //endregion
 
   //region Dio Client Instance
