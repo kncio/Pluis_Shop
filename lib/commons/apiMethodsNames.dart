@@ -28,3 +28,4 @@ const String POST_CHANGE_PASSWORD = '/change_password';
 const String POST_CHANGE_EMAIL = '/change_email';
 const String ON_DISCOUNT_PRODUCTS_BY_CATEGORY_ROW_ID = "/get_product_orfert";
 const String ORDER_DETAIL = '/get_order_detail';
+const String GET_PRODUCT_DETAIL = '/get_product_detail';

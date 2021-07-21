@@ -133,6 +133,7 @@ class _GalleryPage extends State<GalleryPage> {
                             selectedCurrencyNomenclature: this
                                 .currencys[this.selectedCurrency]
                                 .coin_nomenclature,
+                            fromDeepLink: false,
                           ),
                         ))),
           ),

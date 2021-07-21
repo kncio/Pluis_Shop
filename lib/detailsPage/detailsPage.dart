@@ -27,21 +27,27 @@ import 'detailsPageRemoteDataSource.dart';
 class DetailsPage extends StatefulWidget {
   final Product product;
   final String selectedCurrencyNomenclature;
+  final bool fromDeepLink;
 
   const DetailsPage(
-      {@required this.product, @required this.selectedCurrencyNomenclature});
+      {@required this.product,
+      @required this.selectedCurrencyNomenclature,
+      this.fromDeepLink});
 
   @override
   _DetailsPage createState() {
     return _DetailsPage(
         product: this.product,
-        selectedCurrencyNomenclature: this.selectedCurrencyNomenclature);
+        selectedCurrencyNomenclature: this.selectedCurrencyNomenclature,
+        fromDeepLink: this.fromDeepLink);
   }
 }
 
 class _DetailsPage extends State<DetailsPage> {
   final String selectedCurrencyNomenclature;
-  final Product product;
+  Product product;
+  final bool fromDeepLink;
+
   List<ProductDetailsImages> imagesList = [];
   bool addTapped = false;
   PanelController _panelController;
@@ -69,11 +75,26 @@ class _DetailsPage extends State<DetailsPage> {
   //discount Price Variation(for current currency)
   String discountPrice = "";
 
-  _DetailsPage({Key key, this.product, this.selectedCurrencyNomenclature});
+  _DetailsPage(
+      {Key key,
+      this.product,
+      this.selectedCurrencyNomenclature,
+      this.fromDeepLink});
 
   @override
   void initState() {
     super.initState();
+    // if (this.fromDeepLink) {
+    //   context
+    //       .read<DetailsCubit>()
+    //       .getProductDetail(this.product.row_id)
+    //       .then((value) => {this.product = value, _retrieveProductnfo()});
+    // } else {
+      _retrieveProductnfo();
+    // }
+  }
+
+  void _retrieveProductnfo() {
     normalPrice = this.product.price;
     discountPrice = this.product.discount_price;
 
@@ -161,7 +182,6 @@ class _DetailsPage extends State<DetailsPage> {
         log(state.message);
       }
       if (state is DetailsPageSuccessColor) {
-        log("Called");
         this.colorList = (state as DetailsPageSuccessColor).colorsBy;
         context
             .read<DetailsCubit>()
@@ -295,7 +315,7 @@ class _DetailsPage extends State<DetailsPage> {
                   onPressed: () => {
                     //TODO: DeepLinks
                     Share.share(
-                        "https://calzadopluis.com/product?id=${this.product.id}&coin=${this.selectedCurrencyNomenclature}")
+                        "https://calzadopluis.com/product?id=${this.product.row_id}&image=${this.product.image.replaceAll("https://www.calzadopluis.com/writable/uploads/images/", "")}&coin=${this.selectedCurrencyNomenclature}")
                   },
                   color: Colors.black,
                 )),

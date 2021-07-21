@@ -10,6 +10,7 @@ import 'package:pluis_hv_app/commons/argsClasses.dart';
 import 'package:pluis_hv_app/commons/deepLinksBloc.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/commons/pocWidget.dart';
+import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPage.dart';
 import 'package:pluis_hv_app/detailsPage/detailsPageCubit.dart';
 import 'package:pluis_hv_app/galleryPage/galleryPageCubit.dart';
@@ -49,27 +50,18 @@ class PluisApp extends StatelessWidget {
         if (_deepLinkValidator(settings.name)) {
           //Notify entry for deeplink
           Settings.setEntryType(true);
-
-          // return PLuisPageRoute(
-          //     builder: (_) => BlocProvider<DetailsCubit>(
-          //       create: (_) => injectionContainer.sl<DetailsCubit>(),
-          //       child: DetailsPage(
-          //         product: null,
-          //         selectedCurrencyNomenclature: 'USD'
-          //       ),
-          //     ));
+          var rowId = Uri.parse(settings.name).queryParameters['id'];
+          var coin = Uri.parse(settings.name).queryParameters['coin'];
+          var image = Uri.parse(settings.name).queryParameters['image'];
           return PLuisPageRoute(
-            settings: RouteSettings(name: "/home/product"),
-            builder: (_) => Scaffold(
-              body: Container(
-                  child: Center(
-                      child: Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Text(
-                              'POR LAS GENERATED RUTES SE METIO ${settings.name}',
-                              style: Theme.of(context).textTheme.title)))),
-            ),
-          );
+              builder: (_) => BlocProvider<DetailsCubit>(
+                    create: (_) => injectionContainer.sl<DetailsCubit>(),
+                    child: DetailsPage(
+                      product: Product(row_id: rowId, image: image),
+                      selectedCurrencyNomenclature: coin,
+                      fromDeepLink: true,
+                    ),
+                  ));
         }
         switch (settings.name) {
           case GALERY_SCREEN_PAGE_ROUTE:
@@ -136,9 +128,10 @@ class PluisApp extends StatelessWidget {
       var parsedUri = Uri.tryParse(route);
       if (parsedUri != null) {
         log(parsedUri.queryParameters.keys.toString());
-        return parsedUri.queryParameters.keys.length == 2 &&
-            parsedUri.queryParameters.keys.toList()[0] == 'id' &&
-            parsedUri.queryParameters.keys.toList()[1] == 'coin';
+        return parsedUri.queryParameters.keys.length == 3 &&
+            parsedUri.queryParameters.keys.contains('id') &&
+            parsedUri.queryParameters.keys.contains('coin') &&
+            parsedUri.queryParameters.keys.contains('image');
       }
     }
 

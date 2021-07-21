@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
+import 'package:pluis_hv_app/commons/productsModel.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisProductCardCubit.dart';
 
 import 'detailsPageRemoteDataSource.dart';
@@ -107,6 +108,27 @@ class DetailsRepository {
 
         return Right(imagesList);
       } else {
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, Product>> getProductDetail(
+      String rowId) async {
+    Product product;
+    try {
+      var response =
+      await api.get(GET_PRODUCT_DETAIL, {"row_id": rowId});
+
+      if (response.statusCode == 200) {
+
+        product = Product.fromMap(response.data['data']);
+
+        return Right(product);
+      } else {
+        log(response.statusCode.toString());
         return Left(Failure([response.statusMessage]));
       }
     } catch (error) {

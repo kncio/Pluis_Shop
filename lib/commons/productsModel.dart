@@ -55,5 +55,6 @@ class Product {
         category_id: data["category_id"],
         image: WEB_IMAGES + data["image"]);
   }
+
 }
 
