@@ -27,7 +27,6 @@ import 'package:pluis_hv_app/splashScreen/splashScreenCubit.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenPage.dart';
 import 'package:provider/provider.dart';
 
-import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
 import 'commons/pagesRoutes.dart';
 import 'galleryPage/galleryPage.dart';
 import 'injectorContainer.dart' as injectionContainer;
@@ -53,15 +52,7 @@ class PluisApp extends StatelessWidget {
           var rowId = Uri.parse(settings.name).queryParameters['id'];
           var coin = Uri.parse(settings.name).queryParameters['coin'];
           var image = Uri.parse(settings.name).queryParameters['image'];
-          return PLuisPageRoute(
-              builder: (_) => BlocProvider<DetailsCubit>(
-                    create: (_) => injectionContainer.sl<DetailsCubit>(),
-                    child: DetailsPage(
-                      product: Product(row_id: rowId, image: image),
-                      selectedCurrencyNomenclature: coin,
-                      fromDeepLink: true,
-                    ),
-                  ));
+          return PLuisPageRoute(builder: (_) => PocWidget(coin: coin,rowId: rowId,image: image,));
         }
         switch (settings.name) {
           case GALERY_SCREEN_PAGE_ROUTE:

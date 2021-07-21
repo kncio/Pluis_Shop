@@ -33,6 +33,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'commons/deepLinksBloc.dart';
 import 'commons/values.dart';
+import 'observables/deepLinkFlag.dart';
 import 'pluisWidgets/pluisProductCardCubit.dart';
 
 final sl = GetIt.instance;
@@ -137,6 +138,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<TotalBloc>(
       () => TotalBloc(sum: 0, shoppingCartReference: sl()));
+
+  sl.registerLazySingleton<DeepLinkFlag>(
+          () => DeepLinkFlag());
+
 
   sl.registerLazySingleton<ColorBloc>(() => ColorBloc(colorsString: "#000000"));
 }

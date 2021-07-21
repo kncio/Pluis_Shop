@@ -39,12 +39,18 @@ class DeepLinkBloc extends Bloc {
     //   injectorContainer
     //       .sl<SplashScreenRepository>()
     //       .initializeApp()
-    //       .then((value) => stateSink.add(uri));
+    //       .then((value) => );
     // }
+    // stateSink.add(uri);
+  }
+
+  updateSink(String s){
+    stateSink.add(s);
   }
 
   @override
   void dispose() {
+    log("was closed");
     _stateController.close();
   }
 

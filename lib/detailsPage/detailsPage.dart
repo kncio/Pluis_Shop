@@ -27,26 +27,24 @@ import 'detailsPageRemoteDataSource.dart';
 class DetailsPage extends StatefulWidget {
   final Product product;
   final String selectedCurrencyNomenclature;
-  final bool fromDeepLink;
 
-  const DetailsPage(
-      {@required this.product,
-      @required this.selectedCurrencyNomenclature,
-      this.fromDeepLink});
+  const DetailsPage({
+    @required this.product,
+    @required this.selectedCurrencyNomenclature,
+  });
 
   @override
   _DetailsPage createState() {
     return _DetailsPage(
-        product: this.product,
-        selectedCurrencyNomenclature: this.selectedCurrencyNomenclature,
-        fromDeepLink: this.fromDeepLink);
+      product: this.product,
+      selectedCurrencyNomenclature: this.selectedCurrencyNomenclature,
+    );
   }
 }
 
 class _DetailsPage extends State<DetailsPage> {
   final String selectedCurrencyNomenclature;
-  Product product;
-  final bool fromDeepLink;
+  final Product product;
 
   List<ProductDetailsImages> imagesList = [];
   bool addTapped = false;
@@ -75,11 +73,11 @@ class _DetailsPage extends State<DetailsPage> {
   //discount Price Variation(for current currency)
   String discountPrice = "";
 
-  _DetailsPage(
-      {Key key,
-      this.product,
-      this.selectedCurrencyNomenclature,
-      this.fromDeepLink});
+  _DetailsPage({
+    Key key,
+    this.product,
+    this.selectedCurrencyNomenclature,
+  });
 
   @override
   void initState() {
@@ -90,7 +88,7 @@ class _DetailsPage extends State<DetailsPage> {
     //       .getProductDetail(this.product.row_id)
     //       .then((value) => {this.product = value, _retrieveProductnfo()});
     // } else {
-      _retrieveProductnfo();
+    _retrieveProductnfo();
     // }
   }
 
@@ -313,7 +311,6 @@ class _DetailsPage extends State<DetailsPage> {
                 child: IconButton(
                   icon: Icon(Icons.ios_share),
                   onPressed: () => {
-                    //TODO: DeepLinks
                     Share.share(
                         "https://calzadopluis.com/product?id=${this.product.row_id}&image=${this.product.image.replaceAll("https://www.calzadopluis.com/writable/uploads/images/", "")}&coin=${this.selectedCurrencyNomenclature}")
                   },

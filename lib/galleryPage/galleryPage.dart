@@ -102,7 +102,10 @@ class _GalleryPage extends State<GalleryPage> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 0),child: Container(child: buildGridView(context, state))))
+              Expanded(
+                  child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: Container(child: buildGridView(context, state))))
             ],
           );
         });
@@ -133,7 +136,6 @@ class _GalleryPage extends State<GalleryPage> {
                             selectedCurrencyNomenclature: this
                                 .currencys[this.selectedCurrency]
                                 .coin_nomenclature,
-                            fromDeepLink: false,
                           ),
                         ))),
           ),
