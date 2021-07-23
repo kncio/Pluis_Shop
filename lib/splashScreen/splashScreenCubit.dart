@@ -3,7 +3,6 @@ import 'package:pluis_hv_app/splashScreen/SplashScreenRepository.dart';
 import 'package:pluis_hv_app/splashScreen/splashScreenStates.dart';
 
 class SplashScreenCubit extends Cubit<SplashScreenState> {
-
   final SplashScreenRepository initializeApp;
 
   SplashScreenCubit({this.initializeApp}) : super(SplashScreenInitialState());
@@ -20,9 +19,7 @@ class SplashScreenCubit extends Cubit<SplashScreenState> {
     );
   }
 
-  Future<void> startAnimation()async {
+  Future<void> startAnimation() async {
     emit(SplashScreenAnimationStartState("Iniciando Animación"));
   }
-
-
 }

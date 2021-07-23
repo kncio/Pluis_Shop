@@ -83,6 +83,40 @@ class _RegisterPage extends State<RegisterPage> {
                 Expanded(child: buildForm(state))
               ],
             );
+          case RegisterErrorState:
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text("REGISTRARSE",
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                ),
+                Spacer(flex: 2),
+                Center(
+                  child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+                ),
+                Spacer(),
+                Center(
+                  child: Text("No hay conexión a Internet ...",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(64, 16, 64, 0),
+                  child: Center(
+                    child: DarkButton(
+                        text: "Reintentar",
+                        action: () {
+                          context.read<RegisterCubit>().getProvinces();
+                        }),
+                  ),
+                ),
+                Spacer(flex: 5)
+              ],
+            );
           default:
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,8 +137,7 @@ class _RegisterPage extends State<RegisterPage> {
       },
       listener: (context, state) async {
         if (state is RegisterSuccessState) {
-          showSnackbar(context, text: "Registro Satisfactorio");
-          Navigator.of(context).pushReplacementNamed(HOME_PAGE_ROUTE);
+          buildShowDialog(context);
         } else if (state is RegisterErrorState) {
           showSnackbar(context, text: state.message);
         } else if (state is RegisterInitialState) {
@@ -116,6 +149,43 @@ class _RegisterPage extends State<RegisterPage> {
         }
       },
     );
+  }
+
+  Future buildShowDialog(BuildContext context) {
+    return showDialog(
+        barrierDismissible: false, // must click btn
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Center(
+              child: const Text(
+                "Registro satisfactorio",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 18),
+              ),
+            ),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const <Widget>[
+                  Text(
+                      'Se le envíara un código mediante sms para validar el registro'),
+                  // Text('Verifique que contiene un lector de .docxs'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Entendido'),
+                onPressed: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      HOME_PAGE_ROUTE, ModalRoute.withName("/"));
+                },
+              )
+            ],
+          );
+        });
   }
 
   Form buildForm(RegisterState state) {
@@ -362,7 +432,8 @@ class _RegisterPage extends State<RegisterPage> {
       log(data.toMap().toString());
       await context.read<RegisterCubit>().register(data);
     } else {
-      //TODO: shoe error card
+      // showSnackbar(context, text: "Debes aceptar las políticas de privacidad");
+      buildShowDialog(context);
     }
   }
 
