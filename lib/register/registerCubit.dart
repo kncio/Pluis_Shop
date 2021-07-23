@@ -18,8 +18,8 @@ class RegisterCubit extends Cubit<RegisterState> {
         (failure) => failure.properties.isEmpty
             ? emit(RegisterErrorState(message: "Server unreachable"))
             : emit(RegisterErrorState(message: failure.properties.first)),
-        (logged) => logged
-            ? emit(RegisterSuccessState(message: "Ok"))
+        (logged) => logged.isNotEmpty
+            ? emit(RegisterSuccessState(message: logged))
             : emit(RegisterErrorState(message: "Campos Inválidos")));
   }
 

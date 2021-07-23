@@ -40,7 +40,7 @@ class RegisterRepository {
     log(response.data.toString());
   }
 
-  Future<Either<Failure, bool>> register(RegisterData registerData) async {
+  Future<Either<Failure, String>> register(RegisterData registerData) async {
     try {
       var apiToken = await Settings.storedApiToken;
 
@@ -59,13 +59,12 @@ class RegisterRepository {
           phone: registerData.phone,
           privacyCheck: registerData.privacyCheck,
           activation: registerData.activation);
-      log("Register called" + registerFinalData.toMap().toString());
+      // log("Register called" + registerFinalData.toMap().toString());
       var response = await api.post("user_register", registerFinalData.toMap());
 
       if (response.statusCode == 200) {
-        log("Register called" + response.data.toString());
-        //TODO: RETRIVE ERRORS if Ocurred
-        return Right(true);
+        // log("Register called" + response.data.toString());
+        return Right(response.data.toString());
       } else {
         log(response.statusCode.toString());
         return Left(Failure([response.data.toString()]));

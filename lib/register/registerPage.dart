@@ -137,7 +137,12 @@ class _RegisterPage extends State<RegisterPage> {
       },
       listener: (context, state) async {
         if (state is RegisterSuccessState) {
-          buildShowDialog(context);
+          if (!state.message.contains("field_errors")) {
+            buildShowDialog(context);
+          } else {
+            log(state.message);
+            buildShowDialogError(context);
+          }
         } else if (state is RegisterErrorState) {
           log(state.message);
         } else if (state is RegisterInitialState) {
@@ -149,6 +154,36 @@ class _RegisterPage extends State<RegisterPage> {
         }
       },
     );
+  }
+
+  Future buildShowDialogError(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Center(
+              child: Text("Imposible Registrar"),
+            ),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text("Su dirección de correo o teléfono ya están en uso ..."),
+                  // Text('Verifique que contiene un lector de .docxs'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Entendido'),
+                onPressed: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      HOME_PAGE_ROUTE, ModalRoute.withName("/"));
+                },
+              )
+            ],
+          );
+        },
+        barrierDismissible: false);
   }
 
   Future buildShowDialog(BuildContext context) {
@@ -191,7 +226,8 @@ class _RegisterPage extends State<RegisterPage> {
   Form buildForm(RegisterState state) {
     return Form(
         key: this._formKey,
-        child: ListView(
+        child: SingleChildScrollView(
+            child: Column(
           children: [
             buildEmailField(),
             buildPasswordField(),
@@ -205,7 +241,7 @@ class _RegisterPage extends State<RegisterPage> {
             buildCheckboxPrivacy(),
             buildRegisterButton()
           ],
-        ));
+        )));
   }
 
   Padding buildMunicipeSelector(RegisterState state) {
@@ -295,6 +331,12 @@ class _RegisterPage extends State<RegisterPage> {
     return Padding(
       padding: EdgeInsets.all(20),
       child: TextFormField(
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Este campo es obligatorio';
+          }
+          return null;
+        },
         onSaved: (newValue) => {formData.addressLines = newValue.trim()},
         onChanged: (newValue) => {formData.addressLines = newValue.trim()},
         keyboardType: TextInputType.streetAddress,
@@ -309,6 +351,12 @@ class _RegisterPage extends State<RegisterPage> {
     return Padding(
       padding: EdgeInsets.all(20),
       child: TextFormField(
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Este campo es obligatorio';
+          }
+          return null;
+        },
         onSaved: (newValue) => {formData.phone = newValue.trim()},
         onChanged: (newValue) => {formData.phone = newValue.trim()},
         keyboardType: TextInputType.phone,
@@ -323,6 +371,12 @@ class _RegisterPage extends State<RegisterPage> {
     return Padding(
       padding: EdgeInsets.all(20),
       child: TextFormField(
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Este campo es obligatorio';
+          }
+          return null;
+        },
         onSaved: (newValue) => {formData.lastName = newValue.trim()},
         onChanged: (newValue) => {formData.lastName = newValue.trim()},
         keyboardType: TextInputType.text,
@@ -337,6 +391,12 @@ class _RegisterPage extends State<RegisterPage> {
     return Padding(
       padding: EdgeInsets.all(20),
       child: TextFormField(
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Este campo es obligatorio';
+          }
+          return null;
+        },
         onSaved: (newValue) => {formData.firstName = newValue.trim()},
         onChanged: (newValue) => {formData.firstName = newValue.trim()},
         keyboardType: TextInputType.text,
@@ -351,6 +411,12 @@ class _RegisterPage extends State<RegisterPage> {
     return Padding(
       padding: EdgeInsets.all(20),
       child: TextFormField(
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Este campo es obligatorio';
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         onSaved: (newValue) => {formData.passwordConfirm = newValue.trim()},
         onChanged: (newValue) => {formData.passwordConfirm = newValue.trim()},
@@ -376,6 +442,12 @@ class _RegisterPage extends State<RegisterPage> {
     return Padding(
       padding: EdgeInsets.all(20),
       child: TextFormField(
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Este campo es obligatorio';
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         onSaved: (newValue) => {formData.password = newValue.trim()},
         onChanged: (newValue) => {formData.password = newValue.trim()},
@@ -401,6 +473,12 @@ class _RegisterPage extends State<RegisterPage> {
     return Padding(
       padding: EdgeInsets.all(20),
       child: TextFormField(
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Este campo es obligatorio';
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         onSaved: (newValue) => {formData.email = newValue.trim()},
         onChanged: (newValue) => {formData.email = newValue.trim()},
@@ -413,8 +491,7 @@ class _RegisterPage extends State<RegisterPage> {
 
   Future<void> doRegister(BuildContext context) async {
     _formKey.currentState.save();
-
-    if (this.formData.privacyCheck) {
+    if (this.formData.privacyCheck && _formKey.currentState.validate()) {
       var data = RegisterData(
           email: this.formData.email,
           password: this.formData.password,
@@ -429,11 +506,11 @@ class _RegisterPage extends State<RegisterPage> {
           addressLines_1: this.formData.addressLines,
           isCompany: false,
           activation: "phone_act");
-      log(data.toMap().toString());
+      log("data.toMap().toString()");
       await context.read<RegisterCubit>().register(data);
     } else {
-      // showSnackbar(context, text: "Debes aceptar las políticas de privacidad");
-      buildShowDialog(context);
+      showSnackbar(context, text: "Debes aceptar las políticas de privacidad");
+      // buildShowDialog(context);
     }
   }
 
