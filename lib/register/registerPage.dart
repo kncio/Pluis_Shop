@@ -139,7 +139,7 @@ class _RegisterPage extends State<RegisterPage> {
         if (state is RegisterSuccessState) {
           buildShowDialog(context);
         } else if (state is RegisterErrorState) {
-          showSnackbar(context, text: state.message);
+          log(state.message);
         } else if (state is RegisterInitialState) {
           this.provinces = state.provinces;
           this.selectedProvince = state.provinces[0];
