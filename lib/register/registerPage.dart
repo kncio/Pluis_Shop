@@ -152,9 +152,10 @@ class _RegisterPage extends State<RegisterPage> {
             color: Colors.black54,
           ),
           onChanged: (Municipe newMunicipe) {
-            setState(() {
-              selectedMunicipe = newMunicipe;
-              formData.municipe = newMunicipe.id;
+            this.setState(() {
+              this.selectedMunicipe = newMunicipe;
+              this.formData.municipe = newMunicipe.id;
+              log("municipe selected-> :" + this.formData.municipe);
             });
           },
           items:
@@ -204,7 +205,7 @@ class _RegisterPage extends State<RegisterPage> {
             color: Colors.black54,
           ),
           onChanged: (Province newProvince) {
-            setState(() {
+            this.setState(() {
               selectedProvince = newProvince;
               formData.province = int.parse(newProvince.id);
               getMunicipes();
@@ -340,8 +341,7 @@ class _RegisterPage extends State<RegisterPage> {
     );
   }
 
-  Future<void> doRegister(
-      BuildContext context) async {
+  Future<void> doRegister(BuildContext context) async {
     _formKey.currentState.save();
 
     if (this.formData.privacyCheck) {
@@ -354,6 +354,7 @@ class _RegisterPage extends State<RegisterPage> {
           phone: this.formData.phone,
           privacyCheck: this.formData.privacyCheck,
           province: this.formData.province,
+          municipe: this.formData.municipe,
           addressLines: this.formData.addressLines,
           addressLines_1: this.formData.addressLines,
           isCompany: false,
@@ -371,12 +372,11 @@ class _RegisterPage extends State<RegisterPage> {
         .read<RegisterCubit>()
         .getMunicipeByProvinceId(this.selectedProvince.id)
         .then((value) {
-      setState(() {
+      this.setState(() {
         this.municipes = value;
         log(value.length.toString());
         this.selectedMunicipe = this.municipes[0];
       });
     });
   }
-  
 }
