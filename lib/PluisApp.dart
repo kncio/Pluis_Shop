@@ -40,12 +40,12 @@ class PluisApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Tienda Pluis',
       theme: PluisAppTheme.themeDataLight,
-      home: BlocProvider<SplashScreenCubit>(
-        create: (_) => injectionContainer.sl<SplashScreenCubit>(),
-        child: SplashScreenPage(),
-      ),
+      // home: BlocProvider<SplashScreenCubit>(
+      //   create: (_) => injectionContainer.sl<SplashScreenCubit>(),
+      //   child: SplashScreenPage(),
+      // ),
       onGenerateRoute: (settings) {
-        log(settings.name);
+        log("ROUTE :" + settings.name);
         if (_deepLinkValidator(settings.name)) {
           //Notify entry for deeplink
           Settings.setEntryType(true);
@@ -91,7 +91,6 @@ class PluisApp extends StatelessWidget {
                   child: MenuPage()),
             );
           case HOME_PAGE_ROUTE:
-            log("ENTRO POR LAS RUTAS ");
             return PLuisPageRoute(
                 builder: (_) => BlocProvider<HomePageCubit>(
                       create: (_) => injectionContainer.sl<HomePageCubit>(),
@@ -99,13 +98,9 @@ class PluisApp extends StatelessWidget {
                     ));
           default:
             return PLuisPageRoute(
-              builder: (_) => Scaffold(
-                body: Container(
-                    child: Center(
-                        child: Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text('BAD LINK',
-                                style: Theme.of(context).textTheme.title)))),
+              builder: (_) => BlocProvider<SplashScreenCubit>(
+                create: (_) => injectionContainer.sl<SplashScreenCubit>(),
+                child: SplashScreenPage(),
               ),
             );
         }

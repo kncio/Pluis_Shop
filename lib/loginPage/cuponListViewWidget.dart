@@ -12,7 +12,7 @@ class CuponsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (this.userCupons != null)
+    return (this.userCupons != null && this.userCupons.length > 0)
         ? Column(
             children: [
               Padding(
@@ -29,13 +29,12 @@ class CuponsListView extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                          Text(
-                              'Descuento de ${this.userCupons[index].value_discount}' +
+                              Text('Descuento de ${this.userCupons[index].value_discount}' +
                                   ' ${discountTipe(this.userCupons[index])}'),
-                          Divider()
-                        ]),
+                              Divider()
+                            ]),
                       );
                     }),
               )
@@ -44,15 +43,15 @@ class CuponsListView extends StatelessWidget {
         : Center(
             child: Text(
               "Usted no posee cupones de descuento",
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: 16),
             ),
           );
   }
 
   String discountTipe(Cupon cupon) {
-    return (cupon.type_discount == "1")
-        ? "porciento."
-        : "cantidad fija";
+    return (cupon.type_discount == "1") ? "porciento." : "cantidad fija";
   }
 }

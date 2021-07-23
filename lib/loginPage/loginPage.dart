@@ -21,12 +21,14 @@ import 'package:pluis_hv_app/observables/buysObservable.dart';
 import 'package:pluis_hv_app/observables/pendingOrdersObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/orderDetailsWidget.dart';
+import 'package:pluis_hv_app/pluisWidgets/orderDetailsWidgetRemote.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisPdfViewer.dart';
 import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 
+import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
 import 'cuponListViewWidget.dart';
 import 'loginRepository.dart';
 import 'loginUtils.dart';
@@ -625,47 +627,90 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                       stream: this._buysBloc.bysObservable,
                       builder: (context,
                           AsyncSnapshot<List<PendingOrder>> snapshot) {
-                        return ListView.builder(
-                            itemCount: (snapshot.data != null)
-                                ? snapshot.data.length
-                                : 0,
-                            itemBuilder: (context, index) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
-                                    child: Wrap(
-                                      children: [
-                                        Text(
-                                          "NÚMERO DE PEDIDO: ",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                            '${snapshot.data[index].order_number}')
-                                      ],
+                        return (snapshot.hasData && snapshot.data.length > 0)
+                            ? ListView.builder(
+                                itemCount: (snapshot.data != null)
+                                    ? snapshot.data.length
+                                    : 0,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          context: context,
+                                          builder: (_) {
+                                            return BlocProvider<
+                                                OrderDetailsCubit>(
+                                              create: (_) => injectorContainer
+                                                  .sl<OrderDetailsCubit>(),
+                                              child: OrderDetails(
+                                                  orderNumber: snapshot
+                                                      .data[index]
+                                                      .order_number),
+                                            );
+                                          });
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                20, 8, 8, 8),
+                                            child: Wrap(
+                                              children: [
+                                                Text(
+                                                  "NÚMERO DE PEDIDO: ",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Text(
+                                                    '${snapshot.data[index].order_number}')
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  20, 0, 0, 12),
+                                              child: Wrap(children: [
+                                                Text("ESTADO DE PEDIDO: ",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                properIcon(snapshot, index),
+                                                Text(statusToString(snapshot
+                                                    .data[index].status)),
+                                                showCancelButton(
+                                                    snapshot.data[index])
+                                              ])),
+                                          Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  20, 0, 20, 0),
+                                              child: Divider())
+                                        ],
+                                      ),
                                     ),
+                                  );
+                                })
+                            : ListView(
+                                children: [
+                                  SizedBox(
+                                    height: 250,
                                   ),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                      child: Wrap(children: [
-                                        Text("ESTADO DE PEDIDO: ",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold)),
-                                        properIcon(snapshot, index),
-                                        Text(statusToString(
-                                            snapshot.data[index].status)),
-                                        showCancelButton(snapshot.data[index])
-                                      ])),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                      child: Divider())
+                                  Center(
+                                    child: Text(
+                                      "No existen registros de compras anteriores.",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Colors.black),
+                                    ),
+                                  )
                                 ],
                               );
-                            });
                       },
                     )
                   : Center(child: CircularProgressIndicator()),
@@ -865,59 +910,89 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                     stream: this._pendingOrdersBloc.counterObservable,
                     builder:
                         (context, AsyncSnapshot<List<PendingOrder>> snapshot) {
-                      return ListView.builder(
-                          itemCount: (snapshot.data != null)
-                              ? snapshot.data.length
-                              : 0,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () async {
-                                showModalBottomSheet(
-                                    isScrollControlled: true,
-                                    context: context,
-                                    builder: (_) {
-                                      return OrderDetails(
-                                          orderNumber: snapshot
-                                              .data[index].order_number);
-                                    });
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
-                                    child: Wrap(
+                      return (snapshot.hasData && snapshot.data.length > 0)
+                          ? ListView.builder(
+                              itemCount: (snapshot.data != null)
+                                  ? snapshot.data.length
+                                  : 0,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () async {
+                                    showModalBottomSheet(
+                                        isScrollControlled: true,
+                                        context: context,
+                                        builder: (_) {
+                                          return BlocProvider<
+                                              OrderDetailsCubit>(
+                                            create: (_) => injectorContainer
+                                                .sl<OrderDetailsCubit>(),
+                                            child: OrderDetails(
+                                                orderNumber: snapshot
+                                                    .data[index].order_number),
+                                          );
+                                        });
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          "NÚMERO DE PEDIDO: ",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                          child: Wrap(
+                                            children: [
+                                              Text(
+                                                "NÚMERO DE PEDIDO: ",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                  '${snapshot.data[index].order_number}')
+                                            ],
+                                          ),
                                         ),
-                                        Text(
-                                            '${snapshot.data[index].order_number}')
+                                        Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                20, 0, 0, 12),
+                                            child: Wrap(children: [
+                                              Text("ESTADO DE PEDIDO: ",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              properIcon(snapshot, index),
+                                              Text(statusToString(
+                                                  snapshot.data[index].status)),
+                                              showCancelButton(
+                                                  snapshot.data[index])
+                                            ])),
+                                        Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                20, 0, 20, 0),
+                                            child: Divider())
                                       ],
                                     ),
                                   ),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                      child: Wrap(children: [
-                                        Text("ESTADO DE PEDIDO: ",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold)),
-                                        properIcon(snapshot, index),
-                                        Text(statusToString(
-                                            snapshot.data[index].status)),
-                                        showCancelButton(snapshot.data[index])
-                                      ])),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                      child: Divider())
-                                ],
-                              ),
+                                );
+                              })
+                          : ListView(
+                              children: [
+                                SizedBox(
+                                  height: 250,
+                                ),
+                                Center(
+                                  child: Text(
+                                    "No existen registros de pedidos.",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Colors.black),
+                                  ),
+                                )
+                              ],
                             );
-                          });
                     },
                   )
                 : Center(child: CircularProgressIndicator()),

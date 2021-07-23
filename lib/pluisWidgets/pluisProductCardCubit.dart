@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
+import 'package:pluis_hv_app/commons/productsModel.dart';
 
 class ProductCardCubit extends Cubit<ProductCardState> {
   final ProductCardRepository repository;
@@ -78,6 +79,27 @@ class ProductCardRepository {
     }
 
     return value;
+  }
+
+  Future<Either<Failure, Product>> getProductDetail(
+      String rowId) async {
+    Product product;
+    try {
+      var response =
+      await api.get(GET_PRODUCT_DETAIL, {"row_id": rowId});
+
+      if (response.statusCode == 200) {
+
+        product = Product.fromMap(response.data['data']);
+
+        return Right(product);
+      } else {
+        log(response.statusCode.toString());
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
   }
 }
 

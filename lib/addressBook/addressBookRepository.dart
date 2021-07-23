@@ -20,7 +20,7 @@ class AddressBookRepository {
       var response = await api.get(GET_CLIENT_ADDRESS, {'id': userId});
 
       if (response.statusCode == 200) {
-        for (var addressInfo in response.data["data"]) {
+        for (var addressInfo in response.data["data"]["Libraries Address"]) {
           log(addressInfo.toString());
           alladdress.add(ClientAddress.fromJson(addressInfo));
         }

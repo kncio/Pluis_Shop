@@ -43,12 +43,34 @@ class ShopCartRepository {
       var response = await api.get(GET_CLIENT_ADDRESS, {'id': userId});
 
       if (response.statusCode == 200) {
-        for (var addressInfo in response.data["data"]) {
+        for (var addressInfo in response.data["data"]["Libraries Address"]) {
           log(addressInfo.toString());
           alladdress.add(ClientAddress.fromJson(addressInfo));
         }
 
         return Right(alladdress);
+      } else {
+        log("Error");
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, ClientAddress>> getDefaultClientAddress(
+      String userId) async {
+    ClientAddress defaddress;
+
+    try {
+      var response = await api.get(GET_CLIENT_ADDRESS, {'id': userId});
+
+      if (response.statusCode == 200) {
+        defaddress =
+            (ClientAddress.fromJson(response.data["data"]["Address User"]));
+
+        log(defaddress.city_id.toString());
+        return Right(defaddress);
       } else {
         log("Error");
         return Left(Failure([response.statusMessage]));
@@ -67,7 +89,6 @@ class ShopCartRepository {
           await api.get(GET_DELIVERY_PRICE_BY_STATE_ID, {'id': stateId});
 
       if (response.statusCode == 200) {
-
         deliveryPrice = DeliveryPrice.fromJson(response.data);
 
         return Right(deliveryPrice);
@@ -129,8 +150,4 @@ class ShopCartRepository {
       return Left(Failure([error.toString()]));
     }
   }
-
-
-
-
 }

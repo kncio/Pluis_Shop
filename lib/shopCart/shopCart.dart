@@ -299,7 +299,17 @@ class _ShopCartPage extends State<ShopCartPage> {
 
                             this.onSore = !this.onDefaultAddress;
                             this.onCustomAddress = !this.onDefaultAddress;
-                            this.shipmentPrice = 0;
+                            //setprice
+                            Settings.userId.then((user_id) => context
+                                .read<ShopCartCubit>()
+                                .getDefaultClientAddress(user_id)
+                                .then((value) => context
+                                    .read<ShopCartCubit>()
+                                    .getDeliveryPrice(
+                                        value.city_id)
+                                    .then((value) => this.setState(() {
+                                          this.shipmentPrice = value;
+                                        }))));
                           }
                         });
                       }),
@@ -584,7 +594,7 @@ class _ShopCartPage extends State<ShopCartPage> {
         pickUp = userDefaultAddress;
       }
       if (this.onCustomAddress) {
-        pickUp = '${this.shipmentPrice}|${this.selectedAddress.state_id}';
+        pickUp = '${this.shipmentPrice}|${this.selectedAddress.id}';
         log(pickUp);
       }
       if (this.onDefaultAddress) {

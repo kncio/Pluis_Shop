@@ -39,6 +39,22 @@ class ShopCartCubit extends Cubit<ShopCartState> {
             : emit(ShopCartErrorState("No hay direcciones disponibles")));
   }
 
+  Future<ClientAddress> getDefaultClientAddress(String userId) async {
+    ClientAddress ca;
+
+    var eitherValue = await repository.getDefaultClientAddress(userId);
+
+    eitherValue.fold(
+            (errorFailure) => errorFailure.properties.isEmpty
+            ? emit(ShopCartErrorState("Server unreachable"))
+            : emit(ShopCartErrorState(errorFailure.properties.first)),
+            (address) => address != null
+            ? ca = address
+            : emit(ShopCartErrorState("No hay direcciones disponibles")));
+
+    return ca;
+  }
+
   Future<double> getDeliveryPrice(String stateId) async {
     double priceValue = 0;
     var eitherValue = await repository.getDeliveryPriceByMunicipeId(stateId);
