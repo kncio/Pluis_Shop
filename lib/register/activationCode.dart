@@ -85,7 +85,7 @@ class _ActivateCodePage extends State<ActivateCodePage> {
                               _formKey.currentState.save();
                               this
                                   ._repository
-                                  .activateCode(this._code, "")
+                                  .activateCode(this._code, this.phone)
                                   .then((value) => {
                                         value.fold(
                                             (failure) => null,
@@ -119,7 +119,7 @@ class _ActivateCodePage extends State<ActivateCodePage> {
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pushNamedAndRemoveUntil(
-                        HOME_PAGE_ROUTE, ModalRoute.withName("/home"));
+                        HOME_PAGE_ROUTE, ModalRoute.withName("/"));
                   },
                   child: Text("Entendido"))
             ],
@@ -135,7 +135,7 @@ class _ActivateCodePage extends State<ActivateCodePage> {
           onPressed: () => {Navigator.pop(context)},
         ),
         title: Text(
-          "Activar",
+          "Activar".toUpperCase(),
           style: PluisAppTheme.themeDataLight.textTheme.headline1,
         ),
       );

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
@@ -90,12 +91,18 @@ class RegisterRepository {
     try {
       var apiToken = await Settings.storedApiToken;
       log(phone);
-      var response =
-          await api.post(ACTIVATE_CODE, {"token_csrf":apiToken,"phone": phone, "code": code});
+      var response = await api.post(ACTIVATE_CODE,
+          {"token_csrf": apiToken, "phone": phone, "code": code});
       if (response.statusCode == 200) {
-        log(response.data.toString());
-        if (response.data.toString().contains("success")) {
-          Right(true);
+        var json = jsonEncode(response.data);
+
+        log("shit" + json.contains("field_errors").toString());
+
+        bool success = json.contains("success");
+        log("${success}");
+        if (!success) {
+          log("${success} aaaaaa");
+          return Right(true);
         }
         return Right(false);
       } else {

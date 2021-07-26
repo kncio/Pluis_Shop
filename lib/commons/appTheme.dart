@@ -162,7 +162,7 @@ class PluisAppTheme {
       ),
       textTheme: TextTheme(
         bodyText1: const TextStyle(fontSize: 14),
-        bodyText2: const TextStyle(fontSize: 14),
+        bodyText2: const TextStyle(fontSize: 14,fontWeight: FontWeight.bold, color: Colors.black),
         button: const TextStyle(fontSize: 14),
         caption: const TextStyle(fontSize: 12),
         headline1: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),

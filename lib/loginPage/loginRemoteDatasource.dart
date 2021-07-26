@@ -36,22 +36,22 @@ class PendingOrder {
   final String exchange_rate;
   final String buff;
 
-  PendingOrder(
-      {this.id,
-      this.order_number,
-      this.id_account,
-      this.price_subtotal,
-      this.address_send,
-      this.price_delivery,
-      this.shipping_method,
-      this.status,
-      this.updated_at,
-      this.created_at,
-      this.currency_shipping,
-      this.exchange_rate,
-      this.buff});
+  PendingOrder({this.id,
+    this.order_number,
+    this.id_account,
+    this.price_subtotal,
+    this.address_send,
+    this.price_delivery,
+    this.shipping_method,
+    this.status,
+    this.updated_at,
+    this.created_at,
+    this.currency_shipping,
+    this.exchange_rate,
+    this.buff});
 
-  factory PendingOrder.fromJson(Map<String, dynamic> json) => PendingOrder(
+  factory PendingOrder.fromJson(Map<String, dynamic> json) =>
+      PendingOrder(
         id: json["id"],
         order_number: json["order_number"],
         id_account: json["id_account"],
@@ -83,12 +83,13 @@ class BillData {
     this.pdf,
   });
 
-  factory BillData.fromJson(Map<String, dynamic> jsonObject) => BillData(
-      id: jsonObject["id"],
-      invoice_number: jsonObject["invoice_number"],
-      user_id: jsonObject["user_id"],
-      date: jsonObject["date"],
-      pdf: WEB_PDF_BILLS + jsonObject["pdf"]);
+  factory BillData.fromJson(Map<String, dynamic> jsonObject) =>
+      BillData(
+          id: jsonObject["id"],
+          invoice_number: jsonObject["invoice_number"],
+          user_id: jsonObject["user_id"],
+          date: jsonObject["date"],
+          pdf: WEB_PDF_BILLS + jsonObject["pdf"]);
 }
 
 class UpdatePasswordDataForm {
@@ -97,10 +98,11 @@ class UpdatePasswordDataForm {
   String newPassword;
   String reNewPassword;
 
-  UpdatePasswordDataForm(
-      this.reNewPassword, this.newPassword, this.currentPassword);
+  UpdatePasswordDataForm(this.reNewPassword, this.newPassword,
+      this.currentPassword);
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() =>
+      {
         "token_csrf": this.token_csrf,
         "old_password": this.currentPassword,
         "new_password": this.newPassword,
@@ -116,7 +118,8 @@ class UpdateEmailDataForm {
 
   UpdateEmailDataForm(this.currentPassword, this.newEmail, this.reNewEmail);
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() =>
+      {
         "token_csrf": this.token_csrf,
         "password": this.currentPassword,
         "email": this.newEmail,
@@ -134,13 +137,12 @@ class SubscriptionsData {
   final String is_sms_recibed;
   final String is_email_recibed;
 
-  SubscriptionsData(
-      {this.id,
-      this.email,
-      this.user_id,
-      this.preference,
-      this.is_sms_recibed,
-      this.is_email_recibed});
+  SubscriptionsData({this.id,
+    this.email,
+    this.user_id,
+    this.preference,
+    this.is_sms_recibed,
+    this.is_email_recibed});
 
   factory SubscriptionsData.fromJson(Map<String, dynamic> jsonData) =>
       SubscriptionsData(
@@ -196,35 +198,36 @@ class UserDetails {
   final String black_list;
   final String key_login;
 
-  UserDetails(
-      {this.id,
-      this.name,
-      this.lastname,
-      this.email,
-      this.email_status,
-      this.account_type,
-      this.password,
-      this.role,
-      this.avatar,
-      this.status,
-      this.phone_number,
-      this.state_id,
-      this.city_id,
-      this.address,
-      this.address_number,
-      this.birthday,
-      this.created_at,
-      this.activate_metohd,
-      this.key_activate,
-      this.lastvisit,
-      this.black_list,
-      this.key_login});
+  UserDetails({this.id,
+    this.name,
+    this.lastname,
+    this.email,
+    this.email_status,
+    this.account_type,
+    this.password,
+    this.role,
+    this.avatar,
+    this.status,
+    this.phone_number,
+    this.state_id,
+    this.city_id,
+    this.address,
+    this.address_number,
+    this.birthday,
+    this.created_at,
+    this.activate_metohd,
+    this.key_activate,
+    this.lastvisit,
+    this.black_list,
+    this.key_login});
 
-  factory UserDetails.fromJson(Map<String, dynamic> json) => UserDetails(
+  factory UserDetails.fromJson(Map<String, dynamic> json) =>
+      UserDetails(
         id: json['id'],
         name: json['name'],
         lastname: json['lastname'],
-        email: json['email_status'],
+        email: json['email'],
+        email_status: json['email_status'],
         account_type: json['account_type'],
         password: json['password'],
         role: json['role'],

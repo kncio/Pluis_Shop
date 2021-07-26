@@ -29,10 +29,16 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> isLogged() async {
-    emit(LoginInitialState());
+    emit(LoginLoadingState());
     if (Settings.isLoggedIn) {
       var userId = await Settings.userId;
-      emit(LoginIsLoggedState(userId, null));
+      repository.getUserDetails(userId).then((value) => {
+            value.fold((l) => emit(LoginErrorState(l.properties.first)),
+                (r) => emit(LoginIsLoggedState(userId, r)))
+          });
+    }
+    else{
+      emit(LoginInitialState());
     }
   }
 

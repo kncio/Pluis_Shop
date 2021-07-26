@@ -25,6 +25,7 @@ import 'package:pluis_hv_app/pluisWidgets/orderDetailsWidgetRemote.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/pluisPdfViewer.dart';
 import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
+import 'package:pluis_hv_app/register/activationCode.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
 import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 
@@ -178,25 +179,36 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
               buildRegisterText(context),
             ],
           );
+        case LoginLoadingState:
+          return ListView(
+            children: [
+              LinearProgressIndicator(
+                  minHeight: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black)),
+            ],
+          );
         case LoginIsLoggedState:
           return Scaffold(
-            body: Column(
-              children: [
-                TabBar(
-                  isScrollable: true,
-                  controller: this._tabController,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  indicatorColor: Colors.black,
-                  tabs: _builTabs((state as LoginIsLoggedState).udata),
-                ),
-                Expanded(
-                  child: Container(
-                    child:
-                        _buildTabBarView((state as LoginIsLoggedState).udata),
-                  ),
-                )
-              ],
-            ),
+            body: ((state as LoginIsLoggedState).udata.email_status !="1")//aqui va 0 only test
+                ? Column(
+                    children: [
+                      TabBar(
+                        isScrollable: true,
+                        controller: this._tabController,
+                        indicatorSize: TabBarIndicatorSize.label,
+                        indicatorColor: Colors.black,
+                        tabs: _builTabs((state as LoginIsLoggedState).udata),
+                      ),
+                      Expanded(
+                        child: Container(
+                          child: _buildTabBarView(
+                              (state as LoginIsLoggedState).udata),
+                        ),
+                      )
+                    ],
+                  )
+                : _buildAccountActivate(
+                    (state as LoginIsLoggedState).udata.phone_number),
           );
         default:
           return ListView(
@@ -221,7 +233,33 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
     ]);
   }
 
-  Text _buildAccountActivate() => Text("Activar cuenta");
+  Widget _buildAccountActivate(String phone) {
+    return Column(
+      children: [
+        Expanded(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(32),
+              child: Text(
+                "Su Cuenta no ha sido activada por favor activela para continuar".toUpperCase(),
+                style: PluisAppTheme.themeDataLight.textTheme.bodyText2,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(32),
+          child: DarkButton(
+              text: "Activar",
+              action: () {
+                Navigator.of(context).pushNamed(
+                    ACTIVATION_CODE_PAGE,
+                    arguments: ActivationPageArgs(phone));
+              }),
+        )
+      ],
+    );
+  }
 
   List<Widget> _builTabs(UserDetails data) {
     return [
