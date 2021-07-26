@@ -187,62 +187,12 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
                   controller: this._tabController,
                   indicatorSize: TabBarIndicatorSize.label,
                   indicatorColor: Colors.black,
-                  tabs: [
-                    Text(
-                      "CUPONES",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      "PEDIDOS",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      "COMPRAS",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      "FACTURAS",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      "SUBSCRIPCIONES",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.black),
-                    ),
-                    Text(
-                      "ACCESO",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.black),
-                    )
-                  ],
+                  tabs: _builTabs((state as LoginIsLoggedState).udata),
                 ),
                 Expanded(
                   child: Container(
                     child:
-                        TabBarView(controller: this._tabController, children: [
-                      CuponsListView(userCupons: userCupons),
-                      buildPendingOrdersListView(),
-                      buildBuys(),
-                      buildBills(),
-                      buildSubs(),
-                      buildAccessData(),
-                    ]),
+                        _buildTabBarView((state as LoginIsLoggedState).udata),
                   ),
                 )
               ],
@@ -258,6 +208,54 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           );
       }
     });
+  }
+
+  TabBarView _buildTabBarView(UserDetails data) {
+    return TabBarView(controller: this._tabController, children: [
+      CuponsListView(userCupons: userCupons),
+      buildPendingOrdersListView(),
+      buildBuys(),
+      buildBills(),
+      buildSubs(),
+      buildAccessData(),
+    ]);
+  }
+
+  Text _buildAccountActivate() => Text("Activar cuenta");
+
+  List<Widget> _builTabs(UserDetails data) {
+    return [
+      Text(
+        "CUPONES",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+      ),
+      Text(
+        "PEDIDOS",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+      ),
+      Text(
+        "COMPRAS",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+      ),
+      Text(
+        "FACTURAS",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+      ),
+      Text(
+        "SUBSCRIPCIONES",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+      ),
+      Text(
+        "ACCESO",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+      )
+    ];
   }
 
   //region AccessData

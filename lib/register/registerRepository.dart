@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
+import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/loginPage/loginStates.dart';
@@ -13,32 +14,6 @@ class RegisterRepository {
   final ApiClient api;
 
   RegisterRepository({this.api});
-
-  static Future<void> testRegister() async {
-    var api = ApiClient(serviceUri: WEB_SERVICE);
-
-    var token = await api.getToken("get_token", {});
-
-    log(token.toString());
-
-    Response response = await api.post("user_register", {
-      'token_csrf': '${token.data["message"]["token_hash"]}',
-      'isCompany': '1',
-      'email': 'davidcancio@gmail.com',
-      'password': '12345678',
-      'passwordConfirm': '12345678',
-      'firstName': 'David',
-      'lastName': 'Cancio',
-      'province': '3',
-      'municipe': '2301',
-      'addressLines': 'zona#4',
-      'addressLines_1': 'casa4 ',
-      'phone': '58379145',
-      'privacyCheck': '1'
-    });
-
-    log(response.data.toString());
-  }
 
   Future<Either<Failure, String>> register(RegisterData registerData) async {
     try {
@@ -78,7 +53,6 @@ class RegisterRepository {
 
   Future<Either<Failure, List<Province>>> getProvinces() async {
     try {
-      var apiTOken = await Settings.storedApiToken;
       var response = await api.get("get_state", {});
       if (response.statusCode == 200) {
         var listProvinces = List<Province>.from(
@@ -96,7 +70,6 @@ class RegisterRepository {
 
   Future<Either<Failure, List<Municipe>>> getMunicipes(String id) async {
     try {
-      var apiTOken = await Settings.storedApiToken;
       var response = await api.get("get_city", {"id": id});
       if (response.statusCode == 200) {
         log("Register called" + response.data.toString());
@@ -104,6 +77,27 @@ class RegisterRepository {
             response.data["data"].map((x) => Municipe.fromJson(x)));
 
         return Right(listMunicipes);
+      } else {
+        log(response.statusCode.toString());
+        return Left(Failure([response.data.toString()]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, bool>> activateCode(String code, String phone) async {
+    try {
+      var apiToken = await Settings.storedApiToken;
+      log(phone);
+      var response =
+          await api.post(ACTIVATE_CODE, {"token_csrf":apiToken,"phone": phone, "code": code});
+      if (response.statusCode == 200) {
+        log(response.data.toString());
+        if (response.data.toString().contains("success")) {
+          Right(true);
+        }
+        return Right(false);
       } else {
         log(response.statusCode.toString());
         return Left(Failure([response.data.toString()]));

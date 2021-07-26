@@ -14,7 +14,6 @@ import 'package:pluis_hv_app/shopCart/shopCartRemoteDataSource.dart';
 
 import 'loginLocalDataSource.dart';
 
-
 class LoginRepository {
   final ApiClient api;
 
@@ -179,12 +178,40 @@ class LoginRepository {
   Future<Either<Failure, SubscriptionsData>> getSumbissionData(
       String userId) async {
     try {
+      log("u id" + userId);
       var response = await api.get(GET_SUBSCRIPTION_DATA, {'id': userId});
 
       if (response.statusCode == 200) {
-        var subData = SubscriptionsData.fromJson(response.data["data"]);
         log("Status of subs" + response.data["data"].toString());
+        if (response.data["data"].toString() == "null") {
+          return Right(SubscriptionsData(
+              id: "none",
+              user_id: userId,
+              preference: "",
+              email: "",
+              is_sms_recibed: "0",
+              is_email_recibed: "0"));
+        }
+        var subData = SubscriptionsData.fromJson(response.data["data"]);
+
         return Right(subData);
+      } else {
+        log("Error");
+        return Left(Failure([response.statusMessage]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, UserDetails>> getUserDetails(String userId) async {
+    try {
+      var response = await api.get(GET_USER_INFO, {'id': userId});
+
+      if (response.statusCode == 200) {
+        var uData = UserDetails.fromJson(response.data["data"]);
+        log("uData" + response.data["data"].toString());
+        return Right(uData);
       } else {
         log("Error");
         return Left(Failure([response.statusMessage]));

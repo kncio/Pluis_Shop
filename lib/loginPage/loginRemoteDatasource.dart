@@ -97,14 +97,15 @@ class UpdatePasswordDataForm {
   String newPassword;
   String reNewPassword;
 
-  UpdatePasswordDataForm(this.reNewPassword, this.newPassword, this.currentPassword);
+  UpdatePasswordDataForm(
+      this.reNewPassword, this.newPassword, this.currentPassword);
 
   Map<String, dynamic> toMap() => {
-    "token_csrf": this.token_csrf,
-    "old_password": this.currentPassword,
-    "new_password": this.newPassword,
-    "new_passwordConfirm": this.reNewPassword,
-  };
+        "token_csrf": this.token_csrf,
+        "old_password": this.currentPassword,
+        "new_password": this.newPassword,
+        "new_passwordConfirm": this.reNewPassword,
+      };
 }
 
 class UpdateEmailDataForm {
@@ -113,7 +114,7 @@ class UpdateEmailDataForm {
   String newEmail;
   String reNewEmail;
 
-  UpdateEmailDataForm(this.currentPassword,this.newEmail, this.reNewEmail);
+  UpdateEmailDataForm(this.currentPassword, this.newEmail, this.reNewEmail);
 
   Map<String, dynamic> toMap() => {
         "token_csrf": this.token_csrf,
@@ -169,4 +170,77 @@ class SubscriptionsData {
     log(map.toString());
     return map;
   }
+}
+
+class UserDetails {
+  final String id;
+  final String name;
+  final String lastname;
+  final String email;
+  final String email_status;
+  final String account_type;
+  final String password;
+  final String role;
+  final String avatar;
+  final String status;
+  final String phone_number;
+  final String state_id;
+  final String city_id;
+  final String address;
+  final String address_number;
+  final String birthday;
+  final String created_at;
+  final String activate_metohd;
+  final String key_activate;
+  final String lastvisit;
+  final String black_list;
+  final String key_login;
+
+  UserDetails(
+      {this.id,
+      this.name,
+      this.lastname,
+      this.email,
+      this.email_status,
+      this.account_type,
+      this.password,
+      this.role,
+      this.avatar,
+      this.status,
+      this.phone_number,
+      this.state_id,
+      this.city_id,
+      this.address,
+      this.address_number,
+      this.birthday,
+      this.created_at,
+      this.activate_metohd,
+      this.key_activate,
+      this.lastvisit,
+      this.black_list,
+      this.key_login});
+
+  factory UserDetails.fromJson(Map<String, dynamic> json) => UserDetails(
+        id: json['id'],
+        name: json['name'],
+        lastname: json['lastname'],
+        email: json['email_status'],
+        account_type: json['account_type'],
+        password: json['password'],
+        role: json['role'],
+        avatar: json['avatar'],
+        status: json['status'],
+        phone_number: json['phone_number'],
+        state_id: json['state_id'],
+        city_id: json['city_id'],
+        address: json['address'],
+        address_number: json['address_number'],
+        birthday: json['birthday'],
+        created_at: json['created_at'],
+        activate_metohd: json['activate_metohd'],
+        key_activate: json['key_activate'],
+        lastvisit: json['lastvisit'],
+        black_list: json['black_list'],
+        key_login: json['key_login'],
+      );
 }

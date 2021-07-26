@@ -29,3 +29,5 @@ const String POST_CHANGE_EMAIL = '/change_email';
 const String ON_DISCOUNT_PRODUCTS_BY_CATEGORY_ROW_ID = "/get_product_orfert";
 const String ORDER_DETAIL = '/get_order_detail';
 const String GET_PRODUCT_DETAIL = '/get_product_detail';
+const String ACTIVATE_CODE = '/activate_sms';
+const String GET_USER_INFO = "/info_user";

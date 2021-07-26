@@ -1,6 +1,7 @@
 
 
 import 'package:equatable/equatable.dart';
+import 'package:pluis_hv_app/loginPage/loginRemoteDatasource.dart';
 
 abstract class LoginState extends Equatable{
   const LoginState();
@@ -21,14 +22,16 @@ class LoginSuccessfulState extends LoginState{
 
 class LoginIsLoggedState extends LoginState{
   final String message;
+  final UserDetails udata;
 
-  LoginIsLoggedState(this.message);
+  LoginIsLoggedState(this.message,this.udata);
 }
 class LoginLoadingState extends LoginState{
 
 }
 class LoginErrorState extends LoginState{
   final String message;
+
 
   const LoginErrorState(this.message);
 }

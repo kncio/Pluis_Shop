@@ -7,9 +7,11 @@ import 'package:pluis_hv_app/commons/appTheme.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
+import 'package:pluis_hv_app/register/activationCode.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
 import 'package:pluis_hv_app/register/registerDataModel.dart';
 import 'package:pluis_hv_app/register/registerState.dart';
+import 'package:pluis_hv_app/settings/settings.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -27,6 +29,11 @@ class _RegisterPage extends State<RegisterPage> {
   Municipe selectedMunicipe;
   List<Municipe> municipes;
   List<Province> provinces = [];
+
+  //true, sms activation, on false, email
+  bool _smsXOREmailActivation = true;
+  //phone
+  String phone = '';
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +222,8 @@ class _RegisterPage extends State<RegisterPage> {
                 child: const Text('Entendido'),
                 onPressed: () {
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                      HOME_PAGE_ROUTE, ModalRoute.withName("/"));
+                      ACTIVATION_CODE_PAGE, ModalRoute.withName("/home"),
+                      arguments: ActivationPageArgs(this.formData.phone));
                 },
               )
             ],
@@ -239,7 +247,8 @@ class _RegisterPage extends State<RegisterPage> {
             buildProvinceSelector(state),
             buildMunicipeSelector(state),
             buildCheckboxPrivacy(),
-            buildRegisterButton()
+            phoneOrEmailAct(),
+            buildRegisterButton(),
           ],
         )));
   }
@@ -273,6 +282,33 @@ class _RegisterPage extends State<RegisterPage> {
                   })?.toList() ??
                   <DropdownMenuItem<Municipe>>[],
         ));
+  }
+
+  Widget phoneOrEmailAct() {
+    return Wrap(
+      children: [
+        CheckboxListTile(
+            activeColor: Colors.black,
+            title: Text("Activar por SMS"),
+            value: this._smsXOREmailActivation,
+            onChanged: (value) {
+              setState(() {
+                this._smsXOREmailActivation = value;
+                log(this._smsXOREmailActivation.toString());
+              });
+            }),
+        CheckboxListTile(
+            activeColor: Colors.black,
+            title: Text("Activar por EMAIL"),
+            value: !this._smsXOREmailActivation,
+            onChanged: (value) {
+              setState(() {
+                this._smsXOREmailActivation = !value;
+                log(this._smsXOREmailActivation.toString());
+              });
+            })
+      ],
+    );
   }
 
   CheckboxListTile buildCheckboxPrivacy() {
@@ -491,6 +527,7 @@ class _RegisterPage extends State<RegisterPage> {
 
   Future<void> doRegister(BuildContext context) async {
     _formKey.currentState.save();
+    this.phone = this.formData.phone;
     if (this.formData.privacyCheck && _formKey.currentState.validate()) {
       var data = RegisterData(
           email: this.formData.email,
@@ -505,12 +542,10 @@ class _RegisterPage extends State<RegisterPage> {
           addressLines: this.formData.addressLines,
           addressLines_1: this.formData.addressLines,
           isCompany: false,
-          activation: "phone_act");
-      log("data.toMap().toString()");
+          activation: (_smsXOREmailActivation) ? "phone_act" : "email_act");
       await context.read<RegisterCubit>().register(data);
     } else {
       showSnackbar(context, text: "Debes aceptar las políticas de privacidad");
-      // buildShowDialog(context);
     }
   }
 

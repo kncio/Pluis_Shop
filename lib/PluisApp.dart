@@ -18,6 +18,7 @@ import 'package:pluis_hv_app/homePage/homePage.dart';
 import 'package:pluis_hv_app/homePage/homePageCubit.dart';
 import 'package:pluis_hv_app/loginPage/loginPage.dart';
 import 'package:pluis_hv_app/menuPage/menuPage.dart';
+import 'package:pluis_hv_app/register/activationCode.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
 import 'package:pluis_hv_app/register/registerPage.dart';
 import 'package:pluis_hv_app/settings/settings.dart';
@@ -52,9 +53,18 @@ class PluisApp extends StatelessWidget {
           var rowId = Uri.parse(settings.name).queryParameters['id'];
           var coin = Uri.parse(settings.name).queryParameters['coin'];
           var image = Uri.parse(settings.name).queryParameters['image'];
-          return PLuisPageRoute(builder: (_) => PocWidget(coin: coin,rowId: rowId,image: image,));
+          return PLuisPageRoute(
+              builder: (_) => PocWidget(
+                    coin: coin,
+                    rowId: rowId,
+                    image: image,
+                  ));
         }
         switch (settings.name) {
+          case ACTIVATION_CODE_PAGE:
+            return PLuisPageRoute(
+                builder: (_) => ActivateCodePage(
+                    phone: (settings.arguments as ActivationPageArgs)));
           case GALERY_SCREEN_PAGE_ROUTE:
             return PLuisPageRoute(
                 builder: (_) => BlocProvider<GalleryPageCubit>(
