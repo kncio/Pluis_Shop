@@ -5,7 +5,7 @@ import 'package:pluis_hv_app/detailsPage/detailsPageRemoteDataSource.dart';
 import 'package:pluis_hv_app/observables/aviableSizesObservable.dart';
 
 class SizeSelectorList extends StatefulWidget {
-  final Function(String selectedSizeId) onSelecedSizeChange;
+  final Function(String selectedSizeId, String qty) onSelecedSizeChange;
   final List<SizeVariationByColor> aviableTallsList;
   final AviableSizesBloc aviableSizesByColorBloc;
 
@@ -25,7 +25,7 @@ class SizeSelectorList extends StatefulWidget {
 }
 
 class _SizeSelectorList extends State<SizeSelectorList> {
-  final Function(String selectedSizeId) onSelecedSizeChange;
+  final Function(String selectedSizeId, String qty) onSelecedSizeChange;
   final List<SizeVariationByColor> aviableTallsList;
   final AviableSizesBloc aviableSizesByColorBloc;
 
@@ -61,7 +61,7 @@ class _SizeSelectorList extends State<SizeSelectorList> {
                   //Set the tapped tall
                   this
                       .onSelecedSizeChange
-                      .call(data[index].tall);
+                      .call(data[index].tall, data[index].qty);
                 }
               });
             },

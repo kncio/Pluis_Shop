@@ -386,7 +386,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
                   ])),
           Padding(
             padding: EdgeInsets.fromLTRB(32, 16, 0, 4),
-            child: SelectableText("ventas@calzadopluis.com",
+            child: SelectableText("ventaspluis@gmail.com",
                 style: TextStyle(color: Colors.grey)),
           ),
           Padding(

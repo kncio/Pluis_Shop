@@ -11,21 +11,22 @@ class ShoppingCart {
   List<Function> subscribers = [];
 
   //Add 1 unity to the product on the index index
-  void addProductQty(int index){
+  void addProductQty(int index) {
     this.shoppingList[index].qty += 1;
     this.subscribers.forEach((func) {
       func.call();
     });
   }
+
   //substract 1 unity to the product on the index index
-  void substractProductQty(int index){
+  void substractProductQty(int index) {
     this.shoppingList[index].qty -= 1;
     this.subscribers.forEach((func) {
       func.call();
     });
   }
 
-  String toMap(){
+  String toMap() {
     Map<String, dynamic> cartSession = {};
     int index = 0;
     this.shoppingList.forEach((product) {
@@ -36,16 +37,15 @@ class ShoppingCart {
     return item;
   }
 
-  void resetCart(){
+  void resetCart() {
     this.shoppingList.clear();
   }
-
 }
 
 class ShoppingOrder {
-
   ///
   final Product productData;
+
   /// Product Row ID
   final String id;
 
@@ -63,17 +63,22 @@ class ShoppingOrder {
   /// Product selected Tall
   final String tall;
 
-  /// Product selected tall, forced to by 1 on apk
+  /// Product selected amount, forced to by 1 on apk
   int qty;
+
+  /// Product amount top
+  final int topQty;
 
   ShoppingOrder(
       {this.id,
+      this.topQty,
       this.name,
       this.product_price,
       this.color,
       this.tall,
       this.qty,
-      this.productData, this.hexColorInfo});
+      this.productData,
+      this.hexColorInfo});
 
   //TO map for post buy order
   toMap() => {

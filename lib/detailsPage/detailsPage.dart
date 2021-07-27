@@ -54,6 +54,7 @@ class _DetailsPage extends State<DetailsPage> {
   String selectedColorId;
   int selectedColorIndex;
   String selectedTall;
+  String selectedTallQty;
 
   AviableSizesBloc _aviableSizesByColorBloc;
   List<SizeVariationByColor> sizesByColor = [];
@@ -222,8 +223,9 @@ class _DetailsPage extends State<DetailsPage> {
       Expanded(
         child: Center(
           child: SizeSelectorList(
-            onSelecedSizeChange: (String tall) {
+            onSelecedSizeChange: (String tall, String qty) {
               this.selectedTall = tall;
+              this.selectedTallQty = qty;
             },
             aviableSizesByColorBloc: this._aviableSizesByColorBloc,
           ),
@@ -348,7 +350,9 @@ class _DetailsPage extends State<DetailsPage> {
       showSnackbar(context, text: "Debe seleccionar una talla");
     } else {
       var instance = injectorContainer.sl<ShoppingCart>();
+      log("cantidad para talla" + this.selectedTallQty);
       instance.shoppingList.add(ShoppingOrder(
+          topQty: int.parse(this.selectedTallQty),
           productData: this.product,
           product_price: this.product.price,
           id: this.product.row_id,

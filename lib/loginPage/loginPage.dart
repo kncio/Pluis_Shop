@@ -189,7 +189,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           );
         case LoginIsLoggedState:
           return Scaffold(
-            body: ((state as LoginIsLoggedState).udata.email_status !="1")//aqui va 0 only test
+            body: ((state as LoginIsLoggedState).udata.email_status != "0")
                 ? Column(
                     children: [
                       TabBar(
@@ -241,7 +241,8 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
             child: Padding(
               padding: EdgeInsets.all(32),
               child: Text(
-                "Su Cuenta no ha sido activada por favor activela para continuar".toUpperCase(),
+                "Su Cuenta no ha sido activada por favor activela para continuar"
+                    .toUpperCase(),
                 style: PluisAppTheme.themeDataLight.textTheme.bodyText2,
               ),
             ),
@@ -252,8 +253,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
           child: DarkButton(
               text: "Activar",
               action: () {
-                Navigator.of(context).pushNamed(
-                    ACTIVATION_CODE_PAGE,
+                Navigator.of(context).pushNamed(ACTIVATION_CODE_PAGE,
                     arguments: ActivationPageArgs(phone));
               }),
         )

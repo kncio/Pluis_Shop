@@ -96,12 +96,9 @@ class RegisterRepository {
       if (response.statusCode == 200) {
         var json = jsonEncode(response.data);
 
-        log("shit" + json.contains("field_errors").toString());
-
         bool success = json.contains("success");
-        log("${success}");
+
         if (!success) {
-          log("${success} aaaaaa");
           return Right(true);
         }
         return Right(false);

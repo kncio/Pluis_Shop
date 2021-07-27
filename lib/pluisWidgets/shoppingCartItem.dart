@@ -143,12 +143,7 @@ class _ShopCartItem extends State<ShopCartItem> {
                       ),
                       onPressed: () {
                         //validar si hay existencias
-                        setState(() {
-                          this.shoppingCartReference.addProductQty(index);
-                        });
-                        this
-                            ._totalBloc
-                            .updateTotal(this.coinNomenclature.trim());
+                        validateQty();
                       }),
                   Text("Unidades")
                 ],
@@ -163,6 +158,34 @@ class _ShopCartItem extends State<ShopCartItem> {
         ],
       ),
     );
+  }
+
+  void validateQty() {
+    if (this.shoppingCartReference.shoppingList[index].topQty >
+        this.shoppingCartReference.shoppingList[index].qty) {
+      setState(() {
+        this.shoppingCartReference.addProductQty(index);
+      });
+      this._totalBloc.updateTotal(this.coinNomenclature.trim());
+    } else {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: Text("Cantidad máxima alcanzada.".toUpperCase()),
+              content: Text(
+                  "Solo disponemos de ${this.shoppingCartReference.shoppingList[index].topQty} producto(s) de este tipo"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Entendido"))
+              ],
+            );
+          },
+          barrierDismissible: false);
+    }
   }
 
   Widget buildPriceStreamBuilder() {

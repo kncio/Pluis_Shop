@@ -137,7 +137,6 @@ class ShopCartRepository {
         'Authorization': sessionTOken
       };
       log(sessionTOken);
-      log("Se enviará: \n ${body.toMap()}");
       var response = await api.post(CREATE_BUY_ORDER, body.toMap());
 
       if (response.statusCode == 200) {
