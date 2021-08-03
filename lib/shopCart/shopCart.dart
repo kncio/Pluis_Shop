@@ -4,6 +4,7 @@ import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pluis_hv_app/commons/appTheme.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/observables/totalBloc.dart';
@@ -84,12 +85,12 @@ class _ShopCartPage extends State<ShopCartPage> {
         listener: (context, state) async {
           switch (state.runtimeType) {
             case ShopCartOrderSentSuccess:
-              showSnackbar(context, text: "Orden Creada satisfactoriamente");
+              // showSnackbar(context, text: "Orden Creada satisfactoriamente");
               this.shoppingCartReference.resetCart();
-              Future.delayed(Duration(seconds: 4)).whenComplete(() =>
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      HOME_PAGE_ROUTE, ModalRoute.withName('/')));
-
+              // Future.delayed(Duration(seconds: 4)).whenComplete(() =>
+              //     Navigator.of(context).pushNamedAndRemoveUntil(
+              //         HOME_PAGE_ROUTE, ModalRoute.withName('/')));
+              showSuccessDialog(context);
               return log("Cambio!");
 
             case ShopCartCuponsLoadedState:
@@ -305,8 +306,7 @@ class _ShopCartPage extends State<ShopCartPage> {
                                 .getDefaultClientAddress(user_id)
                                 .then((value) => context
                                     .read<ShopCartCubit>()
-                                    .getDeliveryPrice(
-                                        value.city_id)
+                                    .getDeliveryPrice(value.city_id)
                                     .then((value) => this.setState(() {
                                           this.shipmentPrice = value;
                                         }))));
@@ -584,6 +584,35 @@ class _ShopCartPage extends State<ShopCartPage> {
         .price;
 
     return currentPrice;
+  }
+
+  void showSuccessDialog(BuildContext context) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Orden Realizada satisfactoriamente",
+                style: PluisAppTheme.themeDataLight.textTheme.headline1),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const <Widget>[
+                  Text(
+                      'Usted podrá verificar el estado del pedido en cualquier momento.'),
+                  Text('Vuelva pronto.'),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        HOME_PAGE_ROUTE, ModalRoute.withName('/'));
+                  },
+                  child: Text("Entendiddo"))
+            ],
+          );
+        });
   }
 
   Future<void> postBuyOrder() async {
