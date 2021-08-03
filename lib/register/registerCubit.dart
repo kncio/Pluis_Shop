@@ -53,4 +53,6 @@ class RegisterCubit extends Cubit<RegisterState> {
 
     return result;
   }
+
+
 }

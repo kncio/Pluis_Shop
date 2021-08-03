@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
+import 'package:pluis_hv_app/register/registerCubit.dart';
 import 'package:pluis_hv_app/register/registerRepository.dart';
 import 'package:pluis_hv_app/injectorContainer.dart' as injectorContainer;
 
@@ -75,7 +77,9 @@ class _ActivateCodePage extends State<ActivateCodePage> {
                               labelText: "Código", hintText: "******"),
                         ),
                       ),
-                      SizedBox(height: 75,),
+                      SizedBox(
+                        height: 75,
+                      ),
                       Padding(
                         padding: EdgeInsets.all(20),
                         child: DarkButton(
@@ -95,6 +99,24 @@ class _ActivateCodePage extends State<ActivateCodePage> {
                                                     text: "Código inválido."))
                                       });
                             }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(20),
+                        child: DarkButton(
+                          text: "Reenviar Código",
+                          action: () {
+                            _repository.sendCode().then((value) => {
+                                  value.fold(
+                                      (failure) => null,
+                                      (status) => status
+                                          ? showSnackbar(context,
+                                              text: "Código Reenviado.")
+                                          : showSnackbar(context,
+                                              text:
+                                                  "Correo o Teléfono inválido."))
+                                });
                           },
                         ),
                       )

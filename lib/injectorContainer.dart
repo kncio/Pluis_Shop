@@ -55,7 +55,7 @@ Future<void> init() async {
   //endregion
 
   //region AddressBookPage
-  sl.registerFactory(() => AddressBookCubit(repository: sl()));
+  sl.registerFactory(() => AddressBookCubit(repository: sl(),registerRepository: sl()));
 
   sl.registerFactory(() => AddressBookRepository(api: sl()));
   //endregion

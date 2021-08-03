@@ -31,3 +31,6 @@ const String ORDER_DETAIL = '/get_order_detail';
 const String GET_PRODUCT_DETAIL = '/get_product_detail';
 const String ACTIVATE_CODE = '/activate_sms';
 const String GET_USER_INFO = "/info_user";
+const String SEND_CODE = '/resend_code';
+const String DELETE_ADDRESS = '/delete_specifyAddress';
+const String CREATE_ADDRESS = '/create_address_library';

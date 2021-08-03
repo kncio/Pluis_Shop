@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:pluis_hv_app/commons/apiClient.dart';
 import 'package:pluis_hv_app/commons/apiMethodsNames.dart';
 import 'package:pluis_hv_app/commons/failure.dart';
+import 'package:pluis_hv_app/commons/keyStorage.dart';
 import 'package:pluis_hv_app/commons/values.dart';
 import 'package:pluis_hv_app/loginPage/loginStates.dart';
 import 'package:pluis_hv_app/register/registerDataModel.dart';
@@ -93,6 +94,32 @@ class RegisterRepository {
       log(phone);
       var response = await api.post(ACTIVATE_CODE,
           {"token_csrf": apiToken, "phone": phone, "code": code});
+      if (response.statusCode == 200) {
+        var json = jsonEncode(response.data);
+
+        bool success = json.contains("success");
+
+        if (!success) {
+          return Right(true);
+        }
+        return Right(false);
+      } else {
+        log(response.statusCode.toString());
+        return Left(Failure([response.data.toString()]));
+      }
+    } catch (error) {
+      return Left(Failure([error.toString()]));
+    }
+  }
+
+  Future<Either<Failure, bool>> sendCode() async {
+    try {
+      var sessionTOken = await Settings.storedToken;
+      api.client.options.headers = {
+        '$API_KEY_NAME': '$API_KEY',
+        'Authorization': sessionTOken
+      };
+      var response = await api.post(SEND_CODE, {});
       if (response.statusCode == 200) {
         var json = jsonEncode(response.data);
 
