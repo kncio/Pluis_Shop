@@ -28,7 +28,10 @@ class OrderDetailsCubit extends Cubit<OrderDetailState> {
             : emit(OrderDetailStateError("")));
   }
 
-  Future<void> getAddress( String userId,String addressId,) async {
+  Future<void> getAddress(
+    String userId,
+    String addressId,
+  ) async {
     emit(OrderDetailStateLoading());
 
     var eitherValue = await repo.getClientAddressById(userId, addressId);
@@ -60,16 +63,12 @@ class OrderDetailsRepository {
 
         OrderDetailData x = OrderDetailData.fromJson(infoOrder);
 
-        var y = List.from(
-            response.data['data']["info_product"]);
+        var y = List.from(response.data['data']["info_product"]);
 
         var z = y.map((e) => OrderProductsInfo.fromJson(e)).toList();
         log("step1 " + z[0].toString());
-       
-        var orderDetails = OrderDetailFullData(
-          data: x,
-          pinfo: z
-        );
+
+        var orderDetails = OrderDetailFullData(data: x, pinfo: z);
         log("returnign");
         return Right(orderDetails);
       } else {
@@ -81,20 +80,19 @@ class OrderDetailsRepository {
     }
   }
 
-  Future<Either<Failure, ClientAddress>> getClientAddressById(
+  Future<Either<Failure, ClientAddressForOrder>> getClientAddressById(
       String userId, String addressId) async {
-    ClientAddress address;
-    log(userId + "   " +addressId);
+    ClientAddressForOrder address;
+    log(userId + "   " + addressId);
     try {
       var response = await api.get(GET_CLIENT_ADDRESS, {'id': userId});
 
       if (response.statusCode == 200) {
         try {
+          log("Calling addr");
+          address =
+              ClientAddressForOrder.fromJson(response.data["data"]["Address User"]);
 
-          address = List.from(response.data["data"]["Libraries Address"])
-              .map((e) => ClientAddress.fromJson(e))
-              .where((element) => element.id == addressId)
-              .single;
           return Right(address);
         } catch (error) {
           Failure(["Datos inválidos"]);
@@ -131,7 +129,7 @@ class OrderDetailStateGetData extends OrderDetailState {
 }
 
 class OrderDetailStateSuccess extends OrderDetailState {
-  final ClientAddress address;
+  final ClientAddressForOrder address;
 
   OrderDetailStateSuccess(this.address);
 }
@@ -174,7 +172,8 @@ class OrderDetailData {
     this.buff,
   });
 
-  factory OrderDetailData.fromJson(Map<String, dynamic> json) => OrderDetailData(
+  factory OrderDetailData.fromJson(Map<String, dynamic> json) =>
+      OrderDetailData(
         id: json['id'],
         order_number: json['order_number'],
         id_account: json['id_account'],
@@ -211,7 +210,8 @@ class OrderProductsInfo {
       this.tall,
       this.qty});
 
-   factory OrderProductsInfo.fromJson(Map<String, dynamic> json) => new OrderProductsInfo(
+  factory OrderProductsInfo.fromJson(Map<String, dynamic> json) =>
+      new OrderProductsInfo(
         id: json[""],
         order_number: json["order_number"],
         product_id: json["product_id"],

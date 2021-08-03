@@ -67,6 +67,41 @@ class ClientAddress {
       );
 }
 
+class ClientAddressForOrder {
+  final String id;
+  final String user_id;
+  final String name;
+  final String lastName;
+  final String phone_number;
+  final String state_id;
+  final String city_id;
+  final String address;
+  final String address_number;
+
+  ClientAddressForOrder(
+      {this.id,
+        this.user_id,
+        this.name,
+        this.lastName,
+        this.phone_number,
+        this.state_id,
+        this.city_id,
+        this.address,
+        this.address_number});
+
+  factory ClientAddressForOrder.fromJson(Map<String, dynamic> json) => ClientAddressForOrder(
+    id: json["id"],
+    user_id: json["user_id"],
+    name: json["name"],
+    lastName: json["lastname"],
+    phone_number: json["phone_number"],
+    state_id: json["state_id"],
+    city_id: json["city_id"],
+    address: json["address"],
+    address_number: json["address_number"],
+  );
+}
+
 class DeliveryPrice {
   final int status;
   final String message;
