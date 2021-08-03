@@ -32,6 +32,7 @@ class _RegisterPage extends State<RegisterPage> {
 
   //true, sms activation, on false, email
   bool _smsXOREmailActivation = true;
+
   //phone
   String phone = '';
 
@@ -223,7 +224,10 @@ class _RegisterPage extends State<RegisterPage> {
                 onPressed: () {
                   Navigator.of(context).pushNamedAndRemoveUntil(
                       ACTIVATION_CODE_PAGE, ModalRoute.withName("/home"),
-                      arguments: ActivationPageArgs(this.formData.phone));
+                      arguments: ActivationPageArgs(
+                          phone: this.formData.phone,
+                          email: this.formData.email,
+                          pass: this.formData.password));
                 },
               )
             ],

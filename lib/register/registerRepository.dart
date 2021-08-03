@@ -119,11 +119,12 @@ class RegisterRepository {
         '$API_KEY_NAME': '$API_KEY',
         'Authorization': sessionTOken
       };
-      var response = await api.post(SEND_CODE, {});
+      log(sessionTOken);
+      var response = await api.get(SEND_CODE, {});
       if (response.statusCode == 200) {
         var json = jsonEncode(response.data);
 
-        bool success = json.contains("success");
+        bool success = response.data.toString().contains("Exito");
 
         if (!success) {
           return Right(true);

@@ -1,10 +1,11 @@
 import 'dart:developer';
 
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pluis_hv_app/commons/appTheme.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
+import 'package:pluis_hv_app/loginPage/loginLocalDataSource.dart';
+import 'package:pluis_hv_app/loginPage/loginRepository.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
 import 'package:pluis_hv_app/register/registerCubit.dart';
@@ -19,20 +20,41 @@ class ActivateCodePage extends StatefulWidget {
   @override
   _ActivateCodePage createState() {
     log(this.phone.phone);
-    return _ActivateCodePage(phone: this.phone.phone);
+    return _ActivateCodePage(
+        phone: this.phone.phone,
+        email: this.phone.email,
+        pass: this.phone.pass);
   }
 }
 
 class _ActivateCodePage extends State<ActivateCodePage> {
   final String phone;
+  final String pass;
+  final String email;
 
-  _ActivateCodePage({this.phone});
+  _ActivateCodePage({
+    this.phone,
+    this.pass,
+    this.email,
+  });
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   RegisterRepository _repository = injectorContainer.sl<RegisterRepository>();
+  LoginRepository _loginRepository = injectorContainer.sl<LoginRepository>();
 
   String _code = '';
+
+  @override
+  void initState() {
+    if (this.pass != null && this.email != null) {
+      UserLoginData data =
+          UserLoginData(email: this.email, password: this.pass);
+      this._loginRepository.login(data);
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,6 +187,8 @@ class _ActivateCodePage extends State<ActivateCodePage> {
 
 class ActivationPageArgs {
   final String phone;
+  final String email;
+  final String pass;
 
-  ActivationPageArgs(this.phone);
+  ActivationPageArgs({this.phone, this.email, this.pass});
 }

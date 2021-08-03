@@ -254,7 +254,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
               text: "Activar",
               action: () {
                 Navigator.of(context).pushNamed(ACTIVATION_CODE_PAGE,
-                    arguments: ActivationPageArgs(phone));
+                    arguments: ActivationPageArgs(phone:phone));
               }),
         )
       ],
