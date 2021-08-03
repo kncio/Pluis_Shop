@@ -14,7 +14,6 @@ class AddressBookInitialState extends AddressBookState{
 
 }
 
-
 class AddressBookSuccessState extends AddressBookState{
   final List<ClientAddress> address;
 

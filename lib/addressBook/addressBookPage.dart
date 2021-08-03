@@ -9,6 +9,7 @@ import 'package:pluis_hv_app/commons/appTheme.dart';
 import 'package:pluis_hv_app/commons/pagesRoutesStrings.dart';
 import 'package:pluis_hv_app/observables/aviableSizesObservable.dart';
 import 'package:pluis_hv_app/observables/municipesObservable.dart';
+import 'package:pluis_hv_app/observables/provincesObservable.dart';
 import 'package:pluis_hv_app/pluisWidgets/DarkButton.dart';
 import 'package:pluis_hv_app/pluisWidgets/homeBottomBar.dart';
 import 'package:pluis_hv_app/pluisWidgets/snackBar.dart';
@@ -36,11 +37,14 @@ class _AddressBookPage extends State<AddressBookPage>
   Municipe _selectedMunicipe;
   AviableMunicipesBloc _municipesBloc =
       AviableMunicipesBloc(aviableMunicipes: []);
-  Stream _provinces;
+  AviableProvincesBloc _provinces = AviableProvincesBloc(aviableProvinces: []);
 
   @override
   void initState() {
-    _provinces = context.read<AddressBookCubit>().getProvinces().asStream();
+    context
+        .read<AddressBookCubit>()
+        .getProvinces()
+        .then((value) => {this._provinces.updateProvinces(value)});
 
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
@@ -221,7 +225,10 @@ class _AddressBookPage extends State<AddressBookPage>
                 if (status)
                   {
                     showSnackbar(context, text: "Dirección creada con éxito"),
-                    this.initState(),
+                    context
+                        .read<AddressBookCubit>()
+                        .isLogged()
+                        .whenComplete(() => {this._tabController.animateTo(0)})
                   }
                 else
                   {showSnackbar(context, text: "Ha ocurrido un error")}
@@ -231,7 +238,7 @@ class _AddressBookPage extends State<AddressBookPage>
 
   Widget buildProvinceSelector() {
     return StreamBuilder<List<Province>>(
-        stream: this._provinces,
+        stream: this._provinces.provincesObservable,
         builder: (context, snapshot) {
           return Padding(
               padding: EdgeInsets.all(20),
