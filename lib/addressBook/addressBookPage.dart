@@ -156,6 +156,8 @@ class _AddressBookPage extends State<AddressBookPage>
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Este campo es obligatorio';
+                } else if (value.length > 8) {
+                  return 'Número de teléfono inválido.';
                 }
                 return null;
               },
@@ -231,8 +233,40 @@ class _AddressBookPage extends State<AddressBookPage>
                         .whenComplete(() => {this._tabController.animateTo(0)})
                   }
                 else
-                  {showSnackbar(context, text: "Ha ocurrido un error")}
+                  {
+                    showSnackbar(context,
+                        text: "Ha ocurrido un error verifique los campos")
+                  }
               });
+    } else {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                "Ha ocurrido un error",
+                style: PluisAppTheme.themeDataLight.textTheme.headline1,
+              ),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: const <Widget>[
+                    Text(
+                        'Verifique el número de teléfono.'),
+                    Text("Debe introducirlo sin el código +53."),
+                    Text('Recuerde que todos los campos son obligatorios.'),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Entendido"))
+              ],
+            );
+          });
     }
   }
 
@@ -422,8 +456,9 @@ class _AddressBookPage extends State<AddressBookPage>
         .then((value) {
       this.setState(() {
         this._municipesBloc.updateMunicipes(value);
-        log(value.length.toString());
+        log(value[0].name);
         this._selectedMunicipe = value[0];
+        addressForm.city_id = value[0].id;
       });
     });
   }

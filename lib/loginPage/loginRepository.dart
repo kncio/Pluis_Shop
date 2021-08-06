@@ -125,7 +125,7 @@ class LoginRepository {
         for (var billInfo in response.data["data"]) {
           bills.add(BillData.fromJson(billInfo));
         }
-        return Right(bills);
+        return Right(bills.reversed.toList());
       } else {
         log("Error");
         return Left(Failure([response.statusMessage]));

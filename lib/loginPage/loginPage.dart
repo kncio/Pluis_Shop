@@ -254,7 +254,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
               text: "Activar",
               action: () {
                 Navigator.of(context).pushNamed(ACTIVATION_CODE_PAGE,
-                    arguments: ActivationPageArgs(phone:phone));
+                    arguments: ActivationPageArgs(phone: phone));
               }),
         )
       ],
@@ -534,84 +534,112 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         Expanded(
           child: Padding(
             padding: EdgeInsets.fromLTRB(0, 32, 0, 0),
-            child: StreamBuilder(
-              stream: this._billsBloc.billsObservable,
-              builder: (context, AsyncSnapshot<List<BillData>> snapshot) {
-                return ListView.builder(
-                    itemCount:
-                        (snapshot.data != null) ? snapshot.data.length : 0,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
-                            child: Wrap(
-                              children: [
-                                Text(
-                                  "NÚMERO DE PEDIDO: ",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text('${snapshot.data[index].invoice_number}')
-                              ],
-                            ),
-                          ),
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                              child: Wrap(children: [
-                                Text("LINK DE FACTURA: ",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                SelectableText((snapshot.data[index].pdf)),
-                              ])),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(20),
-                                    child: DarkButton(
-                                        text: "Descargar",
-                                        action: () {
-                                          var filename = snapshot
-                                              .data[index].pdf
-                                              .split('/');
-                                          download(snapshot.data[index].pdf,
-                                              filename[filename.length - 1]);
-                                        }),
+            child: RefreshIndicator(
+              onRefresh: _refreshBills,
+              child: (!this.reloading)
+                  ? StreamBuilder(
+                      stream: this._billsBloc.billsObservable,
+                      builder:
+                          (context, AsyncSnapshot<List<BillData>> snapshot) {
+                        return ListView.builder(
+                            itemCount: (snapshot.data != null)
+                                ? snapshot.data.length
+                                : 0,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                    child: Wrap(
+                                      children: [
+                                        Text(
+                                          "NÚMERO DE PEDIDO: ",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                            '${snapshot.data[index].invoice_number}')
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(20),
-                                    child: DarkButton(
-                                        text: "Visualizar",
-                                        action: () {
-                                          showModalBottomSheet(
-                                              context: context,
-                                              builder: (context) {
-                                                return SafeArea(
-                                                    top: false,
-                                                    child: PluisPdfViewer(
-                                                        url: snapshot
-                                                            .data[index].pdf));
-                                              });
-                                        }),
-                                  ),
-                                ),
-                              ]),
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                              child: Divider()),
-                        ],
-                      );
-                    });
-              },
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                      child: Wrap(children: [
+                                        Text("LINK DE FACTURA: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        SelectableText(
+                                            (snapshot.data[index].pdf)),
+                                      ])),
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(20),
+                                            child: DarkButton(
+                                                text: "Descargar",
+                                                action: () {
+                                                  var filename = snapshot
+                                                      .data[index].pdf
+                                                      .split('/');
+                                                  download(
+                                                      snapshot.data[index].pdf,
+                                                      filename[
+                                                          filename.length - 1]);
+                                                }),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(20),
+                                            child: DarkButton(
+                                                text: "Visualizar",
+                                                action: () {
+                                                  showModalBottomSheet(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return SafeArea(
+                                                            top: false,
+                                                            child: PluisPdfViewer(
+                                                                url: snapshot
+                                                                    .data[index]
+                                                                    .pdf));
+                                                      });
+                                                }),
+                                          ),
+                                        ),
+                                      ]),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                      child: Divider()),
+                                ],
+                              );
+                            });
+                      },
+                    )
+                  : Center(child: CircularProgressIndicator()),
             ),
           ),
         )
       ],
     );
+  }
+
+  Future<void> _refreshBills() async {
+    setState(() {
+      this.reloading = true;
+    });
+    context.read<LoginCubit>().getUserBills(this.userId).then((list) => {
+          this._billsBloc.updateBills(list),
+          this.setState(() {
+            this.reloading = false;
+          })
+        });
   }
 
   Future<bool> download(String url, String filename) async {
@@ -655,7 +683,7 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
       children: [
         Expanded(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 32, 0, 0),
+            padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
             child: RefreshIndicator(
               onRefresh: _refreshBuys,
               child: (!this.reloading)
