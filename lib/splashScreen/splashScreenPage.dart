@@ -105,7 +105,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                             'Version: $ApplicationVersion\nCopyright \u00a9 2021 - ',
                       ),
                       TextSpan(
-                        text: 'Tienda PLuis',
+                        text: '$pluisString',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -148,7 +148,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                             'Version: $ApplicationVersion\nCopyright \u00a9 2021 - ',
                       ),
                       TextSpan(
-                        text: 'Tienda PLuis',
+                        text: '$pluisString',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),

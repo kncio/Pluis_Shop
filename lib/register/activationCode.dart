@@ -47,6 +47,7 @@ class _ActivateCodePage extends State<ActivateCodePage> {
 
   @override
   void initState() {
+    log(phone.toString() + " " + email.toString() + " " + pass.toString());
     if (this.pass != null && this.email != null) {
       UserLoginData data =
           UserLoginData(email: this.email, password: this.pass);

@@ -99,7 +99,7 @@ class RegisterRepository {
 
         bool success = json.contains("success");
 
-        if (!success) {
+        if (success) {
           return Right(true);
         }
         return Right(false);
@@ -125,8 +125,8 @@ class RegisterRepository {
         var json = jsonEncode(response.data);
 
         bool success = response.data.toString().contains("Exito");
-
-        if (!success) {
+        log(response.data.toString());
+        if (success) {
           return Right(true);
         }
         return Right(false);

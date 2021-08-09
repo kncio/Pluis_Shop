@@ -7,7 +7,7 @@
 
     <application
         android:icon="@mipmap/launcher_icon"
-        android:label="Calzado Pluis">
+        android:label="Calzado PLuis">
         <meta-data
             android:name="io.flutter.network-policy"
             android:resource="@xml/network_security_config"></meta-data>

@@ -84,7 +84,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
               return Padding(
                   padding: EdgeInsets.fromLTRB(32, 0, 0, 0),
                   child: Text(
-                    "Calzado Pluis",
+                    "$pluisString",
                     style: TextStyle(
                       color: (snapshot.data != null)
                           ? Color(snapshot.data)
@@ -421,7 +421,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin {
                 log('${directory.path}'),
                 truePath = directory.path.replaceAll(
                         "Android/data/com.dcm.highvista.calzado_pluis/files",
-                        "CalzadoPluis") +
+                        "CalzadoPLuis") +
                     '/privacidad' +
                     '/' +
                     filename,

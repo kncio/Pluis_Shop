@@ -454,6 +454,8 @@ class _RegisterPage extends State<RegisterPage> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Este campo es obligatorio';
+          } else if (value.length < 6) {
+            return 'La contraseña debe exceder de 6 caracteres';
           }
           return null;
         },
@@ -485,6 +487,8 @@ class _RegisterPage extends State<RegisterPage> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Este campo es obligatorio';
+          } else if (value.length < 6) {
+            return 'La contraseña debe exceder de 6 caracteres';
           }
           return null;
         },
