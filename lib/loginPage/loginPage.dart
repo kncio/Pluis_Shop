@@ -148,7 +148,11 @@ class _LoginPage extends State<LoginPage> with SingleTickerProviderStateMixin {
         context
             .read<LoginCubit>()
             .getCupons((state as LoginIsLoggedState).message)
-            .then((value) => this.userCupons = value);
+            .then((value) => {
+                  this.setState(() {
+                    this.userCupons = value;
+                  })
+                });
         context
             .read<LoginCubit>()
             .getPendingOrders((state as LoginIsLoggedState).message)

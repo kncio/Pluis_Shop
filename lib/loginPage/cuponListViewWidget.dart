@@ -31,8 +31,11 @@ class CuponsListView extends StatelessWidget {
                         title: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Descuento de ${this.userCupons[index].value_discount}' +
+                              Text('Descuento:'.toUpperCase() +
+                                  ' ${this.userCupons[index].value_discount}' +
                                   ' ${discountTipe(this.userCupons[index])}'),
+                              Text('Cantidad disponible:'.toUpperCase() +
+                                  ' ${this.userCupons[index].qty}'),
                               Divider()
                             ]),
                       );
@@ -52,6 +55,8 @@ class CuponsListView extends StatelessWidget {
   }
 
   String discountTipe(Cupon cupon) {
-    return (cupon.type_discount == "1") ? "porciento." : "cantidad fija";
+    return (cupon.type_discount == "1")
+        ? "    TIPO: %"
+        : " TIPO:  cantidad fija";
   }
 }

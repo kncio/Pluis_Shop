@@ -418,7 +418,8 @@ class _ShopCartPage extends State<ShopCartPage> {
                       .map<DropdownMenuItem<Cupon>>((Cupon value) {
                     return DropdownMenuItem<Cupon>(
                       value: value,
-                      child: Text("Cupón número " + value.id),
+                      child: Text('DESCUENTO: ${value.value_discount}' +
+                          ' ${discountTipe(value)}' + " Cantidad: ${value.qty}"),
                     );
                   }).toList(),
                 ))
@@ -613,6 +614,9 @@ class _ShopCartPage extends State<ShopCartPage> {
             ],
           );
         });
+  }
+  String discountTipe(Cupon cupon) {
+    return (cupon.type_discount == "1") ? " TIPO: %" : " TIPO:  cantidad fija";
   }
 
   Future<void> postBuyOrder() async {

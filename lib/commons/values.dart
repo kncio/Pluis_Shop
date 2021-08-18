@@ -24,7 +24,7 @@ const int HTTP_CONNECTION_TIMEOUT = 5000;
 const int REQUEST_TIME_LIMIT = 6000;
 const int HTTP_SOCKET_TIMEOUT = 5000;
 //
-const String ApplicationVersion = "1.3.4+1";
+const String ApplicationVersion = "1.3.6+1";
 
 //region Metodos de entrega
 const String storePickUp = '0|null';
