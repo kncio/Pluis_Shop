@@ -10,8 +10,11 @@ class ExpandableRow extends StatelessWidget {
   final List<Map<String, dynamic>> itemsNames;
 
   //TODO: Introduce onClick action
-  const ExpandableRow({Key key, this.headerName, this.itemsNames})
+  ExpandableRow({Key key, this.headerName, this.itemsNames})
       : super(key: key);
+
+
+  ExpandableController _expandableController = ExpandableController(initialExpanded: true);
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +50,7 @@ class ExpandableRow extends StatelessWidget {
         child: Column(
           children: <Widget>[
             ExpandablePanel(
+              controller: _expandableController,
               theme: const ExpandableThemeData(
                 headerAlignment: ExpandablePanelHeaderAlignment.center,
                 tapBodyToExpand: true,
